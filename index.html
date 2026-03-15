@@ -3,69 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3Patti Pro - Official Casino</title>
+    <title>3Patti Pro - Official</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        :root { --gold: #d4af37; --dark: #0a0a0a; --card: #161616; }
-        body { background: var(--dark); color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
-        .header { background: #111; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .balance-card { background: linear-gradient(135deg, #1a1a1a, #222); border: 1px solid var(--gold); border-radius: 15px; margin: 15px auto; padding: 20px; width: 85%; }
+        :root { --gold: #d4af37; --bg: #0a0a0a; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
+        .header { background: #111; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; }
+        .balance-card { background: #1a1a1a; border: 1px solid var(--gold); border-radius: 15px; margin: 20px auto; padding: 20px; width: 85%; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .card { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
+        .card { background: #161616; border: 1px solid #333; padding: 25px; border-radius: 12px; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; }
         .m-content { width: 85%; max-width: 400px; margin: 50px auto; background: #111; padding: 20px; border: 1px solid var(--gold); border-radius: 15px; }
         input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: #fff; }
-        .btn { background: var(--gold); color: #000; padding: 12px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .btn-red { background: #dc3545; color: #fff; }
-        .btn-green { background: #28a745; color: #fff; }
+        .btn { background: var(--gold); color: #000; padding: 12px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
-        .tab-link { color: var(--gold); cursor: pointer; font-size: 14px; text-decoration: underline; margin-top: 10px; display: block; }
     </style>
 </head>
 <body>
 
-    <div id="auth-sec" style="padding-top: 60px;">
-        <h1 style="color:var(--gold); font-size: 35px;">3Patti Pro</h1>
-        <div id="login-box">
+    <div id="auth-sec" style="padding-top: 50px;">
+        <h1 style="color:var(--gold); font-size: 38px;">3Patti Pro</h1>
+        <div id="login-form">
             <h3>Login</h3>
-            <input type="email" id="l-email" placeholder="Email Address">
-            <input type="password" id="l-pass" placeholder="Password">
-            <button class="btn" onclick="login()">LOGIN</button>
-            <span class="tab-link" onclick="toggleAuth(false)">New Player? Register Here</span>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn" onclick="signIn()">LOGIN</button>
+            <p onclick="toggle(false)" style="text-decoration:underline; cursor:pointer;">New? Register Here</p>
         </div>
-        <div id="reg-box" class="hidden">
+        <div id="reg-form" class="hidden">
             <h3>Register</h3>
             <input type="text" id="r-name" placeholder="Full Name">
-            <input type="email" id="r-email" placeholder="Email Address">
+            <input type="email" id="r-email" placeholder="Email">
             <input type="password" id="r-pass" placeholder="Password">
-            <button class="btn btn-green" onclick="register()">CREATE ACCOUNT</button>
-            <span class="tab-link" onclick="toggleAuth(true)">Already have account? Login</span>
+            <button class="btn" style="background:green; color:white;" onclick="signUp()">REGISTER</button>
+            <p onclick="toggle(true)" style="text-decoration:underline; cursor:pointer;">Back to Login</p>
         </div>
-        <p id="err" style="color:red; font-size:12px; padding:15px;"></p>
+        <p id="err-msg" style="color:red; padding:15px;"></p>
     </div>
 
     <div id="dash-sec" class="hidden">
         <div class="header">
-            <span id="p-name">Player</span>
-            <button onclick="logout()" style="color:red; background:none; border:none; font-weight:bold;">Logout</button>
+            <span id="display-name">User</span>
+            <button onclick="signOutUser()" style="color:red; background:none; border:none;">Logout</button>
         </div>
         <div class="balance-card">
-            <p style="margin:0;">Credits</p>
-            <h2 style="color:var(--gold);">Rs. <span id="p-bal">0.00</span></h2>
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-green" onclick="openModal('deposit')">Deposit</button>
-                <button class="btn btn-red" onclick="openModal('withdraw')">Withdraw</button>
-            </div>
+            <p>Wallet Balance</p>
+            <h2 style="color:var(--gold);">Rs. <span id="balance">0.00</span></h2>
+            <button class="btn" style="width:45%; background:green; color:white;" onclick="openWin('Deposit')">Deposit</button>
+            <button class="btn" style="width:45%; background:red; color:white;" onclick="openWin('Withdraw')">Withdraw</button>
         </div>
         <div class="grid">
-            <div class="card" onclick="play('Crash')">🚀<br>Crash</div>
-            <div class="card" onclick="play('Tiger vs Dragon')">🐯<br>Tiger Dragon</div>
-            <div class="card" onclick="play('Mines')">💣<br>Mines</div>
-            <div class="card" onclick="play('Slots')">🎰<br>Slots</div>
+            <div class="card" onclick="openGame('Crash')">🚀<br>Crash</div>
+            <div class="card" onclick="openGame('Tiger')">🐯<br>Tiger Dragon</div>
+            <div class="card" onclick="openGame('Mines')">💣<br>Mines</div>
+            <div class="card" onclick="openGame('Slots')">🎰<br>Slots</div>
         </div>
     </div>
 
@@ -73,12 +68,13 @@
         <div class="m-content">
             <h2 id="m-title" style="color:var(--gold)">Menu</h2>
             <div id="m-body"></div>
-            <button class="btn" style="background:#333; color:#fff; margin-top:15px;" onclick="closeM()">Close</button>
+            <button class="btn" style="background:#333; color:#fff; margin-top:10px;" onclick="closeModal()">Close</button>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = {
+        // Verified configuration from your screenshot
+        const config = {
             apiKey: "AIzaSyDTNneivrTLe-s-e0lKW1fUixVSjDfu2k",
             authDomain: "pattipro-c1ffe.firebaseapp.com",
             databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
@@ -88,37 +84,37 @@
             appId: "1:766843054614:web:781658832e63e41fc2e337"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(config);
         const auth = firebase.auth();
         const db = firebase.database();
-        let currentBal = 0;
+        let userBal = 0;
 
-        function toggleAuth(s) {
-            document.getElementById('login-box').className = s ? "" : "hidden";
-            document.getElementById('reg-box').className = s ? "hidden" : "";
+        function toggle(isLogin) {
+            document.getElementById('login-form').className = isLogin ? "" : "hidden";
+            document.getElementById('reg-form').className = isLogin ? "hidden" : "";
         }
 
-        function login() {
-            auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value)
-                .catch(e => document.getElementById('err').innerText = e.message);
+        function signIn() {
+            auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('pass').value)
+                .catch(e => document.getElementById('err-msg').innerText = e.message);
         }
 
-        function register() {
+        function signUp() {
             const name = document.getElementById('r-name').value;
             auth.createUserWithEmailAndPassword(document.getElementById('r-email').value, document.getElementById('r-pass').value)
                 .then(u => db.ref('users/' + u.user.uid).set({name: name, balance: 0}))
-                .catch(e => document.getElementById('err').innerText = e.message);
+                .catch(e => document.getElementById('err-msg').innerText = e.message);
         }
 
-        auth.onAuthStateChanged(u => {
-            if(u) {
+        auth.onAuthStateChanged(user => {
+            if(user) {
                 document.getElementById('auth-sec').classList.add('hidden');
                 document.getElementById('dash-sec').classList.remove('hidden');
-                db.ref('users/' + u.uid).on('value', s => {
+                db.ref('users/' + user.uid).on('value', s => {
                     const d = s.val();
-                    currentBal = d.balance || 0;
-                    document.getElementById('p-bal').innerText = currentBal.toFixed(2);
-                    document.getElementById('p-name').innerText = d.name || "Player";
+                    userBal = d.balance || 0;
+                    document.getElementById('balance').innerText = userBal.toFixed(2);
+                    document.getElementById('display-name').innerText = d.name || "Player";
                 });
             } else {
                 document.getElementById('auth-sec').classList.remove('hidden');
@@ -126,35 +122,38 @@
             }
         });
 
-        function play(game) {
-            const modal = document.getElementById('modal');
-            modal.style.display = "block";
+        function openGame(game) {
+            document.getElementById('modal').style.display = "block";
             document.getElementById('m-title').innerText = game;
             document.getElementById('m-body').innerHTML = `
                 <input type="number" id="bet" placeholder="Bet Amount (Min 10)">
-                <button class="btn" onclick="runGameLogic('${game}')">Bet Now (33% Win)</button>
+                <button class="btn" onclick="play('${game}')">Start Game</button>
             `;
         }
 
-        function runGameLogic(game) {
+        function play(game) {
             let b = parseFloat(document.getElementById('bet').value);
-            if(isNaN(b) || b < 10 || b > currentBal) return alert("Invalid Bet/Balance");
+            if(isNaN(b) || b < 10 || b > userBal) return alert("Invalid Bet/Balance");
             
-            let win = Math.random() < 0.33; // 33% Win Chance
-            let amt = win ? (game === 'Slots' ? b * 5 : b) : -b;
-            db.ref('users/' + auth.currentUser.uid).update({balance: currentBal + amt});
-            alert(win ? "WINNER! Money added." : "LOST! Try again.");
-            closeM();
+            // Logic: 65% Loss / 33% Win
+            let win = Math.random() < 0.33;
+            let res = win ? (game === 'Slots' ? b * 5 : b) : -b;
+            db.ref('users/' + auth.currentUser.uid).update({balance: userBal + res});
+            alert(win ? "WIN! Rs." + res + " added." : "LOSS! Try again.");
+            closeModal();
         }
 
-        function openModal(t) {
+        function openWin(type) {
             document.getElementById('modal').style.display = "block";
-            document.getElementById('m-title').innerText = t.toUpperCase();
-            document.getElementById('m-body').innerHTML = `<input type="number" id="amt" placeholder="Enter Amount"><button class="btn btn-green" onclick="alert('Request sent to Admin!')">Confirm</button>`;
+            document.getElementById('m-title').innerText = type;
+            document.getElementById('m-body').innerHTML = `
+                <input type="number" placeholder="Enter Amount">
+                <button class="btn" style="background:green; color:white;" onclick="alert('Request sent!')">Confirm ${type}</button>
+            `;
         }
 
-        function closeM() { document.getElementById('modal').style.display = "none"; }
-        function logout() { auth.signOut().then(() => location.reload()); }
+        function closeModal() { document.getElementById('modal').style.display = "none"; }
+        function signOutUser() { auth.signOut().then(() => location.reload()); }
     </script>
 </body>
 </html>
