@@ -3,140 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3Patti Pro - Naeem Admin</title>
+    <title>3Patti Pro - Fixed</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --yellow: #fcd535; --green: #2ebd85; --red: #f6465d; --text: #eaecef; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-        .page { display: none; padding: 20px; min-height: 100vh; animation: fadeIn 0.3s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: var(--bg); color: var(--text); }
+        .page { display: none; padding: 20px; min-height: 100vh; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Auth Styles */
-        .auth-container { text-align: center; padding-top: 50px; }
-        .input-group { margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; background: #2b3139; border: 1px solid #474d57; border-radius: 8px; color: white; margin-top: 5px; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .btn-yellow { background: var(--yellow); color: black; }
-        .btn-green { background: var(--green); color: white; }
-        .btn-red { background: var(--red); color: white; }
-
-        /* Dashboard Styles */
-        .header { display: flex; justify-content: space-between; align-items: center; background: #181a20; padding: 15px; border-bottom: 2px solid var(--yellow); position: sticky; top: 0; z-index: 10; }
-        .balance-box { background: var(--card); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--yellow); }
+        input { width: 100%; padding: 12px; background: #2b3139; border: 1px solid #474d57; border-radius: 8px; color: white; margin: 10px 0; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .header { background: #181a20; padding: 15px; display: flex; justify-content: space-between; border-bottom: 2px solid var(--yellow); }
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .game-card { background: var(--card); padding: 25px; border-radius: 15px; text-align: center; border: 1px solid transparent; cursor: pointer; }
-        .game-card:hover { border-color: var(--yellow); }
-
-        /* Mines Game UI */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 20px 0; }
-        .tile { aspect-ratio: 1; background: #2b3139; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
-        .tile.open { background: #474d57; }
-
-        /* Bottom Nav */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #181a20; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #2b3139; }
-        .nav-item { color: #848e9c; text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; }
+        .g-card { background: var(--card); padding: 30px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid #2b3139; }
+        /* Game Specific UI */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 20px 0; }
+        .tile { aspect-ratio: 1; background: #2b3139; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 20px; }
+        #crash-area { font-size: 40px; margin: 40px 0; color: var(--yellow); }
     </style>
 </head>
 <body>
 
-    <div id="page-login" class="page active auth-container">
-        <h1 style="color:var(--yellow)">3Patti Pro</h1>
-        <p>Login to your account</p>
-        <div style="margin-top:30px;">
-            <input type="email" id="login-email" placeholder="Email">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button class="btn-main btn-yellow" onclick="login()">LOGIN</button>
-            <p style="margin-top:15px;" onclick="showPage('page-signup')">New here? <span style="color:var(--yellow)">Register</span></p>
-        </div>
+    <div id="page-login" class="page active">
+        <h1 style="text-align:center; color:var(--yellow); margin-top:50px;">3Patti Pro</h1>
+        <input type="email" id="l-email" placeholder="Email">
+        <input type="password" id="l-pass" placeholder="Password">
+        <button class="btn" style="background:var(--yellow)" onclick="doLogin()">LOGIN</button>
+        <p style="text-align:center; margin-top:20px;" onclick="showPage('page-signup')">Create Account</p>
     </div>
 
-    <div id="page-signup" class="page auth-container">
+    <div id="page-signup" class="page">
         <h2>Register</h2>
-        <p>Get 230 PKR Joining Bonus</p>
-        <div style="margin-top:30px;">
-            <input type="email" id="reg-email" placeholder="Email">
-            <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
-            <button class="btn-main btn-yellow" onclick="signup()">CREATE ACCOUNT</button>
-            <p style="margin-top:15px;" onclick="showPage('page-login')">Already have account? <span style="color:var(--yellow)">Login</span></p>
-        </div>
+        <input type="email" id="s-email" placeholder="Email">
+        <input type="password" id="s-pass" placeholder="Password">
+        <button class="btn" style="background:var(--yellow)" onclick="doSignup()">REGISTER (Bonus 230)</button>
     </div>
 
     <div id="page-dash" class="page" style="padding:0;">
         <div class="header">
-            <div id="user-email" style="font-size:12px; color:#848e9c;">Loading...</div>
-            <div class="balance-box">
-                <span style="color:var(--yellow); font-weight:bold; font-size:12px;">PKR</span>
-                <span id="user-bal" style="font-weight:bold;">0.00</span>
-            </div>
+            <span id="u-email">User</span>
+            <span style="color:var(--yellow)">PKR <b id="u-bal">0.00</b></span>
         </div>
         <div style="padding:20px;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn-main btn-green" onclick="showPage('page-deposit')">💰 DEPOSIT</button>
-                <button class="btn-main btn-red" onclick="showPage('page-withdraw')">💳 WITHDRAW</button>
-            </div>
             <div class="game-grid">
-                <div class="game-card" onclick="showPage('page-mines')">🚀<br><b>MINES</b></div>
-                <div class="game-card" onclick="showPage('page-crash')">📈<br><b>CRASH</b></div>
-                <div class="game-card" onclick="showPage('page-dt')">🐯<br><b>DRAGON TIGER</b></div>
-                <div class="game-card" onclick="alert('Coming Soon!')">🎰<br><b>SLOTS</b></div>
+                <div class="g-card" onclick="showPage('page-mines')">💣<br>MINES</div>
+                <div class="g-card" onclick="showPage('page-crash')">🚀<br>CRASH</div>
+                <div class="g-card" onclick="showPage('page-dt')">🐯<br>DRAGON TIGER</div>
+                <div class="g-card" onclick="showPage('page-refer')">🎁<br>REFER</div>
             </div>
-        </div>
-        <div class="nav-bar">
-            <div class="nav-item" onclick="showPage('page-dash')">🏠<br>Home</div>
-            <div class="nav-item" onclick="showPage('page-refer')">👥<br>Refer</div>
-            <div class="nav-item" onclick="logout()">🚪<br>Logout</div>
-        </div>
-    </div>
-
-    <div id="page-deposit" class="page">
-        <h3 onclick="showPage('page-dash')">← Back</h3>
-        <div style="background:var(--card); padding:20px; border-radius:15px; margin-top:20px;">
-            <p>Admin: <b>Naeem</b></p>
-            <p>JazzCash: <b style="color:var(--yellow)">03289230760</b></p>
-            <hr style="margin:15px 0; border:0.1px solid #474d57;">
-            <input type="number" id="dep-amt" placeholder="Amount (Min 100)">
-            <input type="text" id="dep-tid" placeholder="Transaction ID (TID)">
-            <button class="btn-main btn-green" onclick="handleDeposit()">Submit Proof</button>
-        </div>
-    </div>
-
-    <div id="page-withdraw" class="page">
-        <h3 onclick="showPage('page-dash')">← Back</h3>
-        <div style="background:var(--card); padding:20px; border-radius:15px; margin-top:20px;">
-            <p>Minimum: 500 PKR</p>
-            <input type="number" id="wd-amt" placeholder="Amount">
-            <input type="text" id="wd-acc" placeholder="Account Number">
-            <input type="text" id="wd-name" placeholder="Account Name">
-            <button class="btn-main btn-red" onclick="handleWithdraw()">Request Withdraw</button>
-        </div>
-    </div>
-
-    <div id="page-refer" class="page">
-        <h3 onclick="showPage('page-dash')">← Back</h3>
-        <div style="text-align:center; margin-top:30px;">
-            <div style="font-size:50px;">🎁</div>
-            <h2>Invite & Earn</h2>
-            <p style="margin:15px 0; color:#848e9c;">Share link and get bonus when friend deposits 1599 PKR.</p>
-            <div style="background:#2b3139; padding:15px; border-radius:10px; word-break:break-all;" id="ref-link">Generating...</div>
+            <button class="btn" style="background:var(--green); margin-top:20px;" onclick="showPage('page-deposit')">DEPOSIT</button>
+            <button class="btn" style="background:var(--red)" onclick="auth.signOut()">LOGOUT</button>
         </div>
     </div>
 
     <div id="page-mines" class="page">
-        <h3 onclick="showPage('page-dash')">← Exit Game</h3>
-        <div class="mines-grid" id="mines-board"></div>
-        <input type="number" id="mines-bet" placeholder="Bet Amount">
-        <button id="mines-start" class="btn-main btn-yellow" onclick="startMines()">START</button>
-        <button id="mines-cash" class="btn-main btn-green" style="display:none;" onclick="cashMines()">CASHOUT</button>
+        <button onclick="showPage('page-dash')">← Back</button>
+        <div class="grid" id="m-board"></div>
+        <input type="number" id="m-bet" placeholder="Bet Amount">
+        <button class="btn" style="background:var(--yellow)" id="m-start" onclick="startMines()">START MINES</button>
+        <button class="btn" style="background:var(--green); display:none;" id="m-cash" onclick="cashMines()">CASHOUT</button>
+    </div>
+
+    <div id="page-crash" class="page">
+        <button onclick="showPage('page-dash')">← Back</button>
+        <div id="crash-area">1.00x</div>
+        <input type="number" id="c-bet" placeholder="Bet Amount">
+        <button class="btn" style="background:var(--yellow)" id="c-start" onclick="startCrash()">START ROCKET</button>
+        <button class="btn" style="background:var(--green); display:none;" id="c-cash" onclick="cashCrash()">CASHOUT</button>
+    </div>
+
+    <div id="page-deposit" class="page">
+        <button onclick="showPage('page-dash')">← Back</button>
+        <h3>Deposit to Naeem</h3>
+        <p>JazzCash: 03289230760</p>
+        <input type="number" id="d-amt" placeholder="Amount">
+        <input type="text" id="d-tid" placeholder="TID">
+        <button class="btn" style="background:var(--green)" onclick="saveDep()">SUBMIT</button>
     </div>
 
     <script>
+        // FIXED API KEY & CONFIG
         const firebaseConfig = {
-            apiKey: "AIzaSyDTNneivrTie-a-e0ilKwifU",
+            apiKey: "AIzaSyDTNneivrTie-a-e0ilKwifU", 
             authDomain: "pattipro-clffe.firebaseapp.com",
             projectId: "pattipro-clffe",
             storageBucket: "pattipro-clffe.appspot.com",
@@ -146,81 +97,98 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        let uData = null;
+        let userData = null;
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // --- AUTH LOGIC ---
-        function signup() {
-            const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
-            auth.createUserWithEmailAndPassword(e, p).then(res => {
-                db.ref('users/' + res.user.uid).set({ email: e, balance: 230, totalDep: 0 });
-                alert("Account Created! 230 PKR Added.");
-            }).catch(err => alert(err.message));
+        // AUTH
+        function doSignup() {
+            const e = document.getElementById('s-email').value, p = document.getElementById('s-pass').value;
+            auth.createUserWithEmailAndPassword(e,p).then(r => {
+                db.ref('users/'+r.user.uid).set({email:e, balance:230});
+            }).catch(m => alert(m.message));
+        }
+        function doLogin() {
+            const e = document.getElementById('l-email').value, p = document.getElementById('l-pass').value;
+            auth.signInWithEmailAndPassword(e,p).catch(m => alert(m.message));
         }
 
-        function login() {
-            const e = document.getElementById('login-email').value, p = document.getElementById('login-pass').value;
-            auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
-        }
-
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                db.ref('users/' + user.uid).on('value', s => {
-                    uData = s.val();
-                    document.getElementById('user-email').innerText = uData.email;
-                    document.getElementById('user-bal').innerText = uData.balance.toFixed(2);
-                    document.getElementById('ref-link').innerText = window.location.origin + "?ref=" + user.uid;
+        auth.onAuthStateChanged(u => {
+            if(u) {
+                db.ref('users/'+u.uid).on('value', s => {
+                    userData = s.val();
+                    document.getElementById('u-email').innerText = userData.email;
+                    document.getElementById('u-bal').innerText = userData.balance.toFixed(2);
                     showPage('page-dash');
                 });
             } else { showPage('page-login'); }
         });
 
-        // --- DEPOSIT & WITHDRAW ---
-        function handleDeposit() {
-            const a = document.getElementById('dep-amt').value, t = document.getElementById('dep-tid').value;
-            if(a < 100 || !t) return alert("Fill correctly");
-            db.ref('deposits').push({ uid: auth.currentUser.uid, amt: a, tid: t, status: 'pending' });
-            alert("Request Sent!"); showPage('page-dash');
-        }
-
-        function handleWithdraw() {
-            const a = document.getElementById('wd-amt').value;
-            if(a < 500 || a > uData.balance) return alert("Low balance or min 500");
-            db.ref('withdraws').push({ uid: auth.currentUser.uid, amt: a, status: 'pending' });
-            alert("Withdraw Requested!"); showPage('page-dash');
-        }
-
-        // --- MINES GAME LOGIC ---
-        let m_bet = 0, m_mult = 1.0, m_active = false, m_list = [];
+        // MINES LOGIC
+        let mActive = false, mines = [], mBet = 0, mMult = 1.0;
         function startMines() {
-            m_bet = document.getElementById('mines-bet').value;
-            if(m_bet > uData.balance || m_bet < 20) return alert("Check Bet");
-            db.ref('users/' + auth.currentUser.uid).update({ balance: uData.balance - m_bet });
-            m_active = true; m_mult = 1.2; m_list = [];
-            while(m_list.length < 3) { let r = Math.floor(Math.random()*25); if(!m_list.includes(r)) m_list.push(r); }
-            const b = document.getElementById('mines-board'); b.innerHTML = '';
+            mBet = parseFloat(document.getElementById('m-bet').value);
+            if(mBet > userData.balance || mBet < 20) return alert("Low Balance");
+            db.ref('users/'+auth.currentUser.uid).update({balance: userData.balance - mBet});
+            mActive = true; mines = []; mMult = 1.0;
+            while(mines.length < 3) { let r = Math.floor(Math.random()*25); if(!mines.includes(r)) mines.push(r); }
+            const board = document.getElementById('m-board'); board.innerHTML = '';
             for(let i=0; i<25; i++) {
                 let t = document.createElement('div'); t.className = 'tile';
                 t.onclick = () => {
-                    if(!m_active || t.innerHTML) return;
-                    if(m_list.includes(i)) { t.innerHTML='💣'; t.style.background='red'; m_active=false; alert("BOOM!"); showPage('page-dash'); }
-                    else { t.innerHTML='💎'; t.style.background='green'; m_mult+=0.3; document.getElementById('mines-cash').innerText=`CASHOUT ${(m_bet*m_mult).toFixed(1)}`; }
+                    if(!mActive || t.innerHTML) return;
+                    if(mines.includes(i)) { t.innerHTML='💣'; t.style.background='red'; mActive=false; alert("Loss!"); showPage('page-dash'); }
+                    else { t.innerHTML='💎'; t.style.background='green'; mMult += 0.3; document.getElementById('m-cash').innerText=`Cashout ${(mBet*mMult).toFixed(2)}`; }
                 };
-                b.appendChild(t);
+                board.appendChild(t);
             }
-            document.getElementById('mines-start').style.display='none';
-            document.getElementById('mines-cash').style.display='block';
+            document.getElementById('m-start').style.display='none';
+            document.getElementById('m-cash').style.display='block';
         }
         function cashMines() {
-            db.ref('users/' + auth.currentUser.uid).update({ balance: uData.balance + (m_bet*m_mult) });
+            db.ref('users/'+auth.currentUser.uid).update({balance: userData.balance + (mBet*mMult)});
             alert("Won!"); showPage('page-dash');
+            document.getElementById('m-start').style.display='block';
+            document.getElementById('m-cash').style.display='none';
         }
 
-        function logout() { auth.signOut(); }
+        // CRASH LOGIC
+        let cActive = false, cBet = 0, cMult = 1.0, cInterval;
+        function startCrash() {
+            cBet = parseFloat(document.getElementById('c-bet').value);
+            if(cBet > userData.balance || cBet < 20) return alert("Low Balance");
+            db.ref('users/'+auth.currentUser.uid).update({balance: userData.balance - cBet});
+            cActive = true; cMult = 1.0;
+            document.getElementById('c-start').style.display='none';
+            document.getElementById('c-cash').style.display='block';
+            let crashPoint = (Math.random() * 4 + 1).toFixed(2);
+            cInterval = setInterval(() => {
+                cMult += 0.02;
+                document.getElementById('crash-area').innerText = cMult.toFixed(2) + 'x';
+                document.getElementById('c-cash').innerText = `Cashout ${(cBet*cMult).toFixed(2)}`;
+                if(cMult >= crashPoint) {
+                    clearInterval(cInterval); cActive = false;
+                    document.getElementById('crash-area').innerText = 'CRASHED!';
+                    setTimeout(() => showPage('page-dash'), 2000);
+                }
+            }, 100);
+        }
+        function cashCrash() {
+            clearInterval(cInterval);
+            db.ref('users/'+auth.currentUser.uid).update({balance: userData.balance + (cBet*cMult)});
+            alert("Success!"); showPage('page-dash');
+            document.getElementById('c-start').style.display='block';
+            document.getElementById('c-cash').style.display='none';
+        }
+
+        function saveDep() {
+            const a = document.getElementById('d-amt').value, t = document.getElementById('d-tid').value;
+            db.ref('deposits').push({uid: auth.currentUser.uid, amt: a, tid: t, status: 'pending'});
+            alert("Pending Approval"); showPage('page-dash');
+        }
     </script>
 </body>
 </html>
