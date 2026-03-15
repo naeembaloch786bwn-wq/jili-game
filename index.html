@@ -3,30 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SALEEM ELITE PRO</title>
+    <title>SALEEM ELITE - FIXED</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         :root { --gold: #ffcc00; --bg: #0b0e18; --card: #1c2230; --green: #24d15d; }
-        body { font-family: 'Arial', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; }
-        .header { background: var(--card); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        .balance-box { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; font-size: 18px; }
-        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; margin-bottom: 70px; }
-        .game-card { background: var(--card); border-radius: 15px; border: 1px solid #333; overflow: hidden; position: relative; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-        .game-card:active { transform: scale(0.95); }
-        .game-card i { font-size: 30px; margin-bottom: 5px; }
-        .footer-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
-        .btn { padding: 10px 25px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-dep { background: var(--gold); color: #000; }
-        .btn-wit { background: var(--green); color: #fff; }
+        body { font-family: 'Arial', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* Modal System */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; width: 85%; max-width: 400px; border: 1px solid var(--gold); text-align: center; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: white; }
+        .header { background: var(--card); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
+        .balance-box { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; }
         
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .game-card { background: var(--card); border-radius: 15px; height: 110px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #333; font-weight: bold; flex-direction: column; text-align: center; }
+        
+        /* Full Screen Game Overlay */
+        #game-stage { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; text-align: center; }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: red; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+        
+        #crash-display { font-size: 50px; color: var(--gold); margin-top: 150px; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 85%; border: 1px solid var(--gold); text-align: center; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #000; color: #fff; border: 1px solid #444; border-radius: 8px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -34,40 +36,56 @@
     <div id="auth-screen">
         <h1 style="color:var(--gold)">SALEEM ELITE</h1>
         <input type="email" id="email" placeholder="Gmail Address">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="btn btn-dep" style="width: 80%;" onclick="authAction('login')">LOGIN</button>
-        <button class="btn" style="background:transparent; color:white; margin-top:10px;" onclick="authAction('reg')">REGISTER</button>
+        <input type="password" id="pswd" placeholder="Password">
+        <button class="btn" style="background:var(--gold)" onclick="login()">LOGIN</button>
+        <button class="btn" style="background:transparent; color:white;" onclick="register()">REGISTER</button>
     </div>
 
     <div class="header">
-        <div id="u-name" style="font-size: 14px; color: #aaa;">User</div>
-        <div class="balance-box">PKR <span id="u-balance">0.00</span></div>
-        <button onclick="logout()" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px;">Exit</button>
+        <div id="u-display">Loading...</div>
+        <div class="balance-box">PKR <span id="u-bal">0.00</span></div>
+        <button onclick="logout()" style="background:red; color:white; border:none; border-radius:5px; padding:5px 10px;">Exit</button>
     </div>
 
     <div class="game-grid">
-        <div class="game-card" onclick="playGame('Crash')">🚀<br>CRASH</div>
-        <div class="game-card" onclick="playGame('Slots')">🎰<br>SLOTS</div>
-        <div class="game-card" onclick="playGame('DragonTiger')">🐉<br>DRAGON TIGER</div>
-        <div class="game-card" onclick="playGame('Mines')">💣<br>MINES</div>
+        <div class="game-card" onclick="openGame('Crash')">🚀<br>CRASH</div>
+        <div class="game-card" onclick="openGame('Mines')">💣<br>MINES</div>
+        <div class="game-card" onclick="openGame('DragonTiger')">🐉<br>DRAGON TIGER</div>
+        <div class="game-card" onclick="openGame('Slots')">🎰<br>SLOTS</div>
+    </div>
+
+    <div id="game-stage">
+        <button class="close-btn" onclick="closeGame()">EXIT GAME</button>
+        
+        <div id="crash-ui" style="display:none;">
+            <h2 style="color:var(--gold); margin-top:80px;">CRASH</h2>
+            <div id="crash-display">1.00x</div>
+            <button class="btn" id="crash-btn" style="background:var(--green); width:60%; margin-top:40px;" onclick="betCrash()">BET 10 PKR</button>
+        </div>
+
+        <div id="generic-ui" style="display:none;">
+            <h2 id="game-title" style="color:var(--gold); margin-top:100px;"></h2>
+            <p>Game Logic Loading... Balance Connected.</p>
+        </div>
     </div>
 
     <div id="walletModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle" style="color:var(--gold)">Deposit</h2>
-            <input type="number" id="walletAmount" placeholder="Enter Amount">
-            <input type="text" id="walletPhone" placeholder="Easypaisa/JazzCash Number">
-            <button class="btn btn-dep" onclick="submitWallet()">SUBMIT</button>
-            <button class="btn" onclick="closeModal()" style="background:grey; margin-top:5px;">Close</button>
+            <h2 id="w-title" style="color:var(--gold)">Wallet</h2>
+            <input type="number" id="w-amount" placeholder="Enter Amount">
+            <input type="text" id="w-phone" placeholder="Easypaisa/JazzCash Number">
+            <button class="btn" style="background:var(--gold)" onclick="sendRequest()">SUBMIT REQUEST</button>
+            <button class="btn" style="background:grey" onclick="closeWallet()">CLOSE</button>
         </div>
     </div>
 
-    <div class="footer-nav">
-        <button class="btn btn-dep" onclick="openModal('Deposit')">DEPOSIT</button>
-        <button class="btn btn-wit" onclick="openModal('Withdraw')">WITHDRAW</button>
+    <div style="position:fixed; bottom:20px; width:100%; display:flex; justify-content:space-evenly;">
+        <button class="btn" style="background:var(--gold); width:40%;" onclick="openWallet('Deposit')">DEPOSIT</button>
+        <button class="btn" style="background:var(--green); width:40%;" onclick="openWallet('Withdraw')">WITHDRAW</button>
     </div>
 
 <script>
+    // Firebase Setup
     const firebaseConfig = {
         apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
         authDomain: "pattipro-c1ffe.firebaseapp.com",
@@ -81,70 +99,92 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // 1. Auth System
-    function authAction(type) {
-        const em = document.getElementById('email').value;
-        const ps = document.getElementById('pass').value;
-        if(type === 'reg') {
-            auth.createUserWithEmailAndPassword(em, ps).then(u => {
-                db.ref('users/'+u.user.uid).set({ email: em, balance: 120.00 });
-                alert("120 PKR Bonus Added!");
-            }).catch(e => alert(e.message));
-        } else {
-            auth.signInWithEmailAndPassword(em, ps).catch(e => alert(e.message));
-        }
+    let balance = 0;
+    let crashTimer;
+
+    // Authentication Logic
+    function login() {
+        auth.signInWithEmailAndPassword(email.value, pswd.value).catch(e => alert(e.message));
     }
+    function register() {
+        auth.createUserWithEmailAndPassword(email.value, pswd.value).then(u => {
+            db.ref('users/'+u.user.uid).set({ email: email.value, balance: 120.00 });
+        }).catch(e => alert(e.message));
+    }
+    function logout() { auth.signOut(); }
 
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
             db.ref('users/'+user.uid).on('value', s => {
-                const d = s.val();
-                document.getElementById('u-balance').innerText = d.balance.toFixed(2);
-                document.getElementById('u-name').innerText = d.email.split('@')[0];
+                const data = s.val();
+                balance = data.balance;
+                document.getElementById('u-bal').innerText = balance.toFixed(2);
+                document.getElementById('u-display').innerText = data.email.split('@')[0];
             });
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
         }
     });
 
-    function logout() { auth.signOut(); }
+    // Game Control (Integrated)
+    function openGame(name) {
+        document.getElementById('game-stage').style.display = 'block';
+        if(name === 'Crash') {
+            document.getElementById('crash-ui').style.display = 'block';
+            runCrash();
+        } else {
+            document.getElementById('generic-ui').style.display = 'block';
+            document.getElementById('game-title').innerText = name;
+        }
+    }
 
-    // 2. Wallet System (Deposit/Withdraw)
-    let currentMode = "";
-    function openModal(mode) {
-        currentMode = mode;
-        document.getElementById('modalTitle').innerText = mode;
+    function closeGame() {
+        clearInterval(crashTimer);
+        document.getElementById('game-stage').style.display = 'none';
+        document.getElementById('crash-ui').style.display = 'none';
+        document.getElementById('generic-ui').style.display = 'none';
+    }
+
+    function runCrash() {
+        let mult = 1.00;
+        document.getElementById('crash-display').innerText = "1.00x";
+        document.getElementById('crash-display').style.color = "var(--gold)";
+        crashTimer = setInterval(() => {
+            mult += 0.01;
+            document.getElementById('crash-display').innerText = mult.toFixed(2) + "x";
+            if(Math.random() < 0.005) { // Crash Logic
+                clearInterval(crashTimer);
+                document.getElementById('crash-display').innerText = "CRASHED!";
+                document.getElementById('crash-display').style.color = "red";
+                setTimeout(runCrash, 3000);
+            }
+        }, 80);
+    }
+
+    // Wallet Logic
+    function openWallet(type) {
+        document.getElementById('w-title').innerText = type;
         document.getElementById('walletModal').style.display = 'flex';
     }
-    function closeModal() { document.getElementById('walletModal').style.display = 'none'; }
+    function closeWallet() { document.getElementById('walletModal').style.display = 'none'; }
 
-    function submitWallet() {
-        const amt = document.getElementById('walletAmount').value;
-        const ph = document.getElementById('walletPhone').value;
-        if(!amt || !ph) return alert("Fill all details");
+    function sendRequest() {
+        const amt = document.getElementById('w-amount').value;
+        const ph = document.getElementById('w-phone').value;
+        const type = document.getElementById('w-title').innerText;
+        if(!amt || !ph) return alert("Enter details");
         
         db.ref('requests').push({
             uid: auth.currentUser.uid,
             email: auth.currentUser.email,
             amount: amt,
             phone: ph,
-            type: currentMode,
+            type: type,
             status: "Pending"
         });
-        alert(currentMode + " request sent to Saleem Admin!");
-        closeModal();
-    }
-
-    // 3. Game Launch Fix
-    function playGame(name) {
-        // Ab hum alert nahi denge balki real function call karenge
-        if(name === 'Crash') {
-            alert("Crash Loading... (Redirecting to your crash.html)");
-            window.location.href = "crash.html"; // Make sure crash.html exists on GitHub
-        } else {
-            alert(name + " Game logic starting... Ensure you have " + name.toLowerCase() + ".html on GitHub.");
-        }
+        alert(type + " Request Sent to Saleem Admin!");
+        closeWallet();
     }
 </script>
 </body>
