@@ -3,89 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SALEEM ELITE - FIXED</title>
+    <title>SALEEM ELITE - GAME CENTER</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #ffcc00; --bg: #0b0e18; --card: #1c2230; --green: #24d15d; }
-        body { font-family: 'Arial', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; overflow-x: hidden; }
+        :root { --gold: #ffcc00; --bg: #0b0e18; --card: #1c2230; --green: #24d15d; --red: #ff4444; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; overflow: hidden; }
         
-        .header { background: var(--card); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
-        .balance-box { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; }
+        /* UI Components */
+        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
+        .balance-box { background: #000; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; font-size: 1.1em; }
         
-        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .game-card { background: var(--card); border-radius: 15px; height: 110px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #333; font-weight: bold; flex-direction: column; text-align: center; }
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .game-card { background: var(--card); border-radius: 15px; height: 120px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #333; font-weight: bold; flex-direction: column; transition: 0.3s; }
+        .game-card:active { transform: scale(0.95); border-color: var(--gold); }
+
+        /* Full Screen Game UI */
+        #game-stage { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; padding-top: 50px; text-align: center; }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: var(--red); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
         
-        /* Full Screen Game Overlay */
-        #game-stage { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; text-align: center; }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: red; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+        .multiplier { font-size: 60px; color: var(--gold); margin: 40px 0; font-weight: bold; text-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
+        .bet-controls { background: var(--card); padding: 20px; border-radius: 20px; width: 80%; margin: 0 auto; border: 1px solid #444; }
         
-        #crash-display { font-size: 50px; color: var(--gold); margin-top: 150px; }
+        input { width: 80%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #555; border-radius: 10px; text-align: center; }
+        .btn { padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1em; transition: 0.2s; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 85%; border: 1px solid var(--gold); text-align: center; }
-        input { width: 90%; padding: 12px; margin: 10px 0; background: #000; color: #fff; border: 1px solid #444; border-radius: 8px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-        
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
-        <h1 style="color:var(--gold)">SALEEM ELITE</h1>
-        <input type="email" id="email" placeholder="Gmail Address">
+        <h1 style="color:var(--gold); letter-spacing: 2px;">SALEEM ELITE</h1>
+        <input type="email" id="email" placeholder="Email Address">
         <input type="password" id="pswd" placeholder="Password">
-        <button class="btn" style="background:var(--gold)" onclick="login()">LOGIN</button>
-        <button class="btn" style="background:transparent; color:white;" onclick="register()">REGISTER</button>
+        <button class="btn" style="background:var(--gold); width: 85%;" onclick="authAction('login')">LOGIN</button>
+        <button class="btn" style="background:transparent; color:white; margin-top:10px;" onclick="authAction('reg')">REGISTER</button>
     </div>
 
     <div class="header">
-        <div id="u-display">Loading...</div>
-        <div class="balance-box">PKR <span id="u-bal">0.00</span></div>
-        <button onclick="logout()" style="background:red; color:white; border:none; border-radius:5px; padding:5px 10px;">Exit</button>
+        <div id="user-name">User</div>
+        <div class="balance-box">PKR <span id="balance-val">0.00</span></div>
     </div>
 
     <div class="game-grid">
-        <div class="game-card" onclick="openGame('Crash')">🚀<br>CRASH</div>
-        <div class="game-card" onclick="openGame('Mines')">💣<br>MINES</div>
-        <div class="game-card" onclick="openGame('DragonTiger')">🐉<br>DRAGON TIGER</div>
-        <div class="game-card" onclick="openGame('Slots')">🎰<br>SLOTS</div>
+        <div class="game-card" onclick="openCrash()">🚀<br>CRASH</div>
+        <div class="game-card" onclick="alert('Mines Loading...')">💣<br>MINES</div>
+        <div class="game-card" onclick="alert('Dragon Tiger Loading...')">🐉<br>DRAGON TIGER</div>
+        <div class="game-card" onclick="alert('Slots Loading...')">🎰<br>SLOTS</div>
     </div>
 
     <div id="game-stage">
-        <button class="close-btn" onclick="closeGame()">EXIT GAME</button>
+        <button class="close-btn" onclick="exitGame()">EXIT</button>
+        <h2 style="color:var(--gold)">CRASH PREDICTOR</h2>
+        <div id="crash-val" class="multiplier">1.00x</div>
         
-        <div id="crash-ui" style="display:none;">
-            <h2 style="color:var(--gold); margin-top:80px;">CRASH</h2>
-            <div id="crash-display">1.00x</div>
-            <button class="btn" id="crash-btn" style="background:var(--green); width:60%; margin-top:40px;" onclick="betCrash()">BET 10 PKR</button>
+        <div class="bet-controls">
+            <input type="number" id="bet-amount" placeholder="Bet Amount (PKR)" value="10">
+            <button id="main-action-btn" class="btn" style="background:var(--green)" onclick="handleBet()">PLACE BET</button>
         </div>
-
-        <div id="generic-ui" style="display:none;">
-            <h2 id="game-title" style="color:var(--gold); margin-top:100px;"></h2>
-            <p>Game Logic Loading... Balance Connected.</p>
-        </div>
-    </div>
-
-    <div id="walletModal" class="modal">
-        <div class="modal-content">
-            <h2 id="w-title" style="color:var(--gold)">Wallet</h2>
-            <input type="number" id="w-amount" placeholder="Enter Amount">
-            <input type="text" id="w-phone" placeholder="Easypaisa/JazzCash Number">
-            <button class="btn" style="background:var(--gold)" onclick="sendRequest()">SUBMIT REQUEST</button>
-            <button class="btn" style="background:grey" onclick="closeWallet()">CLOSE</button>
-        </div>
-    </div>
-
-    <div style="position:fixed; bottom:20px; width:100%; display:flex; justify-content:space-evenly;">
-        <button class="btn" style="background:var(--gold); width:40%;" onclick="openWallet('Deposit')">DEPOSIT</button>
-        <button class="btn" style="background:var(--green); width:40%;" onclick="openWallet('Withdraw')">WITHDRAW</button>
+        <p id="game-msg" style="margin-top: 15px; color: #aaa;"></p>
     </div>
 
 <script>
-    // Firebase Setup
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
         authDomain: "pattipro-c1ffe.firebaseapp.com",
@@ -99,93 +81,134 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    let balance = 0;
-    let crashTimer;
+    let userBal = 0;
+    let currentMult = 1.00;
+    let isPlaying = false;
+    let betPlaced = false;
+    let currentBet = 0;
+    let crashInterval;
 
-    // Authentication Logic
-    function login() {
-        auth.signInWithEmailAndPassword(email.value, pswd.value).catch(e => alert(e.message));
+    // Auth Logic
+    function authAction(type) {
+        const em = document.getElementById('email').value;
+        const pw = document.getElementById('pswd').value;
+        if(type === 'reg') {
+            auth.createUserWithEmailAndPassword(em, pw).then(res => {
+                db.ref('users/' + res.user.uid).set({ email: em, balance: 100.00 });
+            }).catch(e => alert(e.message));
+        } else {
+            auth.signInWithEmailAndPassword(em, pw).catch(e => alert(e.message));
+        }
     }
-    function register() {
-        auth.createUserWithEmailAndPassword(email.value, pswd.value).then(u => {
-            db.ref('users/'+u.user.uid).set({ email: email.value, balance: 120.00 });
-        }).catch(e => alert(e.message));
-    }
-    function logout() { auth.signOut(); }
 
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-screen').style.display = 'none';
-            db.ref('users/'+user.uid).on('value', s => {
-                const data = s.val();
-                balance = data.balance;
-                document.getElementById('u-bal').innerText = balance.toFixed(2);
-                document.getElementById('u-display').innerText = data.email.split('@')[0];
+            db.ref('users/' + user.uid).on('value', snap => {
+                const data = snap.val();
+                userBal = data.balance;
+                document.getElementById('balance-val').innerText = userBal.toFixed(2);
+                document.getElementById('user-name').innerText = data.email.split('@')[0];
             });
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
         }
     });
 
-    // Game Control (Integrated)
-    function openGame(name) {
+    // Crash Engine
+    function openCrash() {
         document.getElementById('game-stage').style.display = 'block';
-        if(name === 'Crash') {
-            document.getElementById('crash-ui').style.display = 'block';
-            runCrash();
-        } else {
-            document.getElementById('generic-ui').style.display = 'block';
-            document.getElementById('game-title').innerText = name;
+        resetRound();
+    }
+
+    function resetRound() {
+        clearInterval(crashInterval);
+        currentMult = 1.00;
+        isPlaying = false;
+        betPlaced = false;
+        document.getElementById('crash-val').innerText = "1.00x";
+        document.getElementById('crash-val').style.color = "var(--gold)";
+        document.getElementById('main-action-btn').innerText = "PLACE BET";
+        document.getElementById('main-action-btn').style.background = "var(--green)";
+        document.getElementById('main-action-btn').disabled = false;
+        document.getElementById('game-msg').innerText = "Waiting for next round...";
+        
+        // Auto start after 5 seconds
+        setTimeout(startRound, 5000);
+    }
+
+    function startRound() {
+        isPlaying = true;
+        document.getElementById('game-msg').innerText = "Round Started!";
+        crashInterval = setInterval(() => {
+            currentMult += 0.01;
+            document.getElementById('crash-val').innerText = currentMult.toFixed(2) + "x";
+            
+            // Random Crash Logic
+            if(Math.random() < 0.006) { 
+                doCrash();
+            }
+        }, 100);
+    }
+
+    function handleBet() {
+        if(!betPlaced && isPlaying === false) {
+            let amt = parseFloat(document.getElementById('bet-amount').value);
+            if(amt > userBal || amt <= 0) return alert("Insufficient Balance!");
+            
+            currentBet = amt;
+            updateBalance(-amt);
+            betPlaced = true;
+            document.getElementById('main-action-btn').innerText = "BET PLACED...";
+            document.getElementById('main-action-btn').disabled = true;
+            document.getElementById('game-msg').innerText = "Wait for multiplier to rise!";
+        } else if(betPlaced && isPlaying === true) {
+            cashOut();
         }
     }
 
-    function closeGame() {
-        clearInterval(crashTimer);
+    // Cashout logic
+    function cashOut() {
+        if(betPlaced && isPlaying) {
+            let win = currentBet * currentMult;
+            updateBalance(win);
+            document.getElementById('game-msg').innerText = "Win: PKR " + win.toFixed(2);
+            betPlaced = false;
+            document.getElementById('main-action-btn').innerText = "CASHED OUT!";
+            document.getElementById('main-action-btn').style.background = "grey";
+            document.getElementById('main-action-btn').disabled = true;
+        }
+    }
+
+    function doCrash() {
+        clearInterval(crashInterval);
+        isPlaying = false;
+        document.getElementById('crash-val').innerText = "CRASHED!";
+        document.getElementById('crash-val').style.color = "var(--red)";
+        if(betPlaced) {
+            document.getElementById('game-msg').innerText = "You Lost PKR " + currentBet;
+        }
+        setTimeout(resetRound, 3000);
+    }
+
+    function updateBalance(amt) {
+        db.ref('users/' + auth.currentUser.uid + '/balance').set(userBal + amt);
+    }
+
+    function exitGame() {
+        clearInterval(crashInterval);
         document.getElementById('game-stage').style.display = 'none';
-        document.getElementById('crash-ui').style.display = 'none';
-        document.getElementById('generic-ui').style.display = 'none';
     }
 
-    function runCrash() {
-        let mult = 1.00;
-        document.getElementById('crash-display').innerText = "1.00x";
-        document.getElementById('crash-display').style.color = "var(--gold)";
-        crashTimer = setInterval(() => {
-            mult += 0.01;
-            document.getElementById('crash-display').innerText = mult.toFixed(2) + "x";
-            if(Math.random() < 0.005) { // Crash Logic
-                clearInterval(crashTimer);
-                document.getElementById('crash-display').innerText = "CRASHED!";
-                document.getElementById('crash-display').style.color = "red";
-                setTimeout(runCrash, 3000);
-            }
-        }, 80);
-    }
-
-    // Wallet Logic
-    function openWallet(type) {
-        document.getElementById('w-title').innerText = type;
-        document.getElementById('walletModal').style.display = 'flex';
-    }
-    function closeWallet() { document.getElementById('walletModal').style.display = 'none'; }
-
-    function sendRequest() {
-        const amt = document.getElementById('w-amount').value;
-        const ph = document.getElementById('w-phone').value;
-        const type = document.getElementById('w-title').innerText;
-        if(!amt || !ph) return alert("Enter details");
-        
-        db.ref('requests').push({
-            uid: auth.currentUser.uid,
-            email: auth.currentUser.email,
-            amount: amt,
-            phone: ph,
-            type: type,
-            status: "Pending"
-        });
-        alert(type + " Request Sent to Saleem Admin!");
-        closeWallet();
-    }
+    // Monitor isPlaying for UI updates
+    setInterval(() => {
+        if(isPlaying && betPlaced) {
+            const btn = document.getElementById('main-action-btn');
+            btn.innerText = "CASHOUT (" + (currentBet * currentMult).toFixed(2) + ")";
+            btn.style.background = "var(--gold)";
+            btn.disabled = false;
+        }
+    }, 100);
 </script>
 </body>
 </html>
