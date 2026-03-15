@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3Patti Pro - Live Games</title>
+    <title>3Patti Pro - Fixed</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -16,12 +16,16 @@
         .active { display: block; }
         .header { background: #181a20; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--yellow); }
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .g-card { background: var(--card); padding: 25px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #2b3139; }
+        .g-card { background: var(--card); padding: 25px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #2b3139; font-weight: bold; }
         .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
         input { width: 100%; padding: 10px; background: #2b3139; border: 1px solid #474d57; border-radius: 5px; color: white; margin: 10px 0; }
-        /* Mines Board */
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 15px 0; }
-        .tile { aspect-ratio: 1; background: #2b3139; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 18px; }
+        .tile { aspect-ratio: 1; background: #2b3139; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 18px; cursor: pointer; }
+        .dt-area { display: flex; justify-content: space-around; margin: 20px 0; }
+        .side { padding: 20px; border-radius: 10px; text-align: center; width: 45%; font-weight: bold; border: 2px solid transparent; }
+        .dragon { background: var(--red); }
+        .tiger { background: #4a90e2; }
+        .selected { border-color: var(--yellow); }
     </style>
 </head>
 <body>
@@ -41,35 +45,49 @@
         <div style="padding:20px;">
             <div class="game-grid">
                 <div class="g-card" onclick="showPage('page-mines')">💣<br>MINES</div>
-                <div class="g-card" onclick="showPage('page-crash')">🚀<br>CRASH</div>
-                <div class="g-card" onclick="showPage('page-dt')">🐯<br>DRAGON TIGER</div>
+                <div class="g-card" onclick="showPage('page-dt')">🐯<br>DRAGON VS TIGER</div>
             </div>
             <button class="btn" style="background:var(--red); margin-top:30px;" onclick="auth.signOut()">LOGOUT</button>
         </div>
     </div>
 
     <div id="page-mines" class="page">
-        <button onclick="showPage('page-dash')">← EXIT</button>
+        <button onclick="showPage('page-dash')" style="background:none; border:none; color:var(--yellow);">← BACK</button>
         <div class="grid" id="m-board"></div>
         <input type="number" id="m-bet" placeholder="Bet Amount">
-        <button class="btn" id="m-start" style="background:var(--yellow)" onclick="startMines()">START</button>
+        <button class="btn" id="m-start" style="background:var(--yellow)" onclick="startMines()">START GAME</button>
         <button class="btn" id="m-cash" style="background:var(--green); display:none;" onclick="cashMines()">CASHOUT</button>
     </div>
 
+    <div id="page-dt" class="page">
+        <button onclick="showPage('page-dash')" style="background:none; border:none; color:var(--yellow);">← BACK</button>
+        <h3 style="text-align:center; margin: 10px 0;">Dragon vs Tiger</h3>
+        <div class="dt-area">
+            <div class="side dragon" id="side-dragon" onclick="setSide('dragon')">DRAGON</div>
+            <div class="side tiger" id="side-tiger" onclick="setSide('tiger')">TIGER</div>
+        </div>
+        <input type="number" id="dt-bet" placeholder="Bet Amount">
+        <button class="btn" style="background:var(--yellow)" onclick="playDT()">PLAY NOW</button>
+        <div id="dt-result" style="text-align:center; margin-top:20px; font-weight:bold;"></div>
+    </div>
+
     <script>
-        // API KEY & CONFIG FROM SCREENSHOT
         const firebaseConfig = {
             apiKey: "AIzaSyDTNneivrTie-a-e0ilKwifU",
             authDomain: "pattipro-clffe.firebaseapp.com",
+            databaseURL: "https://pattipro-clffe-default-rtdb.firebaseio.com",
             projectId: "pattipro-clffe",
             storageBucket: "pattipro-clffe.appspot.com",
             messagingSenderId: "766843054614",
-            appId: "1:766843054614:web:781658832e63e4ffc2c337"
+            appId: "1:766843054614:web:781658832c63e4ffc2c337",
+            measurementId: "G-1YYL1T76LN"
         };
+
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
         let uData = null;
+        let selectedSide = null;
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -84,7 +102,7 @@
         auth.onAuthStateChanged(user => {
             if(user) {
                 db.ref('users/' + user.uid).on('value', s => {
-                    uData = s.val();
+                    uData = s.val() || {email: user.email, balance: 230};
                     document.getElementById('u-email').innerText = uData.email;
                     document.getElementById('u-bal').innerText = uData.balance.toFixed(2);
                     showPage('page-dash');
@@ -92,14 +110,51 @@
             } else { showPage('page-login'); }
         });
 
-        // Mines Logic (Asli Wala)
+        // Dragon vs Tiger Logic
+        function setSide(side) {
+            selectedSide = side;
+            document.getElementById('side-dragon').classList.remove('selected');
+            document.getElementById('side-tiger').classList.remove('selected');
+            document.getElementById('side-' + side).classList.add('selected');
+        }
+
+        function playDT() {
+            const bet = parseFloat(document.getElementById('dt-bet').value);
+            if(!selectedSide) return alert("Select a Side");
+            if(!bet || bet > uData.balance || bet < 20) return alert("Invalid Bet");
+
+            db.ref('users/' + auth.currentUser.uid).update({ balance: uData.balance - bet });
+            
+            const resArea = document.getElementById('dt-result');
+            resArea.innerText = "Dealing Cards...";
+
+            setTimeout(() => {
+                const sides = ['dragon', 'tiger'];
+                const winner = sides[Math.floor(Math.random() * 2)];
+                
+                if(winner === selectedSide) {
+                    db.ref('users/' + auth.currentUser.uid).update({ balance: uData.balance + (bet * 1.9) });
+                    resArea.innerText = "WINNER: " + winner.toUpperCase() + "! You Won!";
+                    resArea.style.color = "var(--green)";
+                } else {
+                    resArea.innerText = "WINNER: " + winner.toUpperCase() + ". You Lost.";
+                    resArea.style.color = "var(--red)";
+                }
+            }, 2000);
+        }
+
+        // Mines Logic
         let mActive = false, mList = [], mBet = 0, mMult = 1.0;
         function startMines() {
             mBet = parseFloat(document.getElementById('m-bet').value);
-            if(mBet > uData.balance || mBet < 20) return alert("Low Balance");
+            if(!mBet || mBet > uData.balance || mBet < 20) return alert("Invalid Bet");
+            
             db.ref('users/' + auth.currentUser.uid).update({ balance: uData.balance - mBet });
             mActive = true; mList = []; mMult = 1.0;
-            while(mList.length < 3) { let r = Math.floor(Math.random()*25); if(!mList.includes(r)) mList.push(r); }
+            while(mList.length < 3) { 
+                let r = Math.floor(Math.random()*25); 
+                if(!mList.includes(r)) mList.push(r); 
+            }
             const b = document.getElementById('m-board'); b.innerHTML = '';
             for(let i=0; i<25; i++) {
                 let t = document.createElement('div'); t.className = 'tile';
@@ -107,7 +162,7 @@
                     if(!mActive || t.innerHTML) return;
                     if(mList.includes(i)) { 
                         t.innerHTML='💣'; t.style.background='red'; mActive=false; 
-                        alert("BOMB! Loss."); showPage('page-dash'); 
+                        alert("BOMB! Game Over."); showPage('page-dash'); 
                     } else { 
                         t.innerHTML='💎'; t.style.background='green'; mMult += 0.4; 
                         document.getElementById('m-cash').innerText=`CASHOUT ${(mBet*mMult).toFixed(1)}`;
@@ -118,9 +173,10 @@
             document.getElementById('m-start').style.display='none';
             document.getElementById('m-cash').style.display='block';
         }
+
         function cashMines() {
             db.ref('users/' + auth.currentUser.uid).update({ balance: uData.balance + (mBet*mMult) });
-            alert("Win!"); showPage('page-dash');
+            alert("Won!"); showPage('page-dash');
             document.getElementById('m-start').style.display='block';
             document.getElementById('m-cash').style.display='none';
         }
