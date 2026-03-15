@@ -5,85 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3Patti Pro - Official Casino</title>
     
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        :root { --gold: #d4af37; --dark: #0a0a0a; --card: #1a1a1a; }
-        body { background-color: var(--dark); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
-        
-        /* Notifications */
-        #notifier { position: fixed; top: 20px; right: -350px; background: var(--gold); color: #000; padding: 15px 25px; border-radius: 8px; font-weight: bold; transition: 0.5s; z-index: 3000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
-        
-        /* Layout */
+        :root { --gold: #d4af37; --dark: #0a0a0a; --card: #161616; }
+        body { background: var(--dark); color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
         .header { background: #111; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .balance-card { background: linear-gradient(135deg, #1a1a1a, #252525); border: 1px solid var(--gold); border-radius: 15px; margin: 20px auto; padding: 25px; width: 85%; }
-        .balance-amount { font-size: 35px; color: var(--gold); font-weight: bold; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .card { background: var(--card); border: 1px solid #333; padding: 25px 10px; border-radius: 15px; cursor: pointer; transition: 0.3s; }
-        .card:active { transform: scale(0.95); border-color: var(--gold); }
-        .icon { font-size: 45px; display: block; margin-bottom: 10px; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; }
-        .m-content { width: 90%; max-width: 400px; margin: 60px auto; background: #1a1a1a; padding: 25px; border-radius: 20px; border: 1px solid var(--gold); }
-        
-        input { width: 90%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: #fff; font-size: 16px; }
-        .btn { background: var(--gold); color: #000; padding: 12px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .balance-card { background: linear-gradient(135deg, #1a1a1a, #222); border: 1px solid var(--gold); border-radius: 15px; margin: 15px auto; padding: 20px; width: 85%; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .card { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
+        .m-content { width: 85%; max-width: 400px; margin: 50px auto; background: #111; padding: 20px; border: 1px solid var(--gold); border-radius: 15px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: #fff; }
+        .btn { background: var(--gold); color: #000; padding: 12px; border: none; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn-red { background: #dc3545; color: #fff; }
+        .btn-green { background: #28a745; color: #fff; }
         .hidden { display: none; }
+        .tab-link { color: var(--gold); cursor: pointer; font-size: 14px; text-decoration: underline; margin-top: 10px; display: block; }
     </style>
 </head>
 <body>
 
-    <div id="notifier">Loading Game...</div>
-
-    <div id="login-sec" style="padding-top: 100px;">
-        <h1 style="color:var(--gold); font-size: 40px;">3Patti Pro</h1>
-        <p>Login to start winning</p>
-        <input type="email" id="email" placeholder="Email Address">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="btn" style="width: 85%;" onclick="doLogin()">LOGIN NOW</button>
+    <div id="auth-sec" style="padding-top: 60px;">
+        <h1 style="color:var(--gold); font-size: 35px;">3Patti Pro</h1>
+        <div id="login-box">
+            <h3>Login</h3>
+            <input type="email" id="l-email" placeholder="Email Address">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="btn" onclick="login()">LOGIN</button>
+            <span class="tab-link" onclick="toggleAuth(false)">New Player? Register Here</span>
+        </div>
+        <div id="reg-box" class="hidden">
+            <h3>Register</h3>
+            <input type="text" id="r-name" placeholder="Full Name">
+            <input type="email" id="r-email" placeholder="Email Address">
+            <input type="password" id="r-pass" placeholder="Password">
+            <button class="btn btn-green" onclick="register()">CREATE ACCOUNT</button>
+            <span class="tab-link" onclick="toggleAuth(true)">Already have account? Login</span>
+        </div>
+        <p id="err" style="color:red; font-size:12px; padding:15px;"></p>
     </div>
 
     <div id="dash-sec" class="hidden">
         <div class="header">
-            <span style="font-weight:bold;">Welcome Pro Player</span>
+            <span id="p-name">Player</span>
             <button onclick="logout()" style="color:red; background:none; border:none; font-weight:bold;">Logout</button>
         </div>
-
         <div class="balance-card">
-            <p style="margin:0; opacity:0.8;">Available Balance</p>
-            <div class="balance-amount">Rs. <span id="user-bal">0.00</span></div>
+            <p style="margin:0;">Credits</p>
+            <h2 style="color:var(--gold);">Rs. <span id="p-bal">0.00</span></h2>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-green" onclick="openModal('deposit')">Deposit</button>
+                <button class="btn btn-red" onclick="openModal('withdraw')">Withdraw</button>
+            </div>
         </div>
-
         <div class="grid">
-            <div class="card" onclick="openGame('Crash')"><span class="icon">🚀</span><span>Crash</span></div>
-            <div class="card" onclick="openGame('Tiger vs Dragon')"><span class="icon">🐯</span><span>Tiger Dragon</span></div>
-            <div class="card" onclick="openGame('Mines')"><span class="icon">💣</span><span>Mines</span></div>
-            <div class="card" onclick="openGame('Slots')"><span class="icon">🎰</span><span>Slots</span></div>
+            <div class="card" onclick="play('Crash')">🚀<br>Crash</div>
+            <div class="card" onclick="play('Tiger vs Dragon')">🐯<br>Tiger Dragon</div>
+            <div class="card" onclick="play('Mines')">💣<br>Mines</div>
+            <div class="card" onclick="play('Slots')">🎰<br>Slots</div>
         </div>
     </div>
 
-    <div id="game-modal" class="modal">
+    <div id="modal" class="modal">
         <div class="m-content">
-            <h2 id="m-title" style="color:var(--gold)">Game</h2>
-            <p id="m-status">Set your bet amount</p>
-            <input type="number" id="bet-val" placeholder="Min Bet 10">
-            <div id="game-area"></div>
-            <button class="btn" style="background:#333; color:#fff;" onclick="closeModal()">Lobby</button>
+            <h2 id="m-title" style="color:var(--gold)">Menu</h2>
+            <div id="m-body"></div>
+            <button class="btn" style="background:#333; color:#fff; margin-top:15px;" onclick="closeM()">Close</button>
         </div>
     </div>
 
     <script>
-        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyDTNneivrTLe-s-e0lKW1fUixVSjDfu2k",
             authDomain: "pattipro-c1ffe.firebaseapp.com",
             databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
             projectId: "pattipro-c1ffe",
-            storageBucket: "pattipro-c1ffe.firebasestorage.app",
+            storageBucket: "pattipro-c1ffe.appspot.com",
             messagingSenderId: "766843054614",
             appId: "1:766843054614:web:781658832e63e41fc2e337"
         };
@@ -91,90 +91,69 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        let balance = 0;
+        let currentBal = 0;
 
-        // --- Auth System ---
-        function doLogin() {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+        function toggleAuth(s) {
+            document.getElementById('login-box').className = s ? "" : "hidden";
+            document.getElementById('reg-box').className = s ? "hidden" : "";
         }
 
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                document.getElementById('login-sec').classList.add('hidden');
+        function login() {
+            auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value)
+                .catch(e => document.getElementById('err').innerText = e.message);
+        }
+
+        function register() {
+            const name = document.getElementById('r-name').value;
+            auth.createUserWithEmailAndPassword(document.getElementById('r-email').value, document.getElementById('r-pass').value)
+                .then(u => db.ref('users/' + u.user.uid).set({name: name, balance: 0}))
+                .catch(e => document.getElementById('err').innerText = e.message);
+        }
+
+        auth.onAuthStateChanged(u => {
+            if(u) {
+                document.getElementById('auth-sec').classList.add('hidden');
                 document.getElementById('dash-sec').classList.remove('hidden');
-                db.ref('users/' + user.uid + '/balance').on('value', snap => {
-                    balance = snap.val() || 0;
-                    document.getElementById('user-bal').innerText = balance.toFixed(2);
+                db.ref('users/' + u.uid).on('value', s => {
+                    const d = s.val();
+                    currentBal = d.balance || 0;
+                    document.getElementById('p-bal').innerText = currentBal.toFixed(2);
+                    document.getElementById('p-name').innerText = d.name || "Player";
                 });
+            } else {
+                document.getElementById('auth-sec').classList.remove('hidden');
+                document.getElementById('dash-sec').classList.add('hidden');
             }
         });
 
-        // --- Game System ---
-        function notify(msg) {
-            const n = document.getElementById('notifier');
-            n.innerText = msg;
-            n.style.right = "20px";
-            setTimeout(() => n.style.right = "-350px", 2000);
+        function play(game) {
+            const modal = document.getElementById('modal');
+            modal.style.display = "block";
+            document.getElementById('m-title').innerText = game;
+            document.getElementById('m-body').innerHTML = `
+                <input type="number" id="bet" placeholder="Bet Amount (Min 10)">
+                <button class="btn" onclick="runGameLogic('${game}')">Bet Now (33% Win)</button>
+            `;
         }
 
-        function openGame(name) {
-            notify("Initializing " + name + "...");
-            setTimeout(() => {
-                document.getElementById('game-modal').style.display = "block";
-                document.getElementById('m-title').innerText = name;
-                setupControls(name);
-            }, 1000);
-        }
-
-        function setupControls(name) {
-            const area = document.getElementById('game-area');
-            area.innerHTML = "";
-            if(name === 'Tiger vs Dragon') {
-                area.innerHTML = `
-                    <button class="btn" style="background:red;" onclick="play('Tiger', 'win33')">Dragon (2x)</button>
-                    <button class="btn" style="background:orange;" onclick="play('Tiger', 'win33')">Tiger (2x)</button>`;
-            } else if(name === 'Crash') {
-                area.innerHTML = `<button class="btn" onclick="play('Crash', 'crash65')">Launch Rocket</button>`;
-            } else {
-                area.innerHTML = `<button class="btn" onclick="play('${name}', 'win33')">Start Game</button>`;
-            }
-        }
-
-        // --- LOGIC: 65% LOSS / 33% WIN ---
-        function play(game, type) {
-            let bet = parseFloat(document.getElementById('bet-val').value);
-            if(isNaN(bet) || bet < 10 || bet > balance) return alert("Invalid Bet or Balance!");
-
-            let rng = Math.random() * 100;
-            let userWon = false;
-            let winAmt = 0;
-
-            if(rng <= 33) { // 33% WIN
-                userWon = true;
-                winAmt = (game === 'Slots') ? bet * 5 : bet;
-            } else if(rng > 35) { // 65% LOSS
-                userWon = false;
-                winAmt = -bet;
-            } else { // 2% DRAW / RETURN
-                alert("Game Draw! Bet Returned.");
-                return;
-            }
-
-            // Update Database
-            db.ref('users/' + auth.currentUser.uid).update({ balance: balance + winAmt });
+        function runGameLogic(game) {
+            let b = parseFloat(document.getElementById('bet').value);
+            if(isNaN(b) || b < 10 || b > currentBal) return alert("Invalid Bet/Balance");
             
-            if(userWon) {
-                notify("VICTORY! +Rs." + winAmt);
-                alert("You Won! Profit added to wallet.");
-            } else {
-                notify("LOSS! -Rs." + bet);
-                alert("You Lost! Better luck next time.");
-            }
+            let win = Math.random() < 0.33; // 33% Win Chance
+            let amt = win ? (game === 'Slots' ? b * 5 : b) : -b;
+            db.ref('users/' + auth.currentUser.uid).update({balance: currentBal + amt});
+            alert(win ? "WINNER! Money added." : "LOST! Try again.");
+            closeM();
         }
 
-        function closeModal() { document.getElementById('game-modal').style.display = "none"; }
+        function openModal(t) {
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('m-title').innerText = t.toUpperCase();
+            document.getElementById('m-body').innerHTML = `<input type="number" id="amt" placeholder="Enter Amount"><button class="btn btn-green" onclick="alert('Request sent to Admin!')">Confirm</button>`;
+        }
+
+        function closeM() { document.getElementById('modal').style.display = "none"; }
         function logout() { auth.signOut().then(() => location.reload()); }
     </script>
 </body>
