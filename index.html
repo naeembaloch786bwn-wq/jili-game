@@ -3,222 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Pro Casino</title>
+    <title>Saleem Elite Games</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #ffcc00; --bg: #0b0b0b; --card: #1a1a1a; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; }
-        .header { background: #000; padding: 20px; border-bottom: 2px solid var(--gold); }
-        .menu { background: #111; padding: 10px; position: sticky; top: 0; z-index: 100; }
-        button { padding: 10px 20px; margin: 5px; font-size: 14px; cursor: pointer; background: #333; color: white; border: 1px solid #555; border-radius: 5px; transition: 0.3s; }
-        button:hover { background: var(--gold); color: black; }
-        .page { display: none; padding: 20px; max-width: 600px; margin: auto; }
-        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
-        .game { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
-        input { padding: 10px; margin: 10px; border-radius: 5px; border: none; width: 80%; }
-        .stats { color: var(--gold); font-weight: bold; font-size: 1.2rem; }
-        #result, #crash, #mineResult, #slotResult, #teenResult { margin-top: 10px; font-weight: bold; min-height: 20px; color: #00ff00; }
+        :root { --gold: #ffcc00; --bg: #0b0e18; --card: #1c2230; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; text-align: center; }
+        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
+        .balance-box { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; }
+        .game-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .game-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #333; cursor: pointer; transition: 0.3s; }
+        .game-card:hover { border-color: var(--gold); transform: scale(1.05); }
+        .btn { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        input { padding: 10px; margin: 5px; width: 250px; border-radius: 5px; border: 1px solid #444; background: #161b29; color: white; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>PRO CASINO</h1>
-    <p>User: <span id="displayUser">saleemislamicnaats-a11y</span></p>
-    <h2 class="stats" id="balanceDisplay">Balance: 1000 Coins</h2>
-</div>
-
-<div class="menu">
-    <button onclick="show('home')">Home</button>
-    <button onclick="show('games')">Play Games</button>
-    <button onclick="show('deposit')">Deposit</button>
-    <button onclick="show('withdraw')">Withdraw</button>
-    <button onclick="show('admin')">Admin</button>
-    <button onclick="logout()" style="background:#800;">Logout</button>
-</div>
-
-<div id="home" class="page" style="display:block">
-    <h2>Welcome Back!</h2>
-    <p>Your ultimate destination for online gaming. Play smart, win big.</p>
-    <div class="game">
-        <h3>Account Status</h3>
-        <p>Verified ✔️</p>
-        <p>VIP Level: 1</p>
+    <div id="auth-screen">
+        <h1 style="color: var(--gold);">SALEEM ELITE</h1>
+        <input type="email" id="email" placeholder="Gmail Address">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn" onclick="handleAuth('login')">Login</button>
+        <button class="btn" onclick="handleAuth('register')" style="background:transparent; color:white; margin-top:10px;">Create New Account</button>
     </div>
-</div>
 
-<div id="games" class="page">
-    <h2>Available Games</h2>
-    <div class="game-grid">
-        <div class="game"><h3>Lucky 7</h3><button onclick="playLucky()">Bet 30</button></div>
-        <div class="game"><h3>Spin Win</h3><button onclick="playSpin()">Spin 20</button></div>
-        <div class="game"><h3>Coin Flip</h3><button onclick="playCoin()">Flip 15</button></div>
-        <div class="game"><h3>Dice Roll</h3><button onclick="playDice()">Roll 25</button></div>
+    <div class="header">
+        <div id="user-name">Guest</div>
+        <div class="balance-box">PKR <span id="user-balance">0.00</span></div>
+        <button onclick="logout()" style="background:red; color:white; border:none; border-radius:5px; padding:5px 10px;">Logout</button>
     </div>
-    <div class="game" style="margin-top:15px;">
-        <h3>Crash Game</h3>
-        <p id="crash">Multiplier: 1.00x</p>
-        <button id="btnStart" onclick="startCrash()">Start Bet (50)</button> 
-        <button id="btnCash" onclick="cashOut()" disabled>Cash Out</button>
+
+    <div class="game-container">
+        <div class="game-card" onclick="alert('Starting Crash...')">🚀 CRASH<br><small>Auto: 1.25x Min</small></div>
+        <div class="game-card" onclick="alert('Starting Slots...')">🎰 SLOTS<br><small>Auto Spin Ready</small></div>
+        <div class="game-card" onclick="alert('Starting Dragon Tiger...')">🐉 DRAGON TIGER<br><small>Professional</small></div>
+        <div class="game-card" onclick="alert('Starting Mines...')">💣 MINES<br><small>Real System</small></div>
     </div>
-    <div class="game" style="margin-top:15px;">
-        <h3>Slot Machine</h3>
-        <p id="slotResult">🎰🎰🎰</p>
-        <button onclick="slot()">Pull Lever (20)</button>
+
+    <div style="padding: 20px;">
+        <button class="btn" style="width: 45%;" onclick="alert('Deposit via Admin')">Deposit</button>
+        <button class="btn" style="width: 45%; background: #24d15d;" onclick="alert('Withdraw logic')">Withdraw</button>
     </div>
-    <p id="resultText"></p>
-</div>
-
-<div id="deposit" class="page">
-    <h2>Add Funds</h2>
-    <p>Transfer to JazzCash/EasyPaisa:</p>
-    <h3 style="color:var(--gold)">03289230760</h3>
-    <input type="number" id="depAmount" placeholder="Enter Amount">
-    <input type="text" id="trxId" placeholder="Transaction ID (TRX)">
-    <button onclick="handleDeposit()">Submit Deposit</button>
-</div>
-
-<div id="withdraw" class="page">
-    <h2>Withdraw Profits</h2>
-    <input type="number" id="withAmount" placeholder="Amount">
-    <input type="text" id="withAcc" placeholder="Account Number">
-    <button onclick="handleWithdraw()">Request Payout</button>
-</div>
-
-<div id="admin" class="page">
-    <h2>Manager Dashboard</h2>
-    <p>System Online: 100%</p>
-    <p>User Balance: <span id="adminBal">1000</span></p>
-    <button onclick="resetData()">Clear Data & Reset</button>
-</div>
 
 <script>
-    // System Variables & Persistence
-    let balance = localStorage.getItem('casino_bal') ? parseInt(localStorage.getItem('casino_bal')) : 1000;
-    
-    function updateUI() {
-        document.getElementById("balanceDisplay").innerText = "Balance: " + balance + " Coins";
-        document.getElementById("adminBal").innerText = balance;
-        localStorage.setItem('casino_bal', balance);
-    }
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.firebasestorage.app",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e641fc2e337"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-    function show(id) {
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-    }
+    // 1. Authentication Logic
+    function handleAuth(type) {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('pass').value;
 
-    // GAME LOGIC
-    function playLucky() {
-        if(balance < 30) return alert("Low Balance!");
-        balance -= 30;
-        let win = Math.random() > 0.7; // 30% win chance
-        if(win) { balance += 100; notify("WINNER! +100", "#00ff00"); }
-        else { notify("Better luck next time!", "#ff4444"); }
-        updateUI();
-    }
-
-    // Crash Game Pro Logic
-    let crashVal = 1.0;
-    let crashTimer;
-    let isCrashed = false;
-
-    function startCrash() {
-        if(balance < 50) return alert("Low Balance!");
-        balance -= 50;
-        isCrashed = false;
-        crashVal = 1.0;
-        document.getElementById("btnStart").disabled = true;
-        document.getElementById("btnCash").disabled = false;
-        updateUI();
-
-        crashTimer = setInterval(() => {
-            crashVal += 0.05;
-            document.getElementById("crash").innerHTML = "Multiplier: " + crashVal.toFixed(2) + "x";
-            
-            // Random crash point logic
-            if(Math.random() < 0.03) { 
-                clearInterval(crashTimer);
-                isCrashed = true;
-                document.getElementById("crash").innerHTML = "<span style='color:red'>CRASHED @ " + crashVal.toFixed(2) + "x</span>";
-                document.getElementById("btnStart").disabled = false;
-                document.getElementById("btnCash").disabled = true;
-            }
-        }, 150);
-    }
-
-    function cashOut() {
-        if(!isCrashed) {
-            clearInterval(crashTimer);
-            let winAmount = Math.floor(50 * crashVal);
-            balance += winAmount;
-            alert("You cashed out at " + crashVal.toFixed(2) + "x! Won: " + winAmount);
-            document.getElementById("btnStart").disabled = false;
-            document.getElementById("btnCash").disabled = true;
-            updateUI();
-        }
-    }
-
-    function slot() {
-        if(balance < 20) return alert("Low Balance!");
-        balance -= 20;
-        const icons = ["🍒", "🍋", "⭐", "💎", "7️⃣"];
-        let r1 = icons[Math.floor(Math.random() * icons.length)];
-        let r2 = icons[Math.floor(Math.random() * icons.length)];
-        let r3 = icons[Math.floor(Math.random() * icons.length)];
-        
-        document.getElementById("slotResult").innerText = `${r1} | ${r2} | ${r3}`;
-        
-        if(r1 === r2 && r2 === r3) {
-            balance += 500;
-            notify("JACKPOT! +500", "gold");
+        if(type === 'register') {
+            auth.createUserWithEmailAndPassword(email, pass).then(res => {
+                // Welcome Bonus 120 set for new user
+                db.ref('users/' + res.user.uid).set({
+                    email: email,
+                    balance: 120,
+                    welcomeBonus: true,
+                    totalWagered: 0
+                });
+                alert("Account Created! 120 Bonus Added.");
+            }).catch(e => alert(e.message));
         } else {
-            notify("Try Again", "white");
+            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
         }
-        updateUI();
     }
 
-    function handleDeposit() {
-        let amt = document.getElementById("depAmount").value;
-        let trx = document.getElementById("trxId").value;
-        if(amt > 0 && trx.length > 5) {
-            alert("Request Submitted! Admin will verify TRX: " + trx);
-            // In a real backend, this would send to a database
+    // 2. Track User & Balance
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            db.ref('users/' + user.uid).on('value', snap => {
+                const data = snap.val();
+                if(data) {
+                    document.getElementById('user-balance').innerText = data.balance.toFixed(2);
+                    document.getElementById('user-name').innerText = data.email.split('@')[0];
+                }
+            });
         } else {
-            alert("Invalid Details");
+            document.getElementById('auth-screen').style.display = 'flex';
         }
-    }
-
-    function handleWithdraw() {
-        let amt = document.getElementById("withAmount").value;
-        if(amt <= balance && amt > 0) {
-            balance -= amt;
-            alert("Withdrawal of " + amt + " processed to " + document.getElementById("withAcc").value);
-            updateUI();
-        } else {
-            alert("Insufficient Balance");
-        }
-    }
-
-    function notify(msg, color) {
-        let res = document.getElementById("resultText");
-        res.innerText = msg;
-        res.style.color = color;
-    }
-
-    function resetData() {
-        localStorage.clear();
-        location.reload();
-    }
+    });
 
     function logout() {
-        if(confirm("Are you sure you want to exit?")) {
-            window.close(); 
-            alert("Session Ended.");
-        }
+        auth.signOut();
     }
 
-    // Initialize
-    updateUI();
-</script>
+    // 3. Auto-Cashout Protection Logic
+    function setAutoCashout(value) {
+        if(value < 1.25) {
+            alert("Auto-cashout cannot be less than 1.25x");
+            return 1.25;
+        }
+        return value;
+    }
 
+</script>
 </body>
 </html>
