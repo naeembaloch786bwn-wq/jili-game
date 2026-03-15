@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saleem Elite - Admin Control</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0e18; color: white; padding: 20px; }
+        h1 { color: #ffcc00; text-align: center; text-transform: uppercase; border-bottom: 2px solid #ffcc00; padding-bottom: 10px; }
+        
+        .section { background: #1c2230; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); }
+        h2 { color: #ffcc00; font-size: 18px; margin-top: 0; }
+
+        /* Search Bar */
+        #userSearch {
+            width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #444; background: #0b0e18; color: white;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; background: #161b29; }
+        th, td { border: 1px solid #333; padding: 12px; text-align: left; }
+        th { background: #111; color: #ffcc00; }
+        tr:hover { background: #1f2636; }
+
+        /* Buttons */
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; margin: 2px; }
+        .btn-green { background: #24d15d; color: black; }
+        .btn-red { background: #ff4444; color: white; }
+        .btn-blue { background: #3498db; color: white; }
+        .btn:active { transform: scale(0.95); }
+
+        .balance-val { color: #ffcc00; font-weight: bold; }
+        .wager-val { color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <h1>👑 SALEEM ELITE ADMIN PANEL</h1>
+
+    <div class="section">
+        <h2>💰 Withdrawal Requests</h2>
+        <table id="wit-table">
+            <thead>
+                <tr>
+                    <th>User UID</th>
+                    <th>Account Number</th>
+                    <th>Amount (PKR)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="wit-list">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>👥 Players Management</h2>
+        <input type="text" id="userSearch" placeholder="Search by Email..." onkeyup="filterUsers()">
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Balance</th>
+                    <th>Deposit Lock</th>
+                    <th>Wagered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="user-list">
+                </tbody>
+        </table>
+    </div>
+
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.firebasestorage.app",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e641fc2e337"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 1. Fetch Withdrawals (Realtime)
+    db.ref('admin_requests/withdraws').on('value', snapshot => {
+        const list = document.getElementById('wit-list');
+        list.innerHTML = "";
+        if (!snapshot.exists()) {
+            list.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No pending withdrawals</td></tr>";
+        }
+        snapshot.forEach(child => {
+            const data = child.val();
+            list.innerHTML += `
+                <tr>
+                    <td><code>${data.uid.substring(0,10)}...</code></td>
+                    <td><b>${data.number}</b></td>
+                    <td style="color:#24d15d; font-weight:bold;">PKR ${data.amount}</td>
+                    <td>
+                        <button class="btn btn-green" onclick="deleteReq('${child.key}')">Done / Paid</button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+
+    // 2. Fetch Users (Realtime)
+    db.ref('users').on('value', snapshot => {
+        const list = document.getElementById('user-list');
+        list.innerHTML = "";
+        snapshot.forEach(child => {
+            const u = child.val();
+            list.innerHTML += `
+                <tr>
+                    <td>${u.email}</td>
+                    <td class="balance-val">${(u.balance || 0).toFixed(2)}</td>
+                    <td>${u.totalDeposit || 0}</td>
+                    <td class="wager-val">${u.totalWagered || 0}</td>
+                    <td>
+                        <button class="btn btn-blue" onclick="addBalance('${child.key}')">+ Cash</button>
+                        <button class="btn btn-red" onclick="minusBalance('${child.key}')">- Cash</button>
+                        <button class="btn btn-red" onclick="resetWager('${child.key}')">Reset Lock</button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+
+    // --- ACTIONS ---
+
+    function deleteReq(id) {
+        if(confirm("Kya aapne payment bhej di hai? Click OK to remove request.")) {
+            db.ref('admin_requests/withdraws/' + id).remove();
+        }
+    }
+
+    function resetWager(uid) {
+        const amt = prompt("New Wager/Deposit Target set karein:");
+        if(amt && !isNaN(amt)) {
+            db.ref('users/' + uid).update({ totalDeposit: parseFloat(amt), totalWagered: 0 });
+            alert("Lock Reset Successful!");
+        }
+    }
+
+    function addBalance(uid) {
+        const amt = prompt("Kitna balance ADD karna hai?");
+        if(amt && !isNaN(amt)) {
+            db.ref('users/' + uid + '/balance').transaction(curr => (curr || 0) + parseFloat(amt));
+            alert("Balance Added!");
+        }
+    }
+
+    function minusBalance(uid) {
+        const amt = prompt("Kitna balance MINUS karna hai?");
+        if(amt && !isNaN(amt)) {
+            db.ref('users/' + uid + '/balance').transaction(curr => {
+                let res = (curr || 0) - parseFloat(amt);
+                return res < 0 ? 0 : res; // Balance zero se niche nahi jayega
+            });
+            alert("Balance Deducted!");
+        }
+    }
+
+    // Search Functionality
+    function filterUsers() {
+        let input = document.getElementById('userSearch').value.toLowerCase();
+        let rows = document.getElementById('user-list').getElementsByTagName('tr');
+        for (let row of rows) {
+            let email = row.getElementsByTagName('td')[0].textContent.toLowerCase();
+            row.style.display = email.includes(input) ? "" : "none";
+        }
+    }
+</script>
+</body>
+</html>
