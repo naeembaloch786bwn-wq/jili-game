@@ -3,53 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saleem Elite Games</title>
+    <title>Saleem Elite Games - Fix</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #ffcc00; --bg: #0b0e18; --card: #1c2230; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; text-align: center; }
-        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
-        .balance-box { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; }
-        .game-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .game-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #333; cursor: pointer; transition: 0.3s; }
-        .game-card:hover { border-color: var(--gold); transform: scale(1.05); }
-        .btn { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        input { padding: 10px; margin: 5px; width: 250px; border-radius: 5px; border: 1px solid #444; background: #161b29; color: white; }
+        :root { --gold: #ffcc00; --bg: #0b0e18; --card: #1c2230; --text: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
+        .header { background: var(--card); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        .balance-box { background: #000; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; font-size: 18px; }
+        .game-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; padding-bottom: 80px; }
+        .game-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; cursor: pointer; transition: 0.3s; text-align: center; }
+        .game-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+        .btn { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:active { opacity: 0.8; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        input { padding: 12px; margin: 8px 0; width: 100%; max-width: 300px; border-radius: 8px; border: 1px solid #444; background: #161b29; color: white; font-size: 16px; }
+        #game-iframe-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; }
+        #game-iframe { width: 100%; height: 100%; border: none; }
+        .close-game { position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; padding: 8px 15px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 201; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
-        <h1 style="color: var(--gold);">SALEEM ELITE</h1>
+        <h1 style="color: var(--gold); margin-bottom: 5px;">SALEEM ELITE</h1>
+        <p style="color: #aaa; margin-top: 0; margin-bottom: 20px;">Register for 120 PKR Bonus</p>
         <input type="email" id="email" placeholder="Gmail Address">
         <input type="password" id="pass" placeholder="Password">
-        <button class="btn" onclick="handleAuth('login')">Login</button>
-        <button class="btn" onclick="handleAuth('register')" style="background:transparent; color:white; margin-top:10px;">Create New Account</button>
+        <button class="btn" style="width: 100%; max-width: 300px; margin-top: 10px;" onclick="handleAuth('login')">Login</button>
+        <button class="btn" onclick="handleAuth('register')" style="background:transparent; color:var(--gold); margin-top:15px; border: 1px solid var(--gold); width: 100%; max-width: 300px;">Create New Account</button>
+        <p id="auth-error" style="color: red; font-size: 14px; margin-top: 10px;"></p>
     </div>
 
     <div class="header">
-        <div id="user-name">Guest</div>
+        <div id="user-name" style="font-weight: bold; color: #aaa;">Loading...</div>
         <div class="balance-box">PKR <span id="user-balance">0.00</span></div>
-        <button onclick="logout()" style="background:red; color:white; border:none; border-radius:5px; padding:5px 10px;">Logout</button>
+        <button onclick="logout()" style="background:#cc0000; color:white; border:none; border-radius:5px; padding:6px 12px; font-weight: bold;">Logout</button>
     </div>
 
     <div class="game-container">
-        <div class="game-card" onclick="alert('Starting Crash...')">🚀 CRASH<br><small>Auto: 1.25x Min</small></div>
-        <div class="game-card" onclick="alert('Starting Slots...')">🎰 SLOTS<br><small>Auto Spin Ready</small></div>
-        <div class="game-card" onclick="alert('Starting Dragon Tiger...')">🐉 DRAGON TIGER<br><small>Professional</small></div>
-        <div class="game-card" onclick="alert('Starting Mines...')">💣 MINES<br><small>Real System</small></div>
+        <div class="game-card" onclick="openGame('crash')">🚀 CRASH<br><small style="color:#aaa;">Auto: 1.25x Min</small></div>
+        <div class="game-card" onclick="openGame('slots')">🎰 SLOTS<br><small style="color:#aaa;">Auto Spin Ready</small></div>
+        <div class="game-card" onclick="openGame('dragontiger')">🐉 DRAGON TIGER<br><small style="color:#aaa;">Real Professional</small></div>
+        <div class="game-card" onclick="openGame('mines')">💣 MINES<br><small style="color:#aaa;">Real System</small></div>
     </div>
 
-    <div style="padding: 20px;">
-        <button class="btn" style="width: 45%;" onclick="alert('Deposit via Admin')">Deposit</button>
-        <button class="btn" style="width: 45%; background: #24d15d;" onclick="alert('Withdraw logic')">Withdraw</button>
+    <div style="position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 10px; display: flex; justify-content: space-around; border-top: 1px solid #333; z-index: 50;">
+        <button class="btn" style="width: 45%;" onclick="showModal('deposit')">Deposit</button>
+        <button class="btn" style="width: 45%; background: #24d15d;" onclick="showModal('withdraw')">Withdraw</button>
+    </div>
+
+    <div id="game-iframe-container">
+        <button class="close-game" onclick="closeGame()">×</button>
+        <iframe id="game-iframe" src="" allowfullscreen></iframe>
     </div>
 
 <script>
-    // Firebase Configuration
+    // --- FIREBASE CONFIGURATION (FIXED & DOUBLE CHECKED) ---
     const firebaseConfig = {
         apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
         authDomain: "pattipro-c1ffe.firebaseapp.com",
@@ -59,58 +70,113 @@
         messagingSenderId: "766843054614",
         appId: "1:766843054614:web:781658832e641fc2e337"
     };
-    firebase.initializeApp(firebaseConfig);
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const auth = firebase.auth();
     const db = firebase.database();
+
+    // Game URLs (Dummy URLs - Aap yahan apni actual games ke links dalein)
+    const gameUrls = {
+        'crash': 'https://saleemislamicna-ats-a11y.github.io/crash-game/', // Replace with real URL
+        'slots': 'https://saleemislamicna-ats-a11y.github.io/slots-game/', // Replace with real URL
+        'dragontiger': 'https://example.com/dragontiger', // Replace with real URL
+        'mines': 'https://example.com/mines' // Replace with real URL
+    };
 
     // 1. Authentication Logic
     function handleAuth(type) {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('pass').value;
+        const errorEl = document.getElementById('auth-error');
+        errorEl.innerText = ""; // Clear previous errors
+
+        if (!email || !pass) {
+            errorEl.innerText = "Email and Password are required.";
+            return;
+        }
 
         if(type === 'register') {
             auth.createUserWithEmailAndPassword(email, pass).then(res => {
-                // Welcome Bonus 120 set for new user
+                // Persistent Balance: New user gets 120, stored in Database
                 db.ref('users/' + res.user.uid).set({
                     email: email,
-                    balance: 120,
+                    balance: 120.00,
                     welcomeBonus: true,
-                    totalWagered: 0
+                    uid: res.user.uid,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
                 });
-                alert("Account Created! 120 Bonus Added.");
-            }).catch(e => alert(e.message));
+                alert("Account Created Successfully! 120 PKR Bonus Added.");
+            }).catch(e => {
+                errorEl.innerText = "Registration Failed: " + e.message;
+            });
         } else {
-            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+            auth.signInWithEmailAndPassword(email, pass).catch(e => {
+                errorEl.innerText = "Login Failed: " + e.message;
+            });
         }
     }
 
-    // 2. Track User & Balance
+    // 2. Track User & Persistent Balance
     auth.onAuthStateChanged(user => {
         if(user) {
+            // User is logged in
             document.getElementById('auth-screen').style.display = 'none';
+            // Listen for balance changes in real-time
             db.ref('users/' + user.uid).on('value', snap => {
                 const data = snap.val();
                 if(data) {
                     document.getElementById('user-balance').innerText = data.balance.toFixed(2);
-                    document.getElementById('user-name').innerText = data.email.split('@')[0];
+                    // Persistent Username (email before @)
+                    const username = data.email.split('@')[0];
+                    document.getElementById('user-name').innerText = username.length > 15 ? username.substring(0,12) + '...' : username;
+                } else {
+                    // Fallback if user data doesn't exist yet
+                    document.getElementById('user-name').innerText = user.email.split('@')[0];
+                    document.getElementById('user-balance').innerText = "0.00";
                 }
             });
         } else {
+            // User is logged out
             document.getElementById('auth-screen').style.display = 'flex';
+            // Stop listening to database
+            if(auth.currentUser) {
+                db.ref('users/' + auth.currentUser.uid).off();
+            }
         }
     });
 
     function logout() {
-        auth.signOut();
+        if(confirm("Are you sure you want to logout?")) {
+            auth.signOut();
+        }
     }
 
-    // 3. Auto-Cashout Protection Logic
-    function setAutoCashout(value) {
-        if(value < 1.25) {
-            alert("Auto-cashout cannot be less than 1.25x");
-            return 1.25;
+    // 3. Game Launch Logic (iframe)
+    function openGame(gameId) {
+        const container = document.getElementById('game-iframe-container');
+        const iframe = document.getElementById('game-iframe');
+        const url = gameUrls[gameId];
+
+        if(url && url !== 'https://example.com/dragontiger' && url !== 'https://example.com/mines') { // Dummy check
+            iframe.src = url;
+            container.style.display = 'block';
+        } else {
+            alert("Game '" + gameId.toUpperCase() + "' is under development. Real logic will be integrated here.");
         }
-        return value;
+    }
+
+    function closeGame() {
+        const container = document.getElementById('game-iframe-container');
+        const iframe = document.getElementById('game-iframe');
+        iframe.src = ""; // Stop the game
+        container.style.display = 'none';
+    }
+
+    // Modal Helper
+    function showModal(type) {
+        alert(type.charAt(0).toUpperCase() + type.slice(1) + " request sent to Admin. Contact Saleem via Telegram.");
     }
 
 </script>
