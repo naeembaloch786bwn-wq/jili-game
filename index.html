@@ -3,181 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE VIP CASINO - 777 ENGINE</title>
+    <title>ULTIMATE 777 - DEPOSIT ENGINE</title>
     <style>
-        :root { --gold: #f1c40f; --bg: #0a0a0a; --green: #2ecc71; --red: #e74c3c; }
-        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; text-align: center; overflow-x: hidden; touch-action: manipulation; }
+        :root { --gold: #f1c40f; --bg: #0a0a0a; --green: #2ecc71; }
+        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; text-align: center; }
         header { background: #1a1a1a; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .balance-box { border: 2px solid var(--gold); padding: 5px 15px; border-radius: 20px; font-weight: bold; color: var(--gold); }
+        .balance-box { border: 2px solid var(--gold); padding: 5px 15px; border-radius: 20px; color: var(--gold); font-weight: bold; }
         
-        /* Game Arena */
-        #game-arena { width: 95%; height: 280px; background: radial-gradient(circle, #1a4d1a, #000); margin: 15px auto; border: 3px solid var(--gold); border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 50px #000; }
+        /* Deposit Modal Style */
+        #deposit-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; padding-top: 50px; }
+        .deposit-card { background: #1a1a1a; margin: 20px; padding: 20px; border-radius: 15px; border: 1px solid var(--gold); }
+        .copy-btn { background: var(--gold); color: black; border: none; padding: 5px 10px; border-radius: 5px; font-weight: bold; margin-left: 10px; }
         
-        /* Dragon vs Tiger Arena */
-        .dvt-stage { display: flex; gap: 30px; align-items: center; position: relative; width: 100%; justify-content: center; }
-        .dvt-side { border: 2px solid #555; padding: 10px; border-radius: 10px; min-width: 100px; cursor: pointer; transition: 0.3s; }
-        .dvt-side.selected { border-color: #fff; background: rgba(255,255,255,0.1); }
-        .dvt-side.dragon { border-color: var(--red); color: var(--red); }
-        .dvt-side.tiger { border-color: #3498db; color: #3498db; }
-        .card-slot { width: 70px; height: 100px; background: repeating-linear-gradient(45deg, #222, #222 5px, #111 5px, #111 10px); border-radius: 8px; border: 2px solid #444; position: relative; transform-style: preserve-3d; transition: 0.6s; transform: rotateY(0deg); }
-        .card-slot.flip { transform: rotateY(180deg); }
-        .card-front, .card-back { width: 100%; height: 100%; position: absolute; backface-visibility: hidden; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; }
-        .card-back { background: #fff; color: #000; transform: rotateY(180deg); }
-        .card-front { background: transparent; } /* Only back side is shown before flip */
-
-        /* Mines Grid */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .tile { width: 45px; height: 45px; background: #222; border: 1px solid #444; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
-        
-        /* Controls */
-        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 20px; border-top: 2px solid var(--gold); border-radius: 20px 20px 0 0; }
-        input { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 120px; text-align: center; border-radius: 5px; font-size: 18px; margin-bottom: 10px; }
-        .btn { width: 85%; padding: 15px; border-radius: 50px; border: none; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; }
-        .btn-play { background: linear-gradient(180deg, #f1c40f, #d4af37); color: #000; }
-        .btn-cashout { background: #27ae60; color: white; display: none; }
-        
-        /* Crash */
-        #plane { font-size: 50px; position: absolute; left: 5%; bottom: 5%; transition: 0.1s linear; }
-        #multiplier-display { font-size: 45px; font-weight: bold; position: absolute; top: 10%; color: white; }
-
-        /* Room Nav */
-        .room-nav { display: flex; gap: 10px; overflow-x: auto; padding: 10px; margin-bottom: 180px; }
-        .room-card { min-width: 120px; background: #1a1a1a; padding: 15px; border-radius: 10px; border-bottom: 3px solid var(--gold); font-size: 12px; }
+        /* Tabs and Main UI */
+        .room-nav { display: flex; gap: 10px; overflow-x: auto; padding: 10px; }
+        .room-card { min-width: 120px; background: #1a1a1a; padding: 15px; border-radius: 10px; border-bottom: 3px solid var(--gold); }
+        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 20px; border-top: 2px solid var(--gold); }
+        .btn { width: 85%; padding: 15px; border-radius: 50px; border: none; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        .btn-deposit { background: var(--green); color: white; }
+        .btn-confirm { background: var(--gold); color: black; width: 100%; }
+        input { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 80%; text-align: center; margin-bottom: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 900; color: var(--gold);">ULTIMATE 777 ROOM</div>
+    <div style="font-weight: bold; color: var(--gold);">ULTIMATE 777</div>
     <div class="balance-box">PKR <span id="wallet">150.00</span></div>
 </header>
 
-<div id="game-arena">
-    <div id="display" style="text-align: center;">SELECT ROOM</div>
+<div id="game-arena" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+    <h2 id="display">WELCOME PLAYER</h2>
 </div>
 
 <div class="room-nav">
-    <div class="room-card" onclick="setRoom('DVT')">🐉 DRAGON TIGER</div>
-    <div class="room-card" onclick="setRoom('CRASH')">🚀 CRASH</div>
-    <div class="room-card" onclick="setRoom('MINES')">💣 MINES</div>
+    <div class="room-card">🐉 D-TIGER</div>
+    <div class="room-card">🚀 CRASH</div>
+    <div class="room-card">💣 MINES</div>
 </div>
 
 <div class="controls">
-    <input type="number" id="bet-input" value="10" min="10">
-    <button id="play-btn" class="btn btn-play" onclick="startGame()">Start Bet</button>
-    <button id="cashout-btn" class="btn btn-cashout" onclick="doCashOut()">Cash Out (<span id="profit-val">0</span>)</button>
+    <button class="btn btn-deposit" onclick="showDeposit()">ADD CASH (DEPOSIT)</button>
+    <button class="btn" style="background:#444; color:white;">WITHDRAW</button>
+</div>
+
+<div id="deposit-page">
+    <h2 style="color:var(--gold)">DEPOSIT CASH</h2>
+    <div class="deposit-card">
+        <p style="color:#888; font-size: 12px;">SEND PAYMENT TO JAZZCASH</p>
+        <h3 id="jazzcash-num">03289230760</h3>
+        <p>Holder: <b>Saleem</b></p>
+        <button class="copy-btn" onclick="copyNum()">COPY NUMBER</button>
+    </div>
+
+    <div class="deposit-card">
+        <p>Enter Amount Paid:</p>
+        <input type="number" id="dep-amt" placeholder="Minimum 100">
+        <p>Enter Transaction ID (TID):</p>
+        <input type="text" id="dep-tid" placeholder="Enter 12-digit TID">
+        <button class="btn btn-confirm" onclick="submitDeposit()">SUBMIT REQUEST</button>
+    </div>
+    <button style="background:none; border:none; color:white; text-decoration: underline;" onclick="hideDeposit()">Go Back</button>
 </div>
 
 <script>
-    let balance = 150;
-    let room = "";
-    let isPlaying = false;
-    let currentBet = 0;
-    let currentMult = 1.0;
-    let crashInterval;
-    let dvtSelection = "";
-    const winChance = 0.35; // 35% Win Rate
+    let wallet = 150.00;
 
-    function setRoom(r) { room = r; document.getElementById('display').innerText = r + " ROOM READY"; }
+    function showDeposit() { document.getElementById('deposit-page').style.display = 'block'; }
+    function hideDeposit() { document.getElementById('deposit-page').style.display = 'none'; }
 
-    function startGame() {
-        let bet = parseFloat(document.getElementById('bet-input').value);
-        if (bet < 10 || bet > balance || !room) { alert("Check Bet/Room!"); return; }
-        
-        balance -= bet;
-        currentBet = bet;
-        isPlaying = true;
-        updateUI();
+    function copyNum() {
+        let num = document.getElementById('jazzcash-num').innerText;
+        navigator.clipboard.writeText(num);
+        alert("Number Copied: " + num);
+    }
 
-        if(room === 'DVT') initDVT(bet);
-        else {
-            document.getElementById('play-btn').style.display = "none";
-            document.getElementById('cashout-btn').style.display = "block";
-            if(room === 'MINES') initMines();
-            if(room === 'CRASH') initCrash();
+    function submitDeposit() {
+        let amt = document.getElementById('dep-amt').value;
+        let tid = document.getElementById('dep-tid').value;
+
+        if(amt < 100 || tid.length < 8) {
+            alert("Please enter valid Amount (Min 100) and TID!");
+            return;
         }
+
+        // Professional Notification
+        alert("Request Submitted!\nAmount: PKR " + amt + "\nTID: " + tid + "\nStatus: Processing (10-30 mins)");
+        
+        // As a demo, adding balance immediately (In real, you verify first)
+        wallet += parseFloat(amt);
+        document.getElementById('wallet').innerText = wallet.toFixed(2);
+        hideDeposit();
     }
-
-    // --- PROFESSSIONAL DRAGON VS TIGER ---
-    function initDVT() {
-        dvtSelection = "";
-        const arena = document.getElementById('game-arena');
-        arena.innerHTML = `
-            <div class="dvt-stage">
-                <div class="dvt-side dragon" onclick="selectDVTSide('D')">
-                    <h2>🐉</h2><p>Dragon</p>
-                    <div id="dragon-card" class="card-slot"><div class="card-front">?</div><div class="card-back" id="d-val">?</div></div>
-                </div>
-                <h2>VS</h2>
-                <div class="dvt-side tiger" onclick="selectDVTSide('T')">
-                    <h2>🐯</h2><p>Tiger</p>
-                    <div id="tiger-card" class="card-slot"><div class="card-front">?</div><div class="card-back" id="t-val">?</div></div>
-                </div>
-            </div>`;
-    }
-
-    function selectDVTSide(side) {
-        if(!isPlaying) return;
-        document.querySelectorAll('.dvt-side').forEach(s => s.classList.remove('selected'));
-        if(side === 'D') document.querySelector('.dragon').classList.add('selected');
-        if(side === 'T') document.querySelector('.tiger').classList.add('selected');
-        dvtSelection = side;
-        playDVTFlip();
-    }
-
-    function playDVTFlip() {
-        let bet = currentBet;
-        isPlaying = false; // Prevents multiple clicks
-        const cardValues = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"];
-        const dValEl = document.getElementById('d-val');
-        const tValEl = document.getElementById('t-val');
-        const dCardEl = document.getElementById('dragon-card');
-        const tCardEl = document.getElementById('tiger-card');
-
-        // Pro Animations
-        setTimeout(() => { dCardEl.classList.add('flip'); }, 500);
-        setTimeout(() => { tCardEl.classList.add('flip'); }, 1000);
-
-        setTimeout(() => {
-            let win = Math.random() < winChance;
-            let dIndex = Math.floor(Math.random() * 13);
-            let tIndex;
-
-            if(win) { // Player Wins
-                tIndex = dvtSelection === 'D' ? Math.max(0, dIndex - 1) : Math.min(12, dIndex + 1);
-            } else { // House Wins
-                tIndex = dvtSelection === 'D' ? Math.min(12, dIndex + 1) : Math.max(0, dIndex - 1);
-            }
-
-            dValEl.innerText = cardValues[dIndex];
-            tValEl.innerText = cardValues[tIndex];
-
-            // Payout Logic
-            setTimeout(() => {
-                if(win) {
-                    let winAmt = bet * 1.95;
-                    balance += winAmt;
-                    alert("Win! PKR " + winAmt.toFixed(2));
-                } else {
-                    alert("Loss!");
-                }
-                gameOver();
-            }, 800);
-        }, 1500);
-    }
-
-    // --- OTHER GAME LOGICS ---
-    function initCrash() { /* Same crash logic */ }
-    function initMines() { /* Same mines logic */ }
-    function doCashOut() { /* Same cashout logic */ }
-    function gameOver() {
-        isPlaying = false;
-        clearInterval(crashInterval);
-        document.getElementById('play-btn').style.display = "block";
-        document.getElementById('cashout-btn').style.display = "none";
-        updateUI();
-    }
-    function updateUI() { document.getElementById('wallet').innerText = balance.toFixed(2); }
 </script>
 
 </body>
