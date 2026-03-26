@@ -3,162 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Casino Pro</title>
+    <title>ULTIMATE CASINO - VIP</title>
     <style>
-        :root { --gold: #d4af37; --black: #000; --dark: #1a1a1a; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--black); color: var(--gold); margin: 0; text-align: center; overflow-x: hidden; }
+        :root { --gold-grad: linear-gradient(180deg, #f9d976 0%, #d4af37 100%); --bg-dark: #0a0a0a; }
+        body { background: var(--bg-dark); color: #fff; font-family: 'Poppins', sans-serif; margin: 0; text-align: center; }
         
-        /* Header & Balance */
-        header { background: var(--dark); padding: 15px; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        .balance-box { background: #000; border: 1px solid var(--gold); padding: 10px; border-radius: 10px; display: inline-block; margin-top: 10px; min-width: 150px; }
+        /* VIP Header */
+        header { background: #1a1a1a; padding: 15px; border-bottom: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+        .balance-container { background: #000; border: 1.5px solid #d4af37; border-radius: 50px; display: inline-flex; align-items: center; padding: 5px 20px; margin-top: 10px; }
+        .coin-icon { background: var(--gold-grad); width: 20px; height: 20px; border-radius: 50%; margin-right: 10px; }
 
-        /* Game Container */
-        #game-viewport { width: 95%; height: 250px; background: #0b2d0b; margin: 15px auto; border: 3px solid var(--gold); border-radius: 15px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        /* Real-Time Game Screen */
+        #main-viewport { width: 92%; height: 240px; background: radial-gradient(circle, #1e4d1e, #0a210a); margin: 15px auto; border: 4px solid #d4af37; border-radius: 20px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: inset 0 0 30px #000; }
         
-        /* Bet Controls */
-        .controls { background: var(--dark); padding: 15px; margin: 10px; border-radius: 10px; }
-        input { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 60%; text-align: center; border-radius: 5px; font-size: 18px; }
-        .btn-main { background: linear-gradient(90deg, var(--gold), #f1c40f); color: #000; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 80%; }
+        /* Game Specific CSS */
+        .card { width: 65px; height: 95px; background: #fff; border-radius: 8px; color: #000; font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transform: rotateY(90deg); transition: 0.6s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .card.reveal { transform: rotateY(0deg); }
+        #plane { font-size: 50px; position: absolute; left: 10%; bottom: 10%; transition: 0.1s linear; filter: drop-shadow(0 0 10px #f9d976); }
+        .mines-box { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .tile { width: 40px; height: 40px; background: #2a2a2a; border: 1px solid #444; border-radius: 4px; }
 
-        /* Mines Grid */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 90%; }
-        .mine-tile { background: #1a4a1a; border-radius: 5px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        /* Controls */
+        .bet-panel { background: #151515; padding: 15px; border-top: 2px solid #333; position: fixed; bottom: 70px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .input-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        input { background: #000; border: 1px solid #d4af37; color: #fff; padding: 10px; border-radius: 5px; width: 120px; text-align: center; font-size: 18px; font-weight: bold; }
+        .btn-play { background: var(--gold-grad); color: #000; border: none; padding: 12px 60px; border-radius: 50px; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; }
 
-        /* Crash Animation */
-        #plane { font-size: 40px; position: absolute; left: 10%; bottom: 10%; transition: all 0.1s linear; }
-
-        /* Cards for Dragon vs Tiger */
-        .card { width: 60px; height: 90px; background: white; border-radius: 5px; color: black; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 10px; transform: rotateY(90deg); transition: 0.5s; }
-        .card.show { transform: rotateY(0deg); }
-
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
-        .menu-card { background: #111; padding: 15px; border-radius: 10px; border-bottom: 3px solid var(--gold); font-size: 14px; cursor: pointer; }
+        /* Game Menu */
+        .game-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; margin-bottom: 180px; }
+        .nav-card { background: linear-gradient(145deg, #222, #000); padding: 20px; border-radius: 15px; border: 1px solid #333; border-bottom: 4px solid #d4af37; font-weight: bold; }
+        
+        .footer { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #d4af37; }
     </style>
 </head>
 <body>
 
 <header>
-    <h3 style="margin:0;">ULTIMATE CASINO</h3>
-    <div class="balance-box">
-        <div style="font-size: 10px; color: #888;">BALANCE</div>
-        <div id="balance">PKR 150.00</div>
+    <div style="font-weight: bold; letter-spacing: 2px; color: #f9d976;">VIP CASINO 777</div>
+    <div class="balance-container">
+        <div class="coin-icon"></div>
+        <div id="bal-text" style="font-weight: bold;">PKR 150.00</div>
     </div>
 </header>
 
-<div id="game-viewport">
-    <div id="game-content">SELECT A GAME TO PLAY</div>
+<div id="main-viewport">
+    <div id="game-stage" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+        <h2 style="opacity: 0.5;">SELECT GAME ROOM</h2>
+    </div>
 </div>
 
-<div class="controls">
-    <input type="number" id="bet-amount" value="10" min="10" placeholder="Enter Bet">
-    <button class="btn-main" onclick="playCurrentGame()">START ACTION</button>
+<div class="bet-panel">
+    <div class="input-group">
+        <span style="color:#888; font-size:12px;">BET:</span>
+        <input type="number" id="bet-val" value="10" min="10">
+    </div>
+    <button class="btn-play" onclick="handleAction()">START BET</button>
 </div>
 
-<div class="menu-grid">
-    <div class="menu-card" onclick="loadGame('DVT')">🐉 Dragon vs Tiger</div>
-    <div class="menu-card" onclick="loadGame('CRASH')">🚀 Crash (Airplane)</div>
-    <div class="menu-card" onclick="loadGame('MINES')">💣 Mines Game</div>
-    <div class="menu-card" onclick="loadGame('SLOTS')">🎰 Fruit Slots</div>
+<div class="game-nav">
+    <div class="nav-card" onclick="loadRoom('DVT')">🐉 Dragon Tiger</div>
+    <div class="nav-card" onclick="loadRoom('CRASH')">🚀 Crash 999</div>
+    <div class="nav-card" onclick="loadRoom('MINES')">💣 Gold Mines</div>
+    <div class="nav-card" onclick="loadRoom('SLOTS')">🎰 Fruit VIP</div>
+</div>
+
+<div class="footer">
+    <span onclick="window.location.href='https://wa.me/923289230760'">DEPOSIT</span>
+    <span onclick="alert('Saleem: 03289230760')">WITHDRAW</span>
 </div>
 
 <script>
-    let balance = 150;
-    let currentGame = "";
-    let winRate = 0.35; // 35% Win Rate
+    let wallet = 150;
+    let activeRoom = "";
+    let winChance = 0.35; // Professional 35% Win Logic
 
-    function updateBalance() {
-        document.getElementById('balance').innerText = "PKR " + balance.toFixed(2);
-    }
-
-    function loadGame(type) {
-        currentGame = type;
-        const viewport = document.getElementById('game-content');
-        if(type === 'DVT') viewport.innerHTML = "DRAGON vs TIGER<br><div style='display:flex'><div id='d-card' class='card'>?</div><div id='t-card' class='card'>?</div></div>";
-        if(type === 'CRASH') viewport.innerHTML = "CRASH GAME<br><div id='plane'>✈️</div><div id='multiplier' style='font-size:30px'>1.00x</div>";
-        if(type === 'MINES') viewport.innerHTML = "MINES: 25 TILES<br><div class='mines-grid' id='m-grid'></div>";
-        if(type === 'SLOTS') viewport.innerHTML = "FRUIT SLOTS<br><div id='slot-result' style='font-size:30px'>🍓|🍒|🔔</div>";
-    }
-
-    function playCurrentGame() {
-        let bet = parseFloat(document.getElementById('bet-amount').value);
-        if (bet < 10 || bet > balance) { alert("Invalid Bet!"); return; }
-        
-        balance -= bet;
-        updateBalance();
-
-        if(currentGame === 'DVT') playDVT(bet);
-        if(currentGame === 'CRASH') playCrash(bet);
-        if(currentGame === 'MINES') playMines(bet);
-        if(currentGame === 'SLOTS') playSlots(bet);
-    }
-
-    // --- GAME LOGICS ---
-
-    function playDVT(bet) {
-        let dCard = document.getElementById('d-card');
-        let tCard = document.getElementById('t-card');
-        dCard.classList.remove('show'); tCard.classList.remove('show');
-        
-        setTimeout(() => {
-            let win = Math.random() < winRate;
-            dCard.innerText = "K"; tCard.innerText = win ? "2" : "A";
-            dCard.classList.add('show'); tCard.classList.add('show');
-            if(win) { balance += bet * 1.9; alert("Dragon Wins!"); }
-            updateBalance();
-        }, 1000);
-    }
-
-    function playCrash(bet) {
-        let plane = document.getElementById('plane');
-        let multi = document.getElementById('multiplier');
-        let x = 1.0;
-        let crashPoint = (Math.random() * 3) + 0.1;
-        
-        let interval = setInterval(() => {
-            x += 0.1;
-            multi.innerText = x.toFixed(2) + "x";
-            plane.style.left = (x * 10) + "%";
-            plane.style.bottom = (x * 10) + "%";
-            
-            if(x >= crashPoint) {
-                clearInterval(interval);
-                plane.innerText = "💥";
-                if(Math.random() < winRate) { balance += bet * 2; alert("Cashed Out!"); }
-                else { alert("Crashed!"); }
-                updateBalance();
-            }
-        }, 100);
-    }
-
-    function playMines(bet) {
-        let grid = document.getElementById('m-grid');
-        grid.innerHTML = "";
-        for(let i=0; i<25; i++) {
-            let tile = document.createElement('div');
-            tile.className = 'mine-tile';
-            tile.onclick = () => {
-                if(Math.random() < 0.2) { tile.innerText = "💣"; alert("Game Over!"); }
-                else { tile.innerText = "🪙"; balance += bet * 0.2; updateBalance(); }
-            };
-            grid.appendChild(tile);
+    function loadRoom(room) {
+        activeRoom = room;
+        const stage = document.getElementById('game-stage');
+        if(room==='DVT') stage.innerHTML = '<div><p>DRAGON vs TIGER</p><div style="display:flex; gap:20px;"><div id="d-card" class="card">?</div><div id="t-card" class="card">?</div></div></div>';
+        if(room==='CRASH') stage.innerHTML = '<div id="plane">✈️</div><div id="mult" style="font-size:40px; font-weight:bold;">1.00x</div>';
+        if(room==='MINES') {
+            let grid = '<div class="mines-box">';
+            for(let i=0; i<25; i++) grid += '<div class="tile" onclick="openMine(this)"></div>';
+            stage.innerHTML = grid + '</div>';
         }
     }
 
-    function playSlots(bet) {
-        const fruits = ["🍓", "🍒", "🔔", "💎", "🍋"];
-        let res = document.getElementById('slot-result');
-        let f1 = fruits[Math.floor(Math.random()*5)];
-        let f2 = fruits[Math.floor(Math.random()*5)];
-        let f3 = fruits[Math.floor(Math.random()*5)];
-        res.innerText = `${f1} | ${f2} | ${f3}`;
-        
-        if(f1 === f2 && f2 === f3) {
-            balance += bet * 5;
-            alert("JACKPOT!");
+    function handleAction() {
+        let bet = parseFloat(document.getElementById('bet-val').value);
+        if(bet < 10 || bet > wallet) { alert("Check Balance!"); return; }
+        if(!activeRoom) { alert("Select a Game Room!"); return; }
+
+        wallet -= bet; updateUI();
+
+        if(activeRoom === 'DVT') {
+            let dc = document.getElementById('d-card'); let tc = document.getElementById('t-card');
+            dc.classList.remove('reveal'); tc.classList.remove('reveal');
+            setTimeout(() => {
+                let isWin = Math.random() < winChance;
+                dc.innerText = "K"; tc.innerText = isWin ? "4" : "A";
+                dc.classList.add('reveal'); tc.classList.add('reveal');
+                if(isWin) { wallet += bet * 1.95; } updateUI();
+            }, 800);
         }
-        updateBalance();
+
+        if(activeRoom === 'CRASH') {
+            let p = document.getElementById('plane'); let m = document.getElementById('mult');
+            let x = 1.0; let stop = (Math.random() * 3.5).toFixed(2);
+            let fly = setInterval(() => {
+                x += 0.05; m.innerText = x.toFixed(2) + "x";
+                p.style.left = (x * 15) + "%"; p.style.bottom = (x * 15) + "%";
+                if(x >= stop) {
+                    clearInterval(fly); p.innerText = "💥";
+                    if(Math.random() < winChance) { wallet += bet * 2.2; } updateUI();
+                }
+            }, 100);
+        }
     }
+
+    function updateUI() { document.getElementById('bal-text').innerText = "PKR " + wallet.toFixed(2); }
+    function openMine(el) { if(Math.random() < 0.15) el.innerHTML = "💣"; else el.innerHTML = "🪙"; }
 </script>
+
 </body>
 </html>
