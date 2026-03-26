@@ -5,96 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultimate Casino Pro</title>
     <style>
-        body {
-            background-color: #000;
-            color: #d4af37; /* Gold */
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-        }
-        header {
-            background: linear-gradient(180deg, #1a1a1a, #000);
-            padding: 20px;
-            border-bottom: 2px solid #d4af37;
-        }
-        .balance-card {
-            background: #1a1a1a;
-            border: 1px solid #d4af37;
-            border-radius: 10px;
-            display: inline-block;
-            padding: 10px 30px;
-            margin-top: 20px;
-        }
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 20px;
-        }
-        .game-card {
-            background: #111;
-            border: 1px solid #d4af37;
-            border-radius: 15px;
-            padding: 20px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .game-card:active {
-            transform: scale(0.95);
-            background: #d4af37;
-            color: #000;
-        }
-        .footer-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: #1a1a1a;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #d4af37;
-        }
-        button {
-            background: #d4af37;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { background-color: #000; color: #d4af37; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding-bottom: 80px; }
+        header { background: linear-gradient(180deg, #1a1a1a, #000); padding: 20px; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 100; }
+        .balance-card { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; display: inline-block; padding: 15px 40px; margin-top: 15px; box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+        .game-card { background: #111; border: 1px solid #444; border-radius: 12px; padding: 25px 10px; font-weight: bold; cursor: pointer; border-bottom: 4px solid #d4af37; }
+        .game-card:active { transform: scale(0.9); background: #d4af37; color: #000; }
+        .btn-action { background: linear-gradient(90deg, #d4af37, #f1c40f); color: #000; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; margin: 10px; width: 80%; cursor: pointer; font-size: 16px; }
+        .footer-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 2px solid #d4af37; }
+        .nav-item { color: #888; text-decoration: none; font-size: 12px; cursor: pointer; }
+        .nav-item.active { color: #d4af37; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>ULTIMATE CASINO</h1>
+    <h2 style="margin:0; letter-spacing: 2px;">ULTIMATE CASINO PRO</h2>
     <div class="balance-card">
-        <p>Wallet Balance</p>
-        <h2 id="balance">PKR 150.00</h2>
+        <p style="margin:0; color: #888; font-size: 12px;">AVAILABLE BALANCE</p>
+        <h2 id="balance" style="margin:5px 0 0 0;">PKR 150.00</h2>
     </div>
 </header>
 
 <div class="game-grid">
-    <div class="game-card">🐉 Dragon vs Tiger</div>
-    <div class="game-card">💣 Mines</div>
-    <div class="game-card">🚀 Crash</div>
-    <div class="game-card">🎰 777 Slots</div>
-    <div class="game-card">🎡 Roulette</div>
-    <div class="game-card">🃏 3 Patti</div>
+    <div class="game-card" onclick="playGame('Dragon vs Tiger')">🐉<br>Dragon vs Tiger</div>
+    <div class="game-card" onclick="playGame('Mines')">💣<br>Mines</div>
+    <div class="game-card" onclick="playGame('Crash')">🚀<br>Crash</div>
+    <div class="game-card" onclick="playGame('777 Slots')">🎰<br>777 Slots</div>
+    <div class="game-card" onclick="playGame('Roulette')">🎡<br>Roulette</div>
+    <div class="game-card" onclick="playGame('3 Patti')">🃏<br>3 Patti</div>
 </div>
 
-<div style="margin-top: 20px; padding: 10px;">
-    <p>WhatsApp Support: 03289230760</p>
-    <button onclick="alert('Deposit page coming soon!')">Deposit Now</button>
-</div>
+<button class="btn-action" onclick="window.location.href='https://wa.me/923289230760'">CONTACT SUPPORT</button>
+<button class="btn-action" style="background: #222; color: #d4af37; border: 1px solid #d4af37;" onclick="addBonus()">CLAIM DAILY BONUS</button>
 
 <div class="footer-nav">
-    <span>Home</span>
-    <span>Invite</span>
-    <span>Withdraw</span>
-    <span>Profile</span>
+    <div class="nav-item active">HOME</div>
+    <div class="nav-item" onclick="alert('Referral System: Comming Soon')">INVITE</div>
+    <div class="nav-item" onclick="alert('Minimum Withdraw: PKR 500')">WITHDRAW</div>
+    <div class="nav-item" onclick="alert('User: Muhammad Naeem')">PROFILE</div>
 </div>
+
+<script>
+    let currentBalance = 150;
+
+    function playGame(gameName) {
+        if(currentBalance < 20) {
+            alert("In-sufficient balance to play " + gameName);
+        } else {
+            alert("Starting " + gameName + "... Please wait!");
+            // Yahan hum future mein game logic add karenge
+        }
+    }
+
+    function addBonus() {
+        currentBalance += 10;
+        document.getElementById('balance').innerText = "PKR " + currentBalance.toFixed(2);
+        alert("Daily Bonus Added! New Balance: PKR " + currentBalance);
+    }
+</script>
 
 </body>
 </html>
