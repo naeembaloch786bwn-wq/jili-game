@@ -3,161 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE CASINO - REAL ENGINE</title>
+    <title>ULTIMATE VIP CASINO</title>
     <style>
-        :root { --gold: #f1c40f; --dark-green: #0a2e0a; }
-        body { background: #000; color: #fff; font-family: 'Arial', sans-serif; margin: 0; overflow: hidden; touch-action: manipulation; }
+        :root { --gold: #f1c40f; --bg: #0a0a0a; }
+        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; text-align: center; }
+        header { background: #1a1a1a; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .balance-box { border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; color: var(--gold); font-weight: bold; }
         
-        /* Dashboard */
-        header { background: linear-gradient(180deg, #222, #000); padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
-        .bal-card { background: #000; border: 1.5px solid var(--gold); padding: 5px 20px; border-radius: 50px; font-weight: bold; color: var(--gold); box-shadow: 0 0 10px rgba(241,196,15,0.3); }
+        #game-arena { width: 95%; height: 280px; background: radial-gradient(circle, #1a4d1a, #000); margin: 15px auto; border: 3px solid var(--gold); border-radius: 15px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .tile { width: 45px; height: 45px; background: #222; border: 1px solid #444; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+        
+        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 20px; border-top: 2px solid var(--gold); }
+        input { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 120px; text-align: center; border-radius: 5px; font-size: 18px; margin-bottom: 10px; }
+        .btn { width: 85%; padding: 15px; border-radius: 50px; border: none; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; }
+        .btn-play { background: linear-gradient(180deg, #f1c40f, #d4af37); color: #000; }
+        .btn-cashout { background: #27ae60; color: white; display: none; }
+        
+        #plane { font-size: 50px; position: absolute; left: 5%; bottom: 5%; transition: 0.1s linear; }
+        #multiplier-display { font-size: 45px; font-weight: bold; position: absolute; top: 10%; color: white; }
 
-        /* Game Arena */
-        #arena { width: 95%; height: 300px; background: radial-gradient(circle, #1a4d1a, #051505); margin: 15px auto; border: 4px solid #333; border-radius: 20px; position: relative; overflow: hidden; box-shadow: inset 0 0 50px #000; border-color: var(--gold); }
-        
-        /* Crash Animation */
-        #plane { font-size: 60px; position: absolute; left: 5%; bottom: 5%; transition: 0.1s linear; filter: drop-shadow(0 0 15px var(--gold)); z-index: 5; }
-        .multiplier-text { font-size: 50px; font-weight: 900; color: #fff; position: absolute; top: 20%; width: 100%; text-shadow: 0 0 20px var(--gold); }
-
-        /* Betting Panel */
-        .bet-panel { position: fixed; bottom: 0; width: 100%; background: #111; padding: 20px; border-top: 3px solid var(--gold); border-radius: 20px 20px 0 0; }
-        .bet-input-box { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; }
-        input { background: #000; border: 1px solid var(--gold); color: #fff; padding: 12px; width: 120px; text-align: center; font-size: 20px; border-radius: 10px; }
-        
-        .btn-action { width: 85%; padding: 15px; border-radius: 50px; border: none; font-size: 20px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
-        .btn-start { background: linear-gradient(180deg, #f1c40f, #d4af37); color: #000; }
-        .btn-cashout { background: linear-gradient(180deg, #2ecc71, #27ae60); color: #fff; display: none; }
-        .btn-start:active { transform: scale(0.95); }
-
-        /* Room Selection */
-        .room-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 10px; margin-top: 10px; }
-        .room-card { min-width: 140px; background: #1a1a1a; padding: 20px; border-radius: 15px; border-bottom: 5px solid var(--gold); font-weight: bold; font-size: 14px; }
-        
-        /* Mines Grid */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 20px; }
-        .tile { width: 50px; height: 50px; background: #222; border: 1px solid #444; border-radius: 8px; box-shadow: inset 0 0 10px #000; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .room-nav { display: flex; gap: 10px; overflow-x: auto; padding: 10px; margin-bottom: 180px; }
+        .room-card { min-width: 120px; background: #1a1a1a; padding: 15px; border-radius: 10px; border-bottom: 3px solid var(--gold); font-size: 12px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 900; color: var(--gold); letter-spacing: 1px;">ULTIMATE 777 VIP</div>
-    <div class="bal-card">PKR <span id="balance">150.00</span></div>
+    <div style="font-weight: bold; color: var(--gold);">ULTIMATE 777</div>
+    <div class="balance-box">PKR <span id="wallet">150.00</span></div>
 </header>
 
-<div id="arena">
-    <div id="game-ui" style="text-align:center; width: 100%;">
-        <h2 style="color: #555;">CHOOSE A ROOM</h2>
-    </div>
+<div id="game-arena">
+    <div id="display">SELECT GAME ROOM</div>
 </div>
 
-<div class="room-scroll">
-    <div class="room-card" onclick="switchRoom('CRASH')">🚀 CRASH 999</div>
-    <div class="room-card" onclick="switchRoom('MINES')">💣 GOLD MINES</div>
-    <div class="room-card" onclick="switchRoom('DVT')">🐉 DRAGON TIGER</div>
+<div class="room-nav">
+    <div class="room-card" onclick="setRoom('MINES')">💣 MINES</div>
+    <div class="room-card" onclick="setRoom('CRASH')">🚀 CRASH</div>
+    <div class="room-card" onclick="setRoom('DVT')">🐉 D-TIGER</div>
 </div>
 
-<div class="bet-panel">
-    <div class="bet-input-box">
-        <span style="color:#888;">BET:</span>
-        <input type="number" id="bet-amount" value="10" min="10">
-    </div>
-    <button id="main-btn" class="btn-action btn-start" onclick="startEngine()">START BET</button>
-    <button id="cashout-btn" class="btn-action btn-cashout" onclick="handleCashout()">CASH OUT</button>
+<div class="controls">
+    <input type="number" id="bet-input" value="10" min="10">
+    <button id="play-btn" class="btn btn-play" onclick="startGame()">Start Bet</button>
+    <button id="cashout-btn" class="btn btn-cashout" onclick="doCashOut()">Cash Out (<span id="profit-val">0</span>)</button>
 </div>
 
 <script>
-    let wallet = 150;
+    let balance = 150;
     let room = "";
-    let activeGame = false;
-    let mult = 1.0;
-    let loop;
+    let isPlaying = false;
     let currentBet = 0;
+    let currentMult = 1.0;
+    let crashInterval;
+    let minesOpened = 0;
 
-    function switchRoom(r) {
-        room = r;
-        document.getElementById('game-ui').innerHTML = `<h2 style='color:var(--gold)'>${r} ROOM</h2><p>Ready to Win?</p>`;
-    }
+    function setRoom(r) { room = r; document.getElementById('display').innerText = r + " ROOM READY"; }
 
-    function startEngine() {
-        let betVal = parseFloat(document.getElementById('bet-amount').value);
-        if (betVal < 10 || betVal > wallet) { alert("Check Balance/Bet!"); return; }
-        if (!room) { alert("Select a room first!"); return; }
-
-        wallet -= betVal;
-        currentBet = betVal;
-        updateUI();
+    function startGame() {
+        let bet = parseFloat(document.getElementById('bet-input').value);
+        if (bet < 10 || bet > balance || !room) { alert("Invalid Bet/Room!"); return; }
         
-        activeGame = true;
-        document.getElementById('main-btn').style.display = "none";
+        balance -= bet;
+        currentBet = bet;
+        isPlaying = true;
+        minesOpened = 0;
+        currentMult = 1.0;
+        updateUI();
+
+        document.getElementById('play-btn').style.display = "none";
         document.getElementById('cashout-btn').style.display = "block";
 
-        if (room === 'CRASH') runCrash();
-        if (room === 'MINES') runMines();
-        if (room === 'DVT') runDVT();
+        if(room === 'MINES') initMines();
+        if(room === 'CRASH') initCrash();
     }
 
-    function runCrash() {
-        const arena = document.getElementById('arena');
-        arena.innerHTML = '<div id="plane">✈️</div><div class="multiplier-text" id="m-val">1.00x</div>';
-        let plane = document.getElementById('plane');
-        let mVal = document.getElementById('m-val');
-        mult = 1.0;
-        let crashAt = (Math.random() * 5 + 1.1).toFixed(2);
-
-        loop = setInterval(() => {
-            mult += 0.03;
-            mVal.innerText = mult.toFixed(2) + "x";
-            plane.style.left = (mult * 10) + "%";
-            plane.style.bottom = (mult * 10) + "%";
-
-            if (mult >= crashAt) {
-                clearInterval(loop);
-                plane.innerText = "💥";
-                endGame("CRASHED!");
-            }
-        }, 100);
-    }
-
-    function runMines() {
+    // --- MINES LOGIC ---
+    function initMines() {
         let grid = '<div class="mines-grid">';
-        for (let i = 0; i < 25; i++) grid += `<div class="tile" onclick="openTile(this)">?</div>`;
-        document.getElementById('arena').innerHTML = grid + '</div>';
+        for(let i=0; i<25; i++) grid += `<div class="tile" onclick="openTile(this)">?</div>`;
+        document.getElementById('game-arena').innerHTML = grid + '</div>';
     }
 
     function openTile(el) {
-        if (!activeGame) return;
-        if (Math.random() < 0.2) {
+        if(!isPlaying || el.innerText !== "?") return;
+
+        if(Math.random() < 0.15) { // 15% Bomb chance
             el.innerHTML = "💣"; el.style.background = "red";
-            endGame("BOOM! LOST");
+            endGame("BOOM! Bet Lost.");
         } else {
             el.innerHTML = "🪙"; el.style.background = "#1a4d1a";
-            wallet += (currentBet * 0.15); updateUI();
+            minesOpened++;
+            // Logic: 1 coin = 1.15x, 6 coins = approx 2x
+            currentMult = Math.pow(1.15, minesOpened); 
+            updateProfitDisplay();
         }
     }
 
-    function handleCashout() {
-        if (!activeGame) return;
-        if (room === 'CRASH') {
-            let win = currentBet * mult;
-            wallet += win;
-            clearInterval(loop);
-            alert("SUCCESS! You Won PKR " + win.toFixed(2));
-        }
+    // --- CRASH LOGIC ---
+    function initCrash() {
+        const arena = document.getElementById('game-arena');
+        arena.innerHTML = '<div id="plane">✈️</div><div id="multiplier-display">1.00x</div>';
+        let plane = document.getElementById('plane');
+        let mDisp = document.getElementById('multiplier-display');
+        let crashAt = (Math.random() * 4 + 1.1).toFixed(2);
+
+        crashInterval = setInterval(() => {
+            currentMult += 0.04;
+            mDisp.innerText = currentMult.toFixed(2) + "x";
+            plane.style.left = (currentMult * 12) + "%";
+            plane.style.bottom = (currentMult * 12) + "%";
+            updateProfitDisplay();
+
+            if(currentMult >= crashAt) {
+                clearInterval(crashInterval);
+                plane.innerText = "💥";
+                endGame("Crashed!");
+            }
+        }, 150);
+    }
+
+    function doCashOut() {
+        if(!isPlaying) return;
+        let win = currentBet * currentMult;
+        balance += win;
+        alert("Success! Won PKR " + win.toFixed(2));
         endGame();
     }
 
     function endGame(msg) {
-        if (msg) alert(msg);
-        activeGame = false;
-        clearInterval(loop);
-        document.getElementById('main-btn').style.display = "block";
+        if(msg) alert(msg);
+        isPlaying = false;
+        clearInterval(crashInterval);
+        document.getElementById('play-btn').style.display = "block";
         document.getElementById('cashout-btn').style.display = "none";
         updateUI();
     }
 
-    function updateUI() { document.getElementById('balance').innerText = wallet.toFixed(2); }
+    function updateUI() { document.getElementById('wallet').innerText = balance.toFixed(2); }
+    function updateProfitDisplay() {
+        document.getElementById('profit-val').innerText = (currentBet * currentMult).toFixed(1);
+    }
 </script>
 
 </body>
-</html>
+</html>	
