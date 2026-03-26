@@ -3,99 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE 777 - DEPOSIT ENGINE</title>
+    <title>ULTIMATE 777 - OFFICIAL</title>
     <style>
         :root { --gold: #f1c40f; --bg: #0a0a0a; --green: #2ecc71; }
-        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; text-align: center; }
-        header { background: #1a1a1a; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .balance-box { border: 2px solid var(--gold); padding: 5px 15px; border-radius: 20px; color: var(--gold); font-weight: bold; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; text-align: center; }
+        header { background: #111; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .bal-box { border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; color: var(--gold); font-weight: bold; }
         
-        /* Deposit Modal Style */
-        #deposit-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; padding-top: 50px; }
-        .deposit-card { background: #1a1a1a; margin: 20px; padding: 20px; border-radius: 15px; border: 1px solid var(--gold); }
-        .copy-btn { background: var(--gold); color: black; border: none; padding: 5px 10px; border-radius: 5px; font-weight: bold; margin-left: 10px; }
+        /* Game Arena */
+        #game-arena { width: 95%; height: 260px; background: radial-gradient(circle, #1a3c1a, #000); margin: 15px auto; border: 3px solid var(--gold); border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
-        /* Tabs and Main UI */
-        .room-nav { display: flex; gap: 10px; overflow-x: auto; padding: 10px; }
-        .room-card { min-width: 120px; background: #1a1a1a; padding: 15px; border-radius: 10px; border-bottom: 3px solid var(--gold); }
-        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 20px; border-top: 2px solid var(--gold); }
-        .btn { width: 85%; padding: 15px; border-radius: 50px; border: none; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; }
-        .btn-deposit { background: var(--green); color: white; }
-        .btn-confirm { background: var(--gold); color: black; width: 100%; }
-        input { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 80%; text-align: center; margin-bottom: 10px; border-radius: 5px; }
+        /* Pages */
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; padding-top: 40px; overflow-y: auto; }
+        .card-box { background: #1a1a1a; margin: 15px; padding: 20px; border-radius: 12px; border: 1px solid #333; }
+
+        /* Controls */
+        .footer-btns { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; border-top: 2px solid var(--gold); z-index: 100; }
+        .btn { width: 45%; padding: 12px; border-radius: 5px; border: none; font-weight: bold; margin: 5px; cursor: pointer; }
+        .btn-dep { background: var(--green); color: white; }
+        .btn-with { background: #444; color: white; }
+        .btn-main { background: var(--gold); color: black; width: 90%; font-size: 18px; margin-bottom: 10px; }
+        .btn-cashout { background: var(--green); color: white; display: none; width: 90%; font-size: 18px; }
+
+        input, select { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 85%; margin-bottom: 10px; border-radius: 5px; }
+        
+        /* Game Assets */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .tile { width: 45px; height: 45px; background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        #plane { font-size: 50px; position: absolute; left: 5%; bottom: 5%; transition: 0.1s linear; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: bold; color: var(--gold);">ULTIMATE 777</div>
-    <div class="balance-box">PKR <span id="wallet">150.00</span></div>
+    <span>ULTIMATE 777</span>
+    <div class="bal-box">PKR <span id="wallet">150.00</span></div>
 </header>
 
-<div id="game-arena" style="height: 250px; display: flex; align-items: center; justify-content: center;">
-    <h2 id="display">WELCOME PLAYER</h2>
+<div id="game-arena">
+    <div id="display-area">SELECT GAME</div>
 </div>
 
-<div class="room-nav">
-    <div class="room-card">🐉 D-TIGER</div>
-    <div class="room-card">🚀 CRASH</div>
-    <div class="room-card">💣 MINES</div>
+<div style="display: flex; gap: 5px; overflow-x: auto; padding: 10px; margin-bottom: 160px;">
+    <button onclick="setRoom('CRASH')" style="padding:10px; background:#222; color:gold; border:1px solid gold;">🚀 CRASH</button>
+    <button onclick="setRoom('MINES')" style="padding:10px; background:#222; color:gold; border:1px solid gold;">💣 MINES</button>
+    <button onclick="setRoom('DVT')" style="padding:10px; background:#222; color:gold; border:1px solid gold;">🐉 D-TIGER</button>
 </div>
 
-<div class="controls">
-    <button class="btn btn-deposit" onclick="showDeposit()">ADD CASH (DEPOSIT)</button>
-    <button class="btn" style="background:#444; color:white;">WITHDRAW</button>
+<div class="footer-btns">
+    <input type="number" id="bet-input" value="10" min="10" placeholder="Bet Amount">
+    <button id="btn-play" class="btn-main" onclick="startPlay()">START GAME</button>
+    <button id="btn-cashout" class="btn-cashout" onclick="cashOutNow()">CASH OUT</button>
+    <br>
+    <button class="btn btn-dep" onclick="showPage('deposit-page')">DEPOSIT</button>
+    <button class="btn btn-with" onclick="showPage('withdraw-page')">WITHDRAW</button>
 </div>
 
-<div id="deposit-page">
-    <h2 style="color:var(--gold)">DEPOSIT CASH</h2>
-    <div class="deposit-card">
-        <p style="color:#888; font-size: 12px;">SEND PAYMENT TO JAZZCASH</p>
-        <h3 id="jazzcash-num">03289230760</h3>
-        <p>Holder: <b>Saleem</b></p>
-        <button class="copy-btn" onclick="copyNum()">COPY NUMBER</button>
+<div id="deposit-page" class="page">
+    <h2 style="color:gold">DEPOSIT</h2>
+    <div class="card-box">
+        <p>JAZZCASH Number: <b>03289230760</b></p>
+        <p>Account Holder: <b>Naeem</b></p>
+        <input type="number" id="dep-amt" placeholder="Amount Sent">
+        <input type="text" id="dep-tid" placeholder="Transaction ID (TID)">
+        <button class="btn-main" onclick="alert('Deposit Request Sent!')">SUBMIT</button>
     </div>
+    <button onclick="hidePages()" style="color:white">Back to Game</button>
+</div>
 
-    <div class="deposit-card">
-        <p>Enter Amount Paid:</p>
-        <input type="number" id="dep-amt" placeholder="Minimum 100">
-        <p>Enter Transaction ID (TID):</p>
-        <input type="text" id="dep-tid" placeholder="Enter 12-digit TID">
-        <button class="btn btn-confirm" onclick="submitDeposit()">SUBMIT REQUEST</button>
+<div id="withdraw-page" class="page">
+    <h2 style="color:gold">WITHDRAWAL</h2>
+    <div class="card-box">
+        <p>Select Method:</p>
+        <select id="wit-method">
+            <option value="JazzCash">JazzCash</option>
+            <option value="EasyPaisa">EasyPaisa</option>
+        </select>
+        <input type="number" id="wit-num" placeholder="Enter Account Number">
+        <input type="number" id="wit-amt" placeholder="Enter Amount">
+        <button class="btn-main" style="background:var(--green); color:white" onclick="alert('Withdrawal Request Submitted!')">WITHDRAW NOW</button>
     </div>
-    <button style="background:none; border:none; color:white; text-decoration: underline;" onclick="hideDeposit()">Go Back</button>
+    <button onclick="hidePages()" style="color:white">Back to Game</button>
 </div>
 
 <script>
-    let wallet = 150.00;
+    let wallet = 150;
+    let room = "";
+    let isPlaying = false;
+    let bet = 0;
+    let mult = 1.0;
+    let timer;
 
-    function showDeposit() { document.getElementById('deposit-page').style.display = 'block'; }
-    function hideDeposit() { document.getElementById('deposit-page').style.display = 'none'; }
+    function setRoom(r) { room = r; document.getElementById('display-area').innerText = r + " READY"; }
+    function showPage(id) { document.getElementById(id).style.display = 'block'; }
+    function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display='none'); }
 
-    function copyNum() {
-        let num = document.getElementById('jazzcash-num').innerText;
-        navigator.clipboard.writeText(num);
-        alert("Number Copied: " + num);
-    }
+    function startPlay() {
+        bet = parseFloat(document.getElementById('bet-input').value);
+        if(!room || bet > wallet || bet < 10) { alert("Invalid Bet/Room!"); return; }
+        wallet -= bet; updateUI();
+        isPlaying = true;
+        document.getElementById('btn-play').style.display = "none";
+        document.getElementById('btn-cashout').style.display = "block";
 
-    function submitDeposit() {
-        let amt = document.getElementById('dep-amt').value;
-        let tid = document.getElementById('dep-tid').value;
-
-        if(amt < 100 || tid.length < 8) {
-            alert("Please enter valid Amount (Min 100) and TID!");
-            return;
+        if(room === 'CRASH') {
+            document.getElementById('game-arena').innerHTML = '<div id="plane">✈️</div><div id="m-text" style="font-size:40px">1.00x</div>';
+            mult = 1.0; let crashAt = (Math.random()*4 + 1.1).toFixed(2);
+            timer = setInterval(() => {
+                mult += 0.05; document.getElementById('m-text').innerText = mult.toFixed(2)+"x";
+                document.getElementById('plane').style.left = (mult*12)+"%";
+                if(mult >= crashAt) { clearInterval(timer); document.getElementById('plane').innerText="💥"; endGame("Crashed!"); }
+            }, 150);
         }
-
-        // Professional Notification
-        alert("Request Submitted!\nAmount: PKR " + amt + "\nTID: " + tid + "\nStatus: Processing (10-30 mins)");
-        
-        // As a demo, adding balance immediately (In real, you verify first)
-        wallet += parseFloat(amt);
-        document.getElementById('wallet').innerText = wallet.toFixed(2);
-        hideDeposit();
+        if(room === 'MINES') {
+            let grid = '<div class="mines-grid">';
+            for(let i=0; i<25; i++) grid += `<div class="tile" onclick="openMine(this)">?</div>`;
+            document.getElementById('game-arena').innerHTML = grid + '</div>';
+            mult = 1.0;
+        }
     }
-</script>
 
+    function openMine(el) {
+        if(!isPlaying || el.innerText !== "?") return;
+        if(Math.random() < 0.15) { el.innerHTML="💣"; endGame("BOOM!"); }
+        else { el.innerHTML="🪙"; mult *= 1.15; updateUI(); }
+    }
+
+    function cashOutNow() {
+        if(!isPlaying) return;
+        wallet += (bet * mult);
+        alert("Success! Redeemed PKR " + (bet*mult).toFixed(2));
+        endGame();
+    }
+
+    function endGame(m) {
+        if(m) alert(m);
+        isPlaying = false; clearInterval(timer);
+        document.getElementById('btn-play').style.display = "block";
+        document.getElementById('btn-cashout').style.display = "none";
+        updateUI();
+    }
+
+    function updateUI() { document.getElementById('wallet').innerText = wallet.toFixed(2); }
+</script>
 </body>
 </html>
