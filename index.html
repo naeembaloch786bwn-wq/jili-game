@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>777 ULTRA - NAEEM ENGINE</title>
+    <title>777 ULTRA - NAEEM PRO ENGINE</title>
     <style>
         :root { --gold: #f1c40f; --bg: #0a0a0a; --green: #2ecc71; --red: #e74c3c; --blue: #3498db; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; text-align: center; user-select: none; }
@@ -14,23 +14,26 @@
         .history-bar { width: 92%; overflow-x: auto; white-space: nowrap; background: #111; padding: 8px; margin: 5px auto; border-radius: 5px; border: 1px solid #333; height: 22px; }
         .h-item { display: inline-block; padding: 2px 6px; margin: 0 3px; border-radius: 3px; font-size: 10px; font-weight: bold; background: #333; }
 
-        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; margin-bottom: 200px; }
+        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; margin-bottom: 220px; }
         .nav-btn { background: #1a1a1a; border-bottom: 3px solid var(--gold); padding: 12px 5px; border-radius: 8px; font-size: 11px; font-weight: bold; color: #ccc; cursor: pointer; }
 
         .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; border-top: 2px solid var(--gold); z-index: 1000; }
         .btn-play { background: var(--gold); color: black; width: 90%; font-size: 18px; font-weight: bold; padding: 12px; border: none; border-radius: 5px; cursor: pointer; }
-        .btn-cashout { background: var(--green); color: white; display: none; width: 90%; font-size: 18px; padding: 12px; border: none; border-radius: 5px; cursor: pointer; }
         
+        /* DVT Choice Buttons */
+        .dvt-select { display: none; gap: 10px; margin-bottom: 10px; justify-content: center; }
+        .sel-btn { padding: 10px 20px; border-radius: 5px; border: none; font-weight: bold; color: white; cursor: pointer; }
+
         .action-bar { display: flex; gap: 5px; margin-top: 10px; justify-content: space-around; }
         .act-btn { flex: 1; padding: 8px; border-radius: 5px; border: none; font-weight: bold; font-size: 10px; color: white; cursor: pointer; }
 
-        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b0b0b; z-index: 2000; padding-top: 50px; }
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b0b0b; z-index: 2000; padding-top: 50px; overflow-y: auto; }
         .form-box { background: #1a1a1a; margin: 15px; padding: 20px; border-radius: 10px; border: 1px solid #333; }
-        input, select { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 80%; margin-bottom: 15px; border-radius: 5px; text-align: center; }
+        input, select { background: #000; border: 1px solid var(--gold); color: #fff; padding: 10px; width: 85%; margin-bottom: 15px; border-radius: 5px; text-align: center; }
 
+        .card { width: 55px; height: 80px; background: white; color: black; border-radius: 5px; font-size: 25px; font-weight: bold; display: flex; align-items: center; justify-content: center; visibility: hidden; }
         .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
         .tile { width: 40px; height: 40px; background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center; }
-        .card { width: 50px; height: 75px; background: white; color: black; border-radius: 4px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; visibility: hidden; }
     </style>
 </head>
 <body>
@@ -53,9 +56,13 @@
 </div>
 
 <div class="controls">
-    <input type="number" id="bet-input" value="10" style="width:80%; margin-bottom:10px;">
+    <div id="dvt-choice" class="dvt-select">
+        <button class="sel-btn" style="background:var(--red)" onclick="selectSide('Dragon')">DRAGON</button>
+        <button class="sel-btn" style="background:var(--blue)" onclick="selectSide('Tiger')">TIGER</button>
+    </div>
+    <input type="number" id="bet-input" value="10" style="width:85%; margin-bottom:10px;">
     <button id="btn-play" class="btn-play" onclick="startPlay()">START GAME</button>
-    <button id="btn-cashout" class="btn-cashout" onclick="cashOutNow()">CASH OUT</button>
+    <button id="btn-cashout" style="display:none; background:var(--green); color:white; width:90%; font-size:18px; padding:12px; border:none; border-radius:5px;" onclick="cashOutNow()">CASH OUT</button>
     
     <div class="action-bar">
         <button class="act-btn" style="background:var(--green);" onclick="showPage('dep-page')">DEPOSIT</button>
@@ -68,9 +75,10 @@
 <div id="dep-page" class="page">
     <h2>DEPOSIT</h2>
     <div class="form-box">
-        <p>JazzCash: <b>03289230760</b> (Naeem)</p>
-        <input type="number" id="d-amt" placeholder="Amount">
-        <input type="text" id="d-tid" placeholder="TID">
+        <p>Send JazzCash to: <b>03289230760</b> (Naeem)</p>
+        <input type="number" id="d-num" placeholder="Your Phone Number">
+        <input type="number" id="d-amt" placeholder="Amount Sent">
+        <input type="text" id="d-tid" placeholder="Transaction ID (TID)">
         <button class="btn-play" onclick="processDeposit()">SUBMIT</button>
     </div>
     <button onclick="hidePages()" style="color:white">BACK</button>
@@ -79,9 +87,13 @@
 <div id="wit-page" class="page">
     <h2>WITHDRAW</h2>
     <div class="form-box">
-        <input type="number" id="w-amt" placeholder="Enter Amount">
+        <select id="w-method">
+            <option value="EasyPaisa">EasyPaisa</option>
+            <option value="JazzCash">JazzCash</option>
+        </select>
         <input type="number" id="w-num" placeholder="Account Number">
-        <button class="btn-play" style="background:var(--green); color:white" onclick="processWithdraw()">WITHDRAW NOW</button>
+        <input type="number" id="w-amt" placeholder="Amount">
+        <button class="btn-play" style="background:var(--green); color:white" onclick="processWithdraw()">WITHDRAW</button>
     </div>
     <button onclick="hidePages()" style="color:white">BACK</button>
 </div>
@@ -89,9 +101,8 @@
 <div id="ref-page" class="page">
     <h2>REFER & EARN</h2>
     <div class="form-box">
-        <p style="color:gold">Invite friends & get PKR 220 bonus!</p>
-        <p id="ref-link" style="background:#222; padding:10px; font-size:12px;">naeem777.com/ref=USR551</p>
-        <button class="btn-play" onclick="alert('Link Copied!')">COPY LINK</button>
+        <p>Invite friends for PKR 220 bonus!</p>
+        <button class="btn-play" onclick="alert('Link Copied!')">COPY REF LINK</button>
     </div>
     <button onclick="hidePages()" style="color:white">BACK</button>
 </div>
@@ -105,56 +116,61 @@
 </div>
 
 <script>
-    let wallet = 150.00;
+    let wallet = 150.0;
     let room = "";
     let isPlaying = false;
-    let mult = 1.0;
     let bet = 0;
+    let mult = 1.0;
     let timer;
+    let sideSelected = "";
 
     function updateUI() { document.getElementById('wallet').innerText = wallet.toFixed(2); }
     function showPage(id) { document.getElementById(id).style.display = 'block'; }
     function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display='none'); }
-    function setRoom(r) { room = r; document.getElementById('display-area').innerHTML = `<h2>${r} READY</h2>`; }
+
+    function setRoom(r) { 
+        room = r; 
+        document.getElementById('display-area').innerHTML = `<h2>${r} READY</h2>`;
+        document.getElementById('dvt-choice').style.display = (r === 'DVT') ? 'flex' : 'none';
+    }
+
+    function selectSide(s) { sideSelected = s; alert("You selected: " + s); }
 
     function processDeposit() {
         let a = parseFloat(document.getElementById('d-amt').value);
-        if(a >= 1599) { wallet += 220; alert("Bonus PKR 220 Added!"); }
+        if(a >= 1599) wallet += 220;
         wallet += a; updateUI(); hidePages();
+        alert("Deposit Submitted. Bonus added if applicable.");
     }
 
     function processWithdraw() {
         let a = parseFloat(document.getElementById('w-amt').value);
-        if(a > wallet || a < 100) { alert("Invalid Amount!"); return; }
-        wallet -= a; // FORAN MINUS KARNA
-        updateUI();
-        alert("Withdrawal of PKR " + a + " is processing. Balance Deducted!");
-        hidePages();
+        if(a > wallet || a < 100) { alert("Invalid Balance!"); return; }
+        wallet -= a; updateUI(); hidePages();
+        alert("Withdrawal Successful. Balance Deducted!");
     }
 
     function startPlay() {
         if(!room || isPlaying) return;
+        if(room === 'DVT' && !sideSelected) { alert("Select Dragon or Tiger first!"); return; }
         bet = parseFloat(document.getElementById('bet-input').value);
         if(bet < 10 || bet > wallet) { alert("Insufficient Balance!"); return; }
         
-        wallet -= bet; updateUI(); // REAL-TIME MINUS
+        wallet -= bet; updateUI();
         isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
-        document.getElementById('btn-cashout').style.display = "block";
-
-        if(room === 'CRASH') runCrash();
-        if(room === 'MINES') runMines();
+        
+        if(room === 'CRASH') { document.getElementById('btn-cashout').style.display = "block"; runCrash(); }
+        if(room === 'MINES') { document.getElementById('btn-cashout').style.display = "block"; runMines(); }
         if(room === 'DVT') runDVT();
     }
 
     function runCrash() {
         document.getElementById('game-arena').innerHTML = '<div id="m-val" style="font-size:50px">1.00x</div>';
-        mult = 1.0;
-        let crashAt = (Math.random() * 3 + 1.1).toFixed(2);
+        mult = 1.0; let crashAt = (Math.random()*3 + 1.1).toFixed(2);
         timer = setInterval(() => {
             if(!isPlaying) return;
-            mult += 0.05;
-            document.getElementById('m-val').innerText = mult.toFixed(2)+"x";
+            mult += 0.05; document.getElementById('m-val').innerText = mult.toFixed(2)+"x";
             if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); endGame("CRASHED! 💥"); }
         }, 150);
     }
@@ -168,35 +184,34 @@
 
     function openMine(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.15) { 
-            el.innerHTML="💣"; el.style.background="red";
-            addHist("MINE LOSS", "red"); endGame("BOOM!"); 
-        } else {
-            el.innerHTML="🪙"; el.style.background="green";
-            mult *= 1.15;
-        }
+        if(Math.random() < 0.15) { el.innerHTML="💣"; el.style.background="red"; endGame("BOOM!"); }
+        else { el.innerHTML="🪙"; el.style.background="green"; mult *= 1.15; }
     }
 
     function runDVT() {
-        document.getElementById('btn-cashout').style.display = "none";
         document.getElementById('game-arena').innerHTML = '<div style="display:flex; gap:20px;"><div id="d" class="card">?</div><h2>VS</h2><div id="t" class="card">?</div></div>';
         setTimeout(() => {
-            let win = Math.random() < 0.35;
+            let winSide = Math.random() < 0.5 ? 'Dragon' : 'Tiger';
             let dC = document.getElementById('d'); let tC = document.getElementById('t');
-            dC.innerText = "K"; tC.innerText = win ? "2" : "A";
+            dC.innerText = (winSide === 'Dragon') ? 'K' : 'Q';
+            tC.innerText = (winSide === 'Tiger') ? 'K' : 'Q';
             dC.style.visibility = "visible"; tC.style.visibility = "visible";
-            if(win) { wallet += (bet*1.95); addHist("D-WIN", "red"); updateUI(); alert("Dragon Wins!"); }
-            else { addHist("T-WIN", "blue"); alert("Tiger Wins!"); }
-            endGame();
+            
+            if(sideSelected === winSide) {
+                wallet += (bet * 1.9); updateUI();
+                addHist(winSide[0]+"-WIN", "green"); alert(winSide + " Wins! You Won!");
+            } else {
+                addHist(winSide[0]+"-WIN", "red"); alert(winSide + " Wins! You Lost!");
+            }
+            sideSelected = ""; endGame();
         }, 1500);
     }
 
     function cashOutNow() {
         if(!isPlaying) return;
-        let win = bet * mult;
-        wallet += win; updateUI(); // REAL-TIME WIN UPDATE
+        wallet += (bet * mult); updateUI();
         addHist(mult.toFixed(2)+"x", "green");
-        alert("Success! Won PKR " + win.toFixed(2));
+        alert("Won: PKR " + (bet*mult).toFixed(2));
         endGame();
     }
 
