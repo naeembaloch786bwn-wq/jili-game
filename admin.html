@@ -1,170 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>777 ULTRA - ADMIN PANEL</title>
+    <title>Admin Panel - 3PattiPro</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        body { background: #0a0a0a; color: white; font-family: sans-serif; padding: 20px; }
-        h1 { color: #f1c40f; text-align: center; border-bottom: 2px solid #f1c40f; padding-bottom: 10px; }
-        .section { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
-        h2 { color: #58a6ff; font-size: 18px; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
-        th { background: #111; color: #f1c40f; }
-        .btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-approve { background: #27ae60; color: white; }
-        .btn-reject { background: #c0392b; color: white; margin-left: 5px; }
-        .btn-edit { background: #f39c12; color: black; }
-        input { background: #000; border: 1px solid #444; color: white; padding: 5px; width: 60px; border-radius: 3px; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 10px; direction: rtl; }
+        .container { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #fff; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 14px; }
+        th { background-color: #007bff; color: white; }
+        .btn-approve { background: #28a745; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .btn-reject { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <h1>777 ULTRA ADMIN</h1>
+<div class="container">
+    <h2>Naye Khiladi (New Players)</h2>
+    <table id="playersTable">
+        <thead>
+            <tr>
+                <th>Naam</th>
+                <th>Email/Phone</th>
+                <th>Balance</th>
+                <th>Join Date</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-    <div class="section">
-        <h2>📥 Pending Deposits</h2>
-        <table id="deposit-table">
-            <thead>
-                <tr>
-                    <th>Phone</th>
-                    <th>Amount</th>
-                    <th>TID</th>
-                    <th>Method</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="dep-list"></tbody>
-        </table>
-    </div>
+    <h2>Deposit Requests</h2>
+    <table id="depositTable">
+        <thead>
+            <tr>
+                <th>Player ID</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-    <div class="section">
-        <h2>📤 Pending Withdrawals</h2>
-        <table id="withdraw-table">
-            <thead>
-                <tr>
-                    <th>Phone</th>
-                    <th>Amount</th>
-                    <th>Target No</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="wit-list"></tbody>
-        </table>
-    </div>
+    <h2>Withdrawal Requests</h2>
+    <table id="withdrawalTable">
+        <thead>
+            <tr>
+                <th>Player ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
-    <div class="section">
-        <h2>👥 All Players</h2>
-        <table id="users-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Balance</th>
-                    <th>Edit Bal</th>
-                </tr>
-            </thead>
-            <tbody id="user-list"></tbody>
-        </table>
-    </div>
+<script>
+    // Aapke Firebase ki configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTNneivrTLe-s-e0lKW1fUixVSjDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.appspot.com",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e63e41fc2e337"
+    };
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
-            authDomain: "pattipro-c1ffe.firebaseapp.com",
-            databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
-            projectId: "pattipro-c1ffe",
-            storageBucket: "pattipro-c1ffe.appspot.com",
-            messagingSenderId: "766843054614",
-            appId: "1:766843054614:web:781658832e63e41fc2e337"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // --- FETCH DEPOSITS ---
-        db.ref('requests/deposits').on('value', (snap) => {
-            let html = "";
-            snap.forEach((child) => {
-                let req = child.val();
-                html += `<tr>
-                    <td>${req.phone}</td>
-                    <td>${req.amount}</td>
-                    <td>${req.tid}</td>
-                    <td>${req.method}</td>
-                    <td>
-                        <button class="btn btn-approve" onclick="approveDeposit('${child.key}', '${req.phone}', ${req.amount})">Approve</button>
-                        <button class="btn btn-reject" onclick="deleteRequest('deposits', '${child.key}')">X</button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('dep-list').innerHTML = html;
+    // 1. Players Data Load Karein
+    db.ref('users').on('value', (snapshot) => {
+        const tbody = document.querySelector('#playersTable tbody');
+        tbody.innerHTML = '';
+        snapshot.forEach((child) => {
+            const user = child.val();
+            tbody.innerHTML += `<tr>
+                <td>${user.name || 'N/A'}</td>
+                <td>${user.email || user.phone}</td>
+                <td>Rs. ${user.balance || 0}</td>
+                <td>${user.joinDate || '-'}</td>
+            </tr>`;
         });
+    });
 
-        // --- FETCH WITHDRAWALS ---
-        db.ref('requests/withdrawals').on('value', (snap) => {
-            let html = "";
-            snap.forEach((child) => {
-                let req = child.val();
-                html += `<tr>
-                    <td>${req.phone}</td>
-                    <td>${req.amount}</td>
-                    <td>${req.target}</td>
-                    <td>
-                        <button class="btn btn-approve" onclick="deleteRequest('withdrawals', '${child.key}')">Done</button>
-                        <button class="btn btn-reject" onclick="rejectWithdraw('${child.key}', '${req.phone}', ${req.amount})">Reject</button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('wit-list').innerHTML = html;
+    // 2. Deposit Requests Load Karein
+    db.ref('deposits').on('value', (snapshot) => {
+        const tbody = document.querySelector('#depositTable tbody');
+        tbody.innerHTML = '';
+        snapshot.forEach((child) => {
+            const data = child.val();
+            tbody.innerHTML += `<tr>
+                <td>${data.userId}</td>
+                <td>${data.amount}</td>
+                <td>${data.method}</td>
+                <td>
+                    <button class="btn-approve" onclick="updateStatus('deposits', '${child.key}', 'Approved')">OK</button>
+                </td>
+            </tr>`;
         });
+    });
 
-        // --- FETCH ALL USERS ---
-        db.ref('users').on('value', (snap) => {
-            let html = "";
-            snap.forEach((child) => {
-                let u = child.val();
-                html += `<tr>
-                    <td>${u.username}</td>
-                    <td>${u.phone}</td>
-                    <td>Rs. ${u.balance}</td>
-                    <td>
-                        <input type="number" id="newbal-${u.phone}" placeholder="Amt">
-                        <button class="btn btn-edit" onclick="updateBal('${u.phone}')">Set</button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('user-list').innerHTML = html;
+    // 3. Withdrawal Requests Load Karein
+    db.ref('withdrawals').on('value', (snapshot) => {
+        const tbody = document.querySelector('#withdrawalTable tbody');
+        tbody.innerHTML = '';
+        snapshot.forEach((child) => {
+            const data = child.val();
+            tbody.innerHTML += `<tr>
+                <td>${data.userId}</td>
+                <td>${data.amount}</td>
+                <td>${data.status}</td>
+                <td>
+                    <button class="btn-approve" onclick="updateStatus('withdrawals', '${child.key}', 'Paid')">Paid</button>
+                    <button class="btn-reject" onclick="updateStatus('withdrawals', '${child.key}', 'Rejected')">X</button>
+                </td>
+            </tr>`;
         });
+    });
 
-        // --- ACTIONS ---
-        function approveDeposit(key, phone, amt) {
-            db.ref('users/' + phone + '/balance').transaction((current) => (current || 0) + amt);
-            db.ref('requests/deposits/' + key).remove();
-            alert("Deposit Approved!");
-        }
+    function updateStatus(path, id, status) {
+        db.ref(path + '/' + id).update({ status: status })
+        .then(() => alert("Status Updated!"));
+    }
+</script>
 
-        function rejectWithdraw(key, phone, amt) {
-            db.ref('users/' + phone + '/balance').transaction((current) => (current || 0) + amt);
-            db.ref('requests/withdrawals/' + key).remove();
-            alert("Withdraw Rejected & Money Returned!");
-        }
-
-        function deleteRequest(type, key) {
-            db.ref('requests/' + type + '/' + key).remove();
-        }
-
-        function updateBal(phone) {
-            let val = parseFloat(document.getElementById('newbal-' + phone).value);
-            if(!isNaN(val)) {
-                db.ref('users/' + phone).update({ balance: val });
-                alert("Balance Updated!");
-            }
-        }
-    </script>
 </body>
 </html>
