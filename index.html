@@ -6,58 +6,73 @@
     <title>777 ULTRA - NAEEM PRO ENGINE</title>
     <style>
         :root { --gold: #f1c40f; --bg: #0a0a0a; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; }
-        header { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .bal-box { border: 1.5px solid var(--gold); padding: 5px 10px; border-radius: 5px; }
-
-        /* Auth Screen Styling */
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        
+        /* Auth Screen (Login/Register) */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .auth-box { background: #1a1a1a; padding: 25px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); text-align: center; }
+        .auth-box { background: #1a1a1a; padding: 25px; border-radius: 10px; width: 80%; border: 1px solid var(--gold); text-align: center; }
         
-        /* Game Arena & UI */
-        #game-content { display: none; } /* Chupaya hua hai jab tak login na ho */
-        #game-arena { width: 92%; height: 240px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .history-bar { width: 92%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 40px; }
-        .h-item { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 3px; font-weight: bold; }
+        /* Header & Balance */
+        header { background: #111; padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
+        .bal-box { border: 1.5px solid var(--gold); padding: 5px 12px; border-radius: 6px; background: #000; font-weight: bold; }
 
-        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 92%; margin: 10px auto; }
-        .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 12px; text-align: center; cursor: pointer; font-size: 14px; }
+        /* Game Arena */
+        #game-arena { width: 94%; height: 260px; margin: 12px auto; background: #151515; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 1px solid #222; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        #display-area h1 { font-size: 50px; margin: 0; color: var(--gold); text-shadow: 0 0 10px rgba(241,196,15,0.5); }
+        
+        /* History Bar */
+        .history-bar { width: 94%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 45px; background: #111; border-radius: 5px; padding: 5px; box-sizing: border-box; }
+        .h-item { display: inline-block; padding: 6px 12px; margin-right: 6px; border-radius: 4px; font-size: 13px; font-weight: bold; color: #000; }
 
-        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        /* Navigation */
+        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 94%; margin: 15px auto; }
+        .nav-btn { background: #1a1a1a; border-bottom: 3px solid var(--gold); padding: 14px; text-align: center; cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .nav-btn:active { transform: scale(0.95); background: #222; }
+
+        /* Controls */
+        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 18px; box-sizing: border-box; border-top: 2px solid #222; }
+        input[type="number"] { background: #000; border: 1.5px solid #333; color: var(--gold); padding: 12px; width: 100%; margin-bottom: 12px; box-sizing: border-box; border-radius: 8px; font-size: 16px; text-align: center; }
+        .btn-play { background: var(--gold); color: black; border: none; padding: 14px; width: 100%; font-weight: 900; border-radius: 8px; font-size: 16px; cursor: pointer; text-transform: uppercase; }
         
-        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-        .form-box { background: #1a1a1a; margin: 15px; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
-        
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 40px; height: 40px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        /* Mines Grid */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 10px; }
+        .tile { width: 42px; height: 42px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; cursor: pointer; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+
+        /* DVT Side Selection */
+        .dvt-select { display: none; gap: 12px; margin-bottom: 12px; width: 100%; }
+        .sel-btn { flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; }
+
+        /* Overlay Pages */
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 500; flex-direction: column; align-items: center; justify-content: center; }
+        .form-box { background: #1a1a1a; padding: 25px; border-radius: 12px; width: 85%; border: 1px solid var(--gold); }
+        .action-bar { display: flex; gap: 8px; margin-top: 12px; }
+        .act-btn { flex: 1; padding: 10px; border-radius: 6px; border: none; background: #252525; color: white; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="auth-screen">
-    <h1 style="color: var(--gold); margin-bottom: 20px;">NAEEM PRO ENGINE</h1>
+    <h1 style="color: var(--gold); letter-spacing: 2px;">777 ULTRA</h1>
     <div class="auth-box">
-        <h2 id="auth-title">LOGIN</h2>
-        <input type="email" id="auth-email" placeholder="Email Address">
-        <input type="password" id="auth-pass" placeholder="Password">
+        <h2 id="auth-title" style="margin-top:0;">LOGIN</h2>
+        <input type="email" id="auth-email" placeholder="Email Address" style="background:#000; border:1px solid #333; color:white; padding:12px; width:100%; margin-bottom:10px; border-radius:5px; box-sizing:border-box;">
+        <input type="password" id="auth-pass" placeholder="Password" style="background:#000; border:1px solid #333; color:white; padding:12px; width:100%; margin-bottom:15px; border-radius:5px; box-sizing:border-box;">
         <button id="auth-btn" class="btn-play">LOGIN NOW</button>
-        <p style="font-size: 12px; margin-top: 15px;" id="auth-toggle">Don't have an account? <span style="color: var(--gold); cursor: pointer;">Register</span></p>
+        <p id="auth-toggle" style="font-size: 13px; margin-top: 15px; cursor: pointer;">New user? <span style="color:var(--gold)">Register Here</span></p>
     </div>
 </div>
 
-<div id="game-content">
+<div id="main-content" style="display:none;">
     <header>
-        <div style="font-weight: 900; color: var(--gold);">NAEEM PRO</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <div class="bal-box">PKR <span id="wallet">150</span></div>
-            <button onclick="logout()" style="background: red; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 10px;">LOGOUT</button>
+        <div style="font-weight: 900; font-size: 18px; color: var(--gold);">NAEEM PRO</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <div class="bal-box">PKR <span id="wallet">0.00</span></div>
+            <button onclick="logout()" style="background:#e74c3c; color:white; border:none; padding:5px 8px; border-radius:4px; font-size:10px; font-weight:bold;">EXIT</button>
         </div>
     </header>
 
     <div id="game-arena">
-        <div id="display-area"><h2>CHOOSE GAME</h2></div>
+        <div id="display-area" style="text-align:center;"><h2>SELECT A GAME</h2></div>
     </div>
 
     <div class="history-bar" id="hist-row"></div>
@@ -69,175 +84,202 @@
     </div>
 
     <div class="controls">
-        <div id="dvt-choice" style="display:none; gap: 10px; margin-bottom: 10px; justify-content: center;">
-            <button class="btn-play" style="background: #e74c3c; width: 45%; color: white;" onclick="selectSide('Dragon')">Dragon</button>
-            <button class="btn-play" style="background: #3498db; width: 45%; color: white;" onclick="selectSide('Tiger')">Tiger</button>
+        <div id="dvt-choice" class="dvt-select">
+            <button class="sel-btn" style="background: #e74c3c;" onclick="selectSide('Dragon')">DRAGON</button>
+            <button class="sel-btn" style="background: #3498db;" onclick="selectSide('Tiger')">TIGER</button>
         </div>
-        <input type="number" id="bet-input" value="10">
-        <button id="btn-play" class="btn-play" onclick="startPlay()">START PLAY</button>
+        <input type="number" id="bet-input" value="10" placeholder="Enter Bet Amount">
+        <button id="btn-play" class="btn-play" onclick="startPlay()">START GAME</button>
         <button id="btn-cashout" class="btn-play" style="display:none; background: #2ecc71;" onclick="cashOutNow()">CASH OUT</button>
-
-        <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <button class="btn-play" style="font-size: 10px; padding: 8px;" onclick="showPage('dep-page')">DEPOSIT</button>
-            <button class="btn-play" style="font-size: 10px; padding: 8px;" onclick="showPage('wit-page')">WITHDRAW</button>
+        
+        <div class="action-bar">
+            <button class="act-btn" onclick="showPage('dep-page')">DEPOSIT</button>
+            <button class="act-btn" onclick="showPage('wit-page')">WITHDRAW</button>
+            <button class="act-btn" onclick="showPage('ref-page')">REFER</button>
+            <button class="act-btn" onclick="showPage('sup-page')">SUPPORT</button>
         </div>
     </div>
 </div>
 
 <div id="dep-page" class="page">
     <div class="form-box">
-        <h2>DEPOSIT</h2>
-        <p>JazzCash: <b>03289230760</b></p>
-        <input type="number" id="d-amt" placeholder="Amount">
-        <button class="btn-play" onclick="alert('Submitted!'); hidePages();">SUBMIT</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:white; margin-top:10px; width:100%;">BACK</button>
+        <h2 style="color:var(--gold); margin-top:0;">DEPOSIT</h2>
+        <p style="font-size:14px;">Transfer to JazzCash/EasyPaisa:<br><b style="font-size:18px;">03289230760</b></p>
+        <input type="number" id="d-amt" placeholder="Amount (Min 100)">
+        <input type="text" id="d-tid" placeholder="Transaction ID (TID)">
+        <button class="btn-play" onclick="alert('Verification in progress...'); hidePages();">SUBMIT REQUEST</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; width:100%; margin-top:10px;">BACK</button>
     </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
     authDomain: "pattipro-c1ffe.firebaseapp.com",
+    databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
     projectId: "pattipro-c1ffe",
+    storageBucket: "pattipro-c1ffe.appspot.com",
+    messagingSenderId: "766843054614",
     appId: "1:766843054614:web:781658832e63e41fc2e337"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getDatabase(app);
 
-  const authBtn = document.getElementById('auth-btn');
-  const toggleBtn = document.getElementById('auth-toggle');
   let isLoginMode = true;
+  const authBtn = document.getElementById('auth-btn');
+  const authToggle = document.getElementById('auth-toggle');
 
-  // Toggle Login/Register
-  toggleBtn.onclick = () => {
+  authToggle.onclick = () => {
     isLoginMode = !isLoginMode;
     document.getElementById('auth-title').innerText = isLoginMode ? "LOGIN" : "REGISTER";
     authBtn.innerText = isLoginMode ? "LOGIN NOW" : "REGISTER NOW";
-    toggleBtn.innerHTML = isLoginMode ? "Don't have an account? <span style='color:var(--gold)'>Register</span>" : "Already have an account? <span style='color:var(--gold)'>Login</span>";
+    authToggle.innerHTML = isLoginMode ? "New user? <span style='color:var(--gold)'>Register Here</span>" : "Already have account? <span style='color:var(--gold)'>Login Here</span>";
   };
 
-  // Auth Action
   authBtn.onclick = async () => {
     const email = document.getElementById('auth-email').value;
     const pass = document.getElementById('auth-pass').value;
+    if(!email || !pass) return alert("Fill all fields");
     try {
-        if (isLoginMode) {
-            await signInWithEmailAndPassword(auth, email, pass);
-        } else {
-            await createUserWithEmailAndPassword(auth, email, pass);
-            alert("Account Created!");
-        }
-    } catch (e) { alert(e.message); }
+      if(isLoginMode) await signInWithEmailAndPassword(auth, email, pass);
+      else {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await set(ref(db, 'users/' + res.user.uid), { balance: 150.0 });
+      }
+    } catch(e) { alert(e.message); }
   };
 
-  // Check User Session
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById('auth-screen').style.display = "none";
-        document.getElementById('game-content').style.display = "block";
+    if(user) {
+      document.getElementById('auth-screen').style.display = "none";
+      document.getElementById('main-content').style.display = "block";
+      onValue(ref(db, 'users/' + user.uid), (snap) => {
+        if(snap.exists()) {
+            window.userBalance = snap.val().balance;
+            document.getElementById('wallet').innerText = window.userBalance.toFixed(2);
+        }
+      });
     } else {
-        document.getElementById('auth-screen').style.display = "flex";
-        document.getElementById('game-content').style.display = "none";
+      document.getElementById('auth-screen').style.display = "flex";
+      document.getElementById('main-content').style.display = "none";
     }
   });
+
+  window.updateBalance = (newBal) => {
+    const user = auth.currentUser;
+    if(user) update(ref(db, 'users/' + user.uid), { balance: newBal });
+  };
 
   window.logout = () => signOut(auth);
 </script>
 
 <script>
-    // Game Logic (Same as your previous screenshots)
-    let wallet = 150.0;
     let room = "";
     let isPlaying = false;
-    let bet = 0;
-    let mult = 1.0;
-    let timer;
-    let sideSelected = "";
+    let betAmt = 0;
+    let multiplier = 1.0;
+    let gameInterval;
+    let selectedSide = "";
 
-    function updateUI() { document.getElementById('wallet').innerText = wallet.toFixed(2); }
     function showPage(id) { document.getElementById(id).style.display = "flex"; }
     function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display = "none"); }
 
     function setRoom(r) {
         room = r;
-        document.getElementById('display-area').innerHTML = `<h2>${r} MODE</h2>`;
+        document.getElementById('display-area').innerHTML = `<h2>${r} READY</h2>`;
         document.getElementById('dvt-choice').style.display = (r === 'DVT') ? 'flex' : 'none';
+        document.getElementById('btn-play').style.display = "block";
+        document.getElementById('btn-cashout').style.display = "none";
     }
 
-    function selectSide(s) { sideSelected = s; alert("Selected: " + s); }
+    function selectSide(s) { selectedSide = s; alert("Side Selected: " + s); }
 
     function startPlay() {
         if(!room || isPlaying) return;
-        bet = parseFloat(document.getElementById('bet-input').value);
-        if(bet < 10 || bet > wallet) { alert("Insufficient Balance!"); return; }
+        betAmt = parseFloat(document.getElementById('bet-input').value);
+        if(betAmt < 10 || betAmt > window.userBalance) return alert("Invalid Balance");
 
-        wallet -= bet; updateUI(); isPlaying = true;
+        if(room === 'DVT' && !selectedSide) return alert("Choose Side First");
+
+        isPlaying = true;
+        window.updateBalance(window.userBalance - betAmt);
         document.getElementById('btn-play').style.display = "none";
 
-        if(room === 'CRASH') runCrash();
-        if(room === 'MINES') runMines();
-        if(room === 'DVT') runDVT();
+        if(room === 'CRASH') {
+            document.getElementById('btn-cashout').style.display = "block";
+            multiplier = 1.0;
+            let crashPoint = (Math.random() * 4) + 1.1;
+            gameInterval = setInterval(() => {
+                multiplier += 0.04;
+                document.getElementById('display-area').innerHTML = `<h1>${multiplier.toFixed(2)}x</h1>`;
+                if(multiplier >= crashPoint) {
+                    addHistory(multiplier.toFixed(2) + "x", "#e74c3c");
+                    finishGame("CRASHED!");
+                }
+            }, 100);
+        } 
+        else if(room === 'MINES') {
+            document.getElementById('btn-cashout').style.display = "block";
+            multiplier = 1.0;
+            let gridHtml = '<div class="mines-grid">';
+            for(let i=0; i<25; i++) gridHtml += `<div class="tile" onclick="tapMine(this)">?</div>`;
+            document.getElementById('display-area').innerHTML = gridHtml + '</div>';
+        }
+        else if(room === 'DVT') {
+            document.getElementById('display-area').innerHTML = "<h1>...</h1>";
+            setTimeout(() => {
+                let win = Math.random() < 0.5 ? 'Dragon' : 'Tiger';
+                document.getElementById('display-area').innerHTML = `<h1>${win.toUpperCase()}</h1>`;
+                if(selectedSide === win) {
+                    window.updateBalance(window.userBalance + (betAmt * 1.9));
+                    addHistory(win[0], "#2ecc71");
+                } else {
+                    addHistory(win[0], "#e74c3c");
+                }
+                finishGame();
+            }, 2000);
+        }
     }
 
-    function runCrash() {
-        document.getElementById('btn-cashout').style.display = "block";
-        let d = document.getElementById('display-area');
-        mult = 1.0; let crashAt = (Math.random() * 3) + 1;
-        timer = setInterval(() => {
-            mult += 0.05;
-            d.innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
-            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); endGame("Crashed!"); }
-        }, 150);
-    }
-
-    function runMines() {
-        let arena = document.getElementById('game-arena');
-        let grid = '<div class="mines-grid">';
-        for(let i=0; i<25; i++) grid += `<div class="tile" onclick="openMine(this)">?</div>`;
-        grid += '</div>';
-        arena.innerHTML = grid;
-        document.getElementById('btn-cashout').style.display = "block";
-        mult = 1.0;
-    }
-
-    function openMine(el) {
+    function tapMine(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.15) { el.innerHTML="💣"; endGame("BOOM!"); }
-        else { el.innerHTML="💎"; mult += 0.2; }
-    }
-
-    function runDVT() {
-        setTimeout(() => {
-            let win = Math.random() < 0.5 ? 'Dragon' : 'Tiger';
-            document.getElementById('display-area').innerHTML = `<h2>Winner: ${win}</h2>`;
-            if(sideSelected === win) { wallet += (bet * 1.9); addHist(win[0]+"-WIN", "green"); }
-            else { addHist(win[0]+"-WIN", "red"); }
-            updateUI(); endGame();
-        }, 1500);
+        if(Math.random() < 0.18) {
+            el.innerHTML = "💣"; el.style.background = "red";
+            finishGame("BOOM!");
+        } else {
+            el.innerHTML = "💎"; el.style.background = "#2ecc71";
+            multiplier += 0.25;
+            document.getElementById('btn-cashout').innerText = `CASH OUT (${multiplier.toFixed(2)}x)`;
+        }
     }
 
     function cashOutNow() {
         if(!isPlaying) return;
-        wallet += (bet * mult);
-        addHist(mult.toFixed(2)+"x", "green");
-        endGame();
+        window.updateBalance(window.userBalance + (betAmt * multiplier));
+        addHistory(multiplier.toFixed(2) + "x", "#2ecc71");
+        finishGame("WON!");
     }
 
-    function endGame(m) {
-        if(m) alert(m);
-        isPlaying = false; clearInterval(timer);
+    function finishGame(msg) {
+        if(msg) alert(msg);
+        isPlaying = false;
+        clearInterval(gameInterval);
         document.getElementById('btn-play').style.display = "block";
         document.getElementById('btn-cashout').style.display = "none";
-        updateUI();
+        document.getElementById('btn-cashout').innerText = "CASH OUT";
+        selectedSide = "";
     }
 
-    function addHist(v, c) {
-        let row = document.getElementById('hist-row');
-        row.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + row.innerHTML;
+    function addHistory(val, col) {
+        const row = document.getElementById('hist-row');
+        const item = `<span class="h-item" style="background:${col}">${val}</span>`;
+        row.innerHTML = item + row.innerHTML;
     }
 </script>
 
