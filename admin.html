@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>777 ULTRA - ADMIN PANEL</title>
     <style>
-        body { background: #0a0a0a; color: #f1c40f; font-family: sans-serif; padding: 10px; }
-        h1 { text-align: center; border-bottom: 2px solid #f1c40f; padding-bottom: 10px; font-size: 18px; }
-        .section { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
-        .section-title { font-weight: bold; margin-bottom: 10px; display: block; color: #fff; border-left: 4px solid #f1c40f; padding-left: 10px; }
+        body { background: #0a0a0a; color: #f1c40f; font-family: sans-serif; padding: 10px; margin:0; }
+        h1 { text-align: center; border-bottom: 2px solid #f1c40f; padding: 15px; font-size: 18px; margin:0; background:#111; }
+        .section { background: #111; padding: 10px; border-radius: 8px; margin: 15px 5px; border: 1px solid #333; }
+        .section-title { font-weight: bold; margin-bottom: 10px; display: block; color: #fff; border-left: 4px solid #f1c40f; padding-left: 10px; font-size: 14px; }
         table { width: 100%; border-collapse: collapse; font-size: 10px; color: #ccc; }
-        th, td { border: 1px solid #222; padding: 8px; text-align: left; }
+        th, td { border: 1px solid #222; padding: 10px 5px; text-align: left; word-break: break-all; }
         th { background: #1a1a1a; color: #f1c40f; }
-        .btn-app { background: #27ae60; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 9px; }
-        .btn-rej { background: #e74c3c; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; font-size: 9px; margin-left: 2px; }
-        input[type="number"] { background: #000; border: 1px solid #444; color: #fff; width: 60px; padding: 3px; border-radius: 3px; }
+        .btn-app { background: #27ae60; color: white; border: none; padding: 6px; border-radius: 3px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .btn-rej { background: #e74c3c; color: white; border: none; padding: 6px; border-radius: 3px; cursor: pointer; font-size: 9px; font-weight: bold; margin-top: 2px; }
+        input[type="number"] { background: #000; border: 1px solid #444; color: #fff; width: 50px; padding: 5px; border-radius: 3px; font-size: 10px; }
+        .add-btn { background: #f1c40f; color: #000; border: none; padding: 5px 8px; border-radius: 3px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -24,15 +25,7 @@
 <div class="section">
     <span class="section-title">🎂 Pending Deposits</span>
     <table>
-        <thead>
-            <tr>
-                <th>USER PHONE</th>
-                <th>AMOUNT</th>
-                <th>METHOD</th>
-                <th>TID</th>
-                <th>ACTION</th>
-            </tr>
-        </thead>
+        <thead><tr><th>PHONE</th><th>AMT</th><th>METHOD</th><th>TID</th><th>ACTION</th></tr></thead>
         <tbody id="dep-list"></tbody>
     </table>
 </div>
@@ -40,30 +33,15 @@
 <div class="section">
     <span class="section-title">🎂 Pending Withdrawals</span>
     <table>
-        <thead>
-            <tr>
-                <th>USER PHONE</th>
-                <th>AMOUNT</th>
-                <th>METHOD</th>
-                <th>TARGET</th>
-                <th>ACTION</th>
-            </tr>
-        </thead>
+        <thead><tr><th>PHONE</th><th>AMT</th><th>METHOD</th><th>TARGET</th><th>ACTION</th></tr></thead>
         <tbody id="wit-list"></tbody>
     </table>
 </div>
 
 <div class="section">
-    <span class="section-title">👥 All Players & Balance Management</span>
+    <span class="section-title">👥 All Players & Balance</span>
     <table>
-        <thead>
-            <tr>
-                <th>USERNAME</th>
-                <th>PHONE</th>
-                <th>BALANCE</th>
-                <th>UPDATE</th>
-            </tr>
-        </thead>
+        <thead><tr><th>NAME</th><th>PHONE</th><th>BALANCE</th><th>UPDATE</th></tr></thead>
         <tbody id="user-list"></tbody>
     </table>
 </div>
@@ -73,7 +51,7 @@
 
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
+        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu23777", // Aapka key wahi purana lagega
         authDomain: "pattipro-c1ffe.firebaseapp.com",
         databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
         projectId: "pattipro-c1ffe",
@@ -84,60 +62,48 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Load Deposits
+    // 1. Load Deposits
     db.ref('requests/deposits').on('value', s => {
         let h = "";
         s.forEach(child => {
             let d = child.val();
             if(d.status === "pending") {
-                h += `<tr>
-                    <td>${d.phone}</td>
-                    <td>PKR ${d.amount}</td>
-                    <td>${d.method || 'N/A'}</td>
-                    <td style="color:#f1c40f">${d.tid}</td>
-                    <td>
-                        <button class="btn-app" onclick="approveDep('${child.key}', '${d.phone}', ${d.amount})">APPROVE</button>
-                        <button class="btn-rej" onclick="rejectReq('deposits', '${child.key}')">REJECT</button>
-                    </td>
-                </tr>`;
+                h += `<tr><td>${d.phone}</td><td>${d.amount}</td><td>${d.method||'EP'}</td><td>${d.tid}</td>
+                <td><button class="btn-app" onclick="approveDep('${child.key}','${d.phone}',${d.amount})">✅</button>
+                <button class="btn-rej" onclick="db.ref('requests/deposits/${child.key}').update({status:'rejected'})">❌</button></td></tr>`;
             }
         });
         document.getElementById('dep-list').innerHTML = h;
     });
 
-    // Load Withdrawals
+    // 2. Load Withdrawals
     db.ref('requests/withdrawals').on('value', s => {
         let h = "";
         s.forEach(child => {
             let d = child.val();
             if(d.status === "pending") {
-                h += `<tr>
-                    <td>${d.phone}</td>
-                    <td>PKR ${d.amount}</td>
-                    <td>${d.method || 'N/A'}</td>
-                    <td>${d.target || d.targetNumber}</td>
-                    <td>
-                        <button class="btn-app" onclick="approveWit('${child.key}')">DONE</button>
-                        <button class="btn-rej" onclick="rejectReq('withdrawals', '${child.key}')">CANCEL</button>
-                    </td>
-                </tr>`;
+                h += `<tr><td>${d.phone}</td><td>${d.amount}</td><td>${d.method||'EP'}</td><td>${d.target||d.targetNumber}</td>
+                <td><button class="btn-app" onclick="db.ref('requests/withdrawals/${child.key}').update({status:'approved'})">✅</button>
+                <button class="btn-rej" onclick="db.ref('requests/withdrawals/${child.key}').update({status:'rejected'})">❌</button></td></tr>`;
             }
         });
         document.getElementById('wit-list').innerHTML = h;
     });
 
-    // Load All Users
+    // 3. Load ALL Users (FIXED)
     db.ref('users').on('value', s => {
         let h = "";
+        if (!s.exists()) { h = "<tr><td colspan='4'>No Users Found</td></tr>"; }
         s.forEach(child => {
             let u = child.val();
+            let phone = child.key; // Phone number as key
             h += `<tr>
-                <td>${u.username}</td>
-                <td>${u.phone}</td>
-                <td id="bal-${u.phone}">${u.balance.toFixed(2)}</td>
+                <td>${u.username || 'No Name'}</td>
+                <td>${phone}</td>
+                <td style="color:#27ae60; font-weight:bold;">${u.balance ? u.balance.toFixed(2) : '0.00'}</td>
                 <td>
-                    <input type="number" id="inp-${u.phone}" placeholder="Amt">
-                    <button class="btn-app" onclick="addBal('${u.phone}')">+</button>
+                    <input type="number" id="inp-${phone}" placeholder="+/-">
+                    <button class="add-btn" onclick="updateUserBal('${phone}')">GO</button>
                 </td>
             </tr>`;
         });
@@ -145,29 +111,17 @@
     });
 
     function approveDep(key, phone, amt) {
-        db.ref('users/' + phone).once('value', s => {
-            let newBal = s.val().balance + parseFloat(amt);
-            db.ref('users/' + phone).update({ balance: newBal });
-            db.ref('requests/deposits/' + key).update({ status: "approved" });
-        });
+        db.ref('users/' + phone + '/balance').transaction(current => (current || 0) + parseFloat(amt));
+        db.ref('requests/deposits/' + key).update({ status: "approved" });
+        alert("Deposit Approved!");
     }
 
-    function approveWit(key) {
-        db.ref('requests/withdrawals/' + key).update({ status: "approved" });
-    }
-
-    function rejectReq(path, key) {
-        db.ref(`requests/${path}/${key}`).update({ status: "rejected" });
-    }
-
-    function addBal(phone) {
-        let amt = document.getElementById('inp-' + phone).value;
-        if(!amt) return;
-        db.ref('users/' + phone).once('value', s => {
-            let newBal = s.val().balance + parseFloat(amt);
-            db.ref('users/' + phone).update({ balance: newBal });
-            alert("Balance Updated!");
-        });
+    function updateUserBal(phone) {
+        let val = document.getElementById('inp-' + phone).value;
+        if(!val) return;
+        db.ref('users/' + phone + '/balance').transaction(current => (current || 0) + parseFloat(val));
+        document.getElementById('inp-' + phone).value = "";
+        alert("Balance Updated!");
     }
 </script>
 </body>
