@@ -5,57 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>777 ULTRA - NAEEM PRO ENGINE</title>
     <style>
-        :root { --gold: #f1c40f; --bg: #0a0a0a; --red: #e74c3c; --blue: #3498db; }
-        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; overflow-x: hidden; }
-        
-        /* Header & Balance */
-        header { background: #111; padding: 12px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .bal-box { border: 2px solid var(--gold); padding: 6px 15px; border-radius: 8px; font-weight: 900; background: rgba(241, 196, 15, 0.1); color: var(--gold); }
-
-        /* Game Arena */
-        #game-arena { width: 94%; height: 280px; margin: 15px auto; background: radial-gradient(circle, #222, #000); border-radius: 15px; display: flex; align-items: center; justify-content: center; position: relative; border: 2px solid #333; overflow: hidden; perspective: 1000px; }
-        
-        /* DVT Card Flip CSS */
+        :root { --gold: #f1c40f; --bg: #0a0a0a; --card-w: 75px; --card-h: 110px; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; user-select: none; }
+        header { background: #111; padding: 12px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 900; color: var(--gold); font-size: 20px; }
+        .bal-box { border: 1.5px solid var(--gold); padding: 6px 12px; border-radius: 8px; font-weight: bold; background: rgba(241, 196, 15, 0.1); }
+        #game-arena { width: 92%; height: 280px; margin: 15px auto; background: radial-gradient(circle, #222 0%, #111 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #333; perspective: 1000px; }
         .card-container { display: flex; gap: 20px; }
-        .card { width: 80px; height: 110px; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card { width: var(--card-w); height: var(--card-h); position: relative; transform-style: preserve-3d; transition: transform 0.8s; }
         .card.flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 35px; font-weight: bold; border: 3px solid #444; }
-        .card-front { background: linear-gradient(45deg, #111, #333); color: var(--gold); border-color: var(--gold); }
-        .card-back { background: white; color: black; transform: rotateY(180deg); border-color: #ddd; }
-
-        /* History Bar */
-        .history-bar { width: 94%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 50px; background: #111; border-radius: 8px; border: 1px solid #222; display: flex; align-items: center; padding: 0 10px; }
-        .h-item { display: inline-block; padding: 6px 12px; margin-right: 8px; border-radius: 5px; font-weight: bold; color: #000; font-size: 13px; text-transform: uppercase; }
-
-        /* Navigation */
-        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 94%; margin: 15px auto; }
-        .nav-btn { background: #1a1a1a; border-bottom: 3px solid var(--gold); padding: 18px 0; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 8px; transition: 0.2s; }
-        .nav-btn:active { transform: scale(0.95); background: #222; }
-
-        /* Controls */
-        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 2px solid #333; z-index: 50; }
-        .dvt-select { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
-        .sel-btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-weight: bold; color: white; font-size: 16px; box-shadow: 0 4px rgba(0,0,0,0.5); }
-        
-        .bet-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        input[type="number"] { background: #000; border: 1px solid #444; color: white; padding: 14px; flex: 1; border-radius: 8px; font-size: 16px; outline: none; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 16px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 18px; text-transform: uppercase; box-shadow: 0 5px #b8950c; }
-        .btn-play:active { transform: translateY(3px); box-shadow: 0 2px #b8950c; }
-
-        /* Mines Grid */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px; }
-        .tile { width: 50px; height: 50px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 24px; cursor: pointer; border: 1px solid #444; transition: 0.2s; }
-
-        /* Action Buttons */
-        .action-bar { display: flex; gap: 8px; margin-top: 15px; }
-        .act-btn { flex: 1; padding: 12px 5px; background: #222; color: white; border: 1px solid #444; font-size: 11px; font-weight: bold; border-radius: 6px; text-transform: uppercase; }
-
-        /* Popups */
-        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
-        .form-box { background: #1a1a1a; padding: 30px; border-radius: 20px; width: 85%; border: 2px solid var(--gold); text-align: center; }
-        .close-btn { background: none; border: none; color: #888; margin-top: 20px; font-size: 14px; cursor: pointer; text-decoration: underline; }
-
-        /* Auth Overlay */
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 32px; font-weight: bold; border: 2px solid #555; }
+        .card-front { background: #222; color: var(--gold); border-color: var(--gold); }
+        .card-back { background: #fff; color: #000; transform: rotateY(180deg); }
+        .history-bar { width: 92%; overflow-x: auto; margin: 8px auto; white-space: nowrap; height: 50px; background: #111; border-radius: 8px; border: 1px solid #222; padding: 5px; box-sizing: border-box; }
+        .h-item { display: inline-block; padding: 6px 14px; margin: 2px; border-radius: 5px; font-weight: bold; color: #fff; font-size: 13px; }
+        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 92%; margin: 12px auto; }
+        .nav-btn { background: #1a1a1a; border: 1px solid #333; border-bottom: 3px solid var(--gold); padding: 18px 5px; text-align: center; cursor: pointer; font-size: 14px; font-weight: 900; border-radius: 8px; }
+        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 2px solid #222; z-index: 50; }
+        .dvt-select { display: none; gap: 10px; margin-bottom: 15px; }
+        .sel-btn { flex: 1; padding: 15px; border-radius: 10px; border: none; font-weight: 900; color: white; cursor: pointer; }
+        input[type="number"], input[type="text"], input[type="password"] { background: #000; border: 1px solid #444; color: var(--gold); padding: 12px; width: 100%; margin-bottom: 10px; border-radius: 8px; box-sizing: border-box; text-align: center; }
+        .btn-play { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: black; border: none; padding: 16px; width: 100%; font-weight: 900; border-radius: 8px; cursor: pointer; font-size: 18px; box-shadow: 0 4px #967d09; }
+        .action-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; }
+        .act-btn { padding: 10px 2px; background: #1a1a1a; color: #ddd; border: 1px solid #333; font-size: 9px; border-radius: 4px; font-weight: bold; }
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; }
+        .tile { width: 48px; height: 48px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 24px; cursor: pointer; border-bottom: 3px solid #111; }
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .form-box { background: #1a1a1a; padding: 25px 20px; border-radius: 15px; width: 85%; border: 1px solid var(--gold); text-align: center; max-height: 80vh; overflow-y: auto; }
+        .record-list { text-align: left; margin-top: 15px; font-size: 12px; border-top: 1px solid #333; padding-top: 10px; }
+        .record-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #222; }
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -63,28 +41,23 @@
 
 <div id="auth-overlay">
     <div class="form-box">
-        <h1 style="color:var(--gold); margin-bottom: 25px; font-size: 32px;">777 ULTRA</h1>
-        <div id="reg-fields" style="display:none;">
-            <input type="text" id="user-in" placeholder="Enter Full Name">
-        </div>
-        <input type="text" id="phone-in" placeholder="Phone Number">
+        <h2 id="auth-title">777 ULTRA</h2>
+        <div id="reg-fields" style="display:none;"><input type="text" id="user-in" placeholder="Full Name"></div>
+        <input type="number" id="phone-in" placeholder="Phone Number">
         <input type="password" id="pass-in" placeholder="Password">
-        <button class="btn-play" onclick="handleAuth()" id="auth-btn">LOGIN</button>
-        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:13px; margin-top:20px; cursor:pointer; color:var(--gold);">Don't have an account? Register</p>
+        <button class="btn-play" onclick="handleAuth()">PROCEED</button>
+        <p onclick="toggleAuth()" style="font-size:13px; margin-top:20px; cursor:pointer; color:var(--gold);">Register / Login</p>
     </div>
 </div>
 
 <header>
-    <div style="font-weight: 900; color: var(--gold); font-size: 20px; letter-spacing: 1px;">777 ULTRA</div>
+    <div class="logo">NAEEM PRO</div>
     <div class="bal-box">PKR <span id="wallet">0.00</span></div>
 </header>
 
 <div id="game-arena">
-    <div id="display-area" style="text-align:center; width: 100%;">
-        <h2 style="color:#555;">SELECT A GAME TO START</h2>
-    </div>
+    <div id="display-area" style="text-align:center;"><h2>SELECT GAME</h2></div>
 </div>
-
 <div class="history-bar" id="hist-row"></div>
 
 <div class="main-nav">
@@ -95,60 +68,45 @@
 
 <div class="controls">
     <div id="dvt-choice" class="dvt-select">
-        <button class="sel-btn" id="btn-dragon" style="background: var(--red);" onclick="selectSide('Dragon')">DRAGON</button>
-        <button class="sel-btn" id="btn-tiger" style="background: var(--blue);" onclick="selectSide('Tiger')">TIGER</button>
+        <button id="btn-drag" class="sel-btn" style="background: #e74c3c;" onclick="selectSide('Dragon')">DRAGON</button>
+        <button id="btn-tig" class="sel-btn" style="background: #3498db;" onclick="selectSide('Tiger')">TIGER</button>
     </div>
-    <div class="bet-row">
-        <input type="number" id="bet-input" value="100" min="10">
-    </div>
+    <input type="number" id="bet-input" value="10">
     <button id="btn-play" class="btn-play" onclick="startPlay()">START GAME</button>
-    <button id="btn-cashout" class="btn-play" style="display:none; background: #27ae60; box-shadow: 0 5px #1e8449;" onclick="cashOutNow()">CASH OUT</button>
-    
+    <button id="btn-cashout" class="btn-play" style="display:none; background: #27ae60;" onclick="cashOutNow()">CASH OUT</button>
     <div class="action-bar">
-        <button class="act-btn" onclick="showPage('dep-page')">Deposit</button>
-        <button class="act-btn" onclick="showPage('wit-page')">Withdraw</button>
-        <button class="act-btn" onclick="showPage('ref-page')">Referral</button>
-        <button class="act-btn" onclick="showPage('sup-page')">Support</button>
+        <button class="act-btn" onclick="showPage('dep-page')">DEPOSIT</button>
+        <button class="act-btn" onclick="showPage('wit-page')">WITHDRAW</button>
+        <button class="act-btn" onclick="showPage('ref-page')">REFER</button>
+        <button class="act-btn" onclick="showPage('sup-page')">SUPPORT</button>
     </div>
 </div>
 
 <div id="dep-page" class="page">
     <div class="form-box">
-        <h2 style="color:var(--gold)">DEPOSIT FUNDS</h2>
-        <p style="font-size:13px; color:#aaa;">Send to JazzCash/EasyPaisa: 03289230760</p>
+        <h2>DEPOSIT</h2>
+        <p style="font-size:12px;">Admin: 03289230760</p>
         <input type="number" id="d-amt" placeholder="Amount">
-        <input type="text" id="d-tid" placeholder="Transaction ID (TID)">
-        <button class="btn-play" onclick="doDeposit()">SUBMIT REQUEST</button>
-        <button onclick="hidePages()" class="close-btn">CLOSE</button>
+        <input type="text" id="d-tid" placeholder="TID">
+        <button class="btn-play" onclick="doDeposit()">SUBMIT</button>
+        <div class="record-list" id="dep-records"><strong>Loading Records...</strong></div>
+        <p onclick="hidePages()" style="color:#777; cursor:pointer; margin-top:15px;">CLOSE</p>
     </div>
 </div>
 
 <div id="wit-page" class="page">
     <div class="form-box">
-        <h2 style="color:var(--gold)">WITHDRAW</h2>
+        <h2>WITHDRAW</h2>
         <input type="text" id="w-num" placeholder="Account Number">
         <input type="number" id="w-amt" placeholder="Amount">
-        <button class="btn-play" onclick="doWithdraw()">WITHDRAW NOW</button>
-        <button onclick="hidePages()" class="close-btn">CLOSE</button>
+        <button class="btn-play" onclick="doWithdraw()">WITHDRAW</button>
+        <div class="record-list" id="wit-records"><strong>Loading Records...</strong></div>
+        <p onclick="hidePages()" style="color:#777; cursor:pointer; margin-top:15px;">CLOSE</p>
     </div>
 </div>
 
-<div id="ref-page" class="page">
-    <div class="form-box">
-        <h2 style="color:var(--gold)">REFER & EARN</h2>
-        <p>Invite friends and get PKR 220 bonus per referral!</p>
-        <button class="btn-play" onclick="alert('Referral Link Copied!')">COPY LINK</button>
-        <button onclick="hidePages()" class="close-btn">CLOSE</button>
-    </div>
-</div>
-
-<div id="sup-page" class="page">
-    <div class="form-box">
-        <h2 style="color:var(--gold)">CONTACT SUPPORT</h2>
-        <button class="btn-play" style="background:#25d366; color:white; box-shadow: 0 5px #128c7e;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP</button>
-        <button onclick="hidePages()" class="close-btn">CLOSE</button>
-    </div>
-</div>
+<div id="ref-page" class="page"><div class="form-box"><h2>REFER & EARN</h2><p>Bonus: 220 PKR</p><button class="btn-play" onclick="alert('Copied!')">COPY LINK</button><p onclick="hidePages()" style="color:#777; cursor:pointer; margin-top:15px;">CLOSE</p></div></div>
+<div id="sup-page" class="page"><div class="form-box"><h2>SUPPORT</h2><button class="btn-play" style="background:#25d366;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP</button><p onclick="hidePages()" style="color:#777; cursor:pointer; margin-top:15px;">CLOSE</p></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
@@ -169,81 +127,50 @@
     let wallet = 0, room = "", isPlaying = false, bet = 0, mult = 1.0, timer, sideSelected = "", isLoginMode = true;
     let activeUser = localStorage.getItem("activeUser");
 
-    function checkAuth() { 
-        if(activeUser) { 
-            db.ref('users/' + activeUser).on('value', s => { 
-                if(s.exists()){ 
-                    wallet = s.val().balance; 
-                    document.getElementById('wallet').innerText = wallet.toFixed(2); 
-                    document.getElementById('auth-overlay').style.display='none'; 
-                } 
-            }); 
-        } 
-    }
-
-    function toggleAuth() { 
-        isLoginMode = !isLoginMode; 
-        document.getElementById('auth-title').innerText = isLoginMode ? "777 ULTRA" : "REGISTER";
-        document.getElementById('auth-btn').innerText = isLoginMode ? "LOGIN" : "CREATE ACCOUNT";
-        document.getElementById('reg-fields').style.display = isLoginMode ? "none" : "block";
-        document.getElementById('toggle-txt').innerText = isLoginMode ? "Don't have an account? Register" : "Already have an account? Login";
-    }
-
-    function handleAuth() {
-        let ph = document.getElementById('phone-in').value, ps = document.getElementById('pass-in').value, u = document.getElementById('user-in').value;
-        if(!ph || !ps) return alert("Fill all fields!");
-        if(isLoginMode) { 
-            db.ref('users/'+ph).once('value', s => { 
-                if(s.exists() && s.val().password === ps){ localStorage.setItem("activeUser", ph); location.reload(); } 
-                else alert("Invalid phone or password!"); 
-            }); 
-        } else { 
-            db.ref('users/'+ph).set({username:u || "Player", phone:ph, password:ps, balance:80, status:"active"}).then(()=> {
-                alert("Account Created! Bonus 80 PKR added.");
-                toggleAuth();
-            }); 
+    function checkAuth() {
+        if(activeUser) {
+            db.ref('users/' + activeUser).on('value', s => {
+                if(s.exists()){
+                    wallet = s.val().balance;
+                    document.getElementById('wallet').innerText = wallet.toFixed(2);
+                    document.getElementById('auth-overlay').style.display = 'none';
+                    loadRecords();
+                }
+            });
         }
     }
 
+    function toggleAuth() { isLoginMode = !isLoginMode; document.getElementById('reg-fields').style.display = isLoginMode ? "none" : "block"; }
+    function handleAuth() {
+        let ph = document.getElementById('phone-in').value, ps = document.getElementById('pass-in').value, u = document.getElementById('user-in').value;
+        if(isLoginMode) { db.ref('users/'+ph).once('value', s => { if(s.exists() && s.val().password === ps){ localStorage.setItem("activeUser", ph); location.reload(); } else alert("Wrong!"); }); }
+        else { db.ref('users/'+ph).set({username:u, phone:ph, password:ps, balance:80, status:"active"}).then(()=>toggleAuth()); }
+    }
+
     function showPage(id) { document.getElementById(id).style.display = "flex"; }
-    function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display="none"); }
+    function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display = "none"); }
     function updateWalletDB(nb) { if(activeUser) db.ref('users/' + activeUser).update({ balance: nb }); }
 
-    // Game Selection
-    function setRoom(r) { 
-        room = r; 
-        document.getElementById('display-area').innerHTML = `<h2>${r} MODE READY</h2>`; 
-        document.getElementById('dvt-choice').style.display = (r==='DVT'?'flex':'none'); 
-        isPlaying = false; clearInterval(timer); 
-        document.getElementById('btn-play').style.display = "block";
-        document.getElementById('btn-cashout').style.display = "none";
-    }
-
-    function selectSide(s) { 
-        sideSelected = s; 
-        document.getElementById('btn-dragon').style.border = (s==='Dragon'?'3px solid gold':'none');
-        document.getElementById('btn-tiger').style.border = (s==='Tiger'?'3px solid gold':'none');
-    }
+    function setRoom(r) { room = r; document.getElementById('display-area').innerHTML = `<h2>${r} MODE</h2>`; document.getElementById('dvt-choice').style.display = (r==='DVT'?'flex':'none'); isPlaying = false; clearInterval(timer); }
+    function selectSide(s) { sideSelected = s; document.getElementById('btn-drag').style.border = s==='Dragon'?'2px solid white':'none'; document.getElementById('btn-tig').style.border = s==='Tiger'?'2px solid white':'none'; }
 
     function startPlay() {
         bet = parseFloat(document.getElementById('bet-input').value);
-        if(!room || bet > wallet || bet < 10) return alert("Invalid Bet or Balance!");
-        if(room==='DVT' && !sideSelected) return alert("Select Dragon or Tiger!");
-        
+        if(!room || bet > wallet || bet < 10) return alert("Check Balance/Room!");
+        if(room==='DVT' && !sideSelected) return alert("Select Side!");
         updateWalletDB(wallet - bet); isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
         if(room==='CRASH') runCrash(); else if(room==='MINES') runMines(); else if(room==='DVT') runDVT();
     }
 
-    // --- WINNING RATE LOGIC (35% Win / 65% Loss) ---
-
+    // 35% WIN RATE LOGIC
     function runCrash() {
-        document.getElementById('btn-cashout').style.display = "block"; mult = 1.0; 
+        document.getElementById('btn-cashout').style.display = "block"; mult = 1.0;
         let isLoss = Math.random() < 0.65;
-        let crashAt = isLoss ? (Math.random() * 0.15 + 1.01) : (Math.random() * 4 + 1.5);
+        let crashAt = isLoss ? (Math.random() * 0.3 + 1.01) : (Math.random() * 3 + 1.5);
         timer = setInterval(() => {
-            mult += 0.04; document.getElementById('display-area').innerHTML = `<h1 style="font-size:60px; color:var(--gold);">${mult.toFixed(2)}x</h1>`;
-            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "#c0392b"); end(); }
+            mult += 0.05; document.getElementById('display-area').innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
+            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); end(); }
         }, 100);
     }
 
@@ -255,69 +182,48 @@
     }
     function openT(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.65) { 
-            el.innerHTML="💣"; el.style.background="var(--red)"; end(); 
-            addHist("LOSE", "#c0392b");
-        } else { 
-            el.innerHTML="💎"; el.style.background="#27ae60"; mult += 0.4; 
-            document.getElementById('btn-cashout').innerText = `CASH OUT (${(bet*mult).toFixed(0)})`;
-        }
+        if(Math.random() < 0.65) { el.innerHTML="💣"; el.style.background="#c0392b"; end(); }
+        else { el.innerHTML="💎"; el.style.background="#27ae60"; mult += 0.4; }
     }
 
     function runDVT() {
-        document.getElementById('display-area').innerHTML = `
-            <div class="card-container">
-                <div id="d-card" class="card"><div class="card-face card-front">D</div><div class="card-face card-back" id="d-val">?</div></div>
-                <div id="t-card" class="card"><div class="card-face card-front">T</div><div class="card-face card-back" id="t-val">?</div></div>
-            </div>`;
-        
+        document.getElementById('display-area').innerHTML = `<div class="card-container"><div id="d-card" class="card"><div class="card-face card-front">D</div><div class="card-face card-back" id="d-val"></div></div><div id="t-card" class="card"><div class="card-face card-front">T</div><div class="card-face card-back" id="t-val"></div></div></div>`;
         setTimeout(() => {
             let win = (Math.random() < 0.65) ? (sideSelected === 'Dragon' ? 'Tiger' : 'Dragon') : sideSelected;
-            let dV = Math.floor(Math.random()*9)+2, tV = (win==='Dragon')? dV-1 : dV+1;
-            
-            document.getElementById('d-val').innerText = dV; 
-            document.getElementById('t-val').innerText = tV;
-            document.getElementById('d-card').classList.add('flipped'); 
-            document.getElementById('t-card').classList.add('flipped');
-
+            let dV = Math.floor(Math.random()*9)+1, tV = (win==='Dragon')? dV-1 : dV+1;
+            document.getElementById('d-val').innerText = dV; document.getElementById('t-val').innerText = tV;
+            document.getElementById('d-card').classList.add('flipped'); document.getElementById('t-card').classList.add('flipped');
             setTimeout(() => {
-                if(sideSelected === win) { 
-                    updateWalletDB(wallet + (bet * 1.95)); 
-                    addHist(win[0], "#27ae60");
-                    document.getElementById('display-area').innerHTML += `<h2 style="color:#27ae60">${win.toUpperCase()} WINS!</h2>`;
-                } else {
-                    addHist(win[0], "#c0392b");
-                    document.getElementById('display-area').innerHTML += `<h2 style="color:var(--red)">${win.toUpperCase()} WINS</h2>`;
-                }
+                if(sideSelected === win) { updateWalletDB(wallet + (bet * 1.95)); addHist(win[0], "green"); } else addHist(win[0], "red");
                 end();
             }, 1000);
-        }, 800);
+        }, 500);
     }
 
-    function cashOutNow() { 
-        if(isPlaying) { 
-            updateWalletDB(wallet + (bet * mult)); 
-            addHist(mult.toFixed(2)+"x", "#27ae60"); 
-            end(); 
-        } 
-    }
+    function cashOutNow() { if(isPlaying) { updateWalletDB(wallet + (bet * mult)); addHist(mult.toFixed(2)+"x", "green"); end(); } }
+    function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; }
+    function addHist(v, c) { let r = document.getElementById('hist-row'); r.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + r.innerHTML; }
 
-    function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; document.getElementById('btn-cashout').innerText="CASH OUT"; }
-    
-    function addHist(v, c) { 
-        let r = document.getElementById('hist-row'); 
-        r.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + r.innerHTML; 
-    }
-    
-    function doDeposit() { 
+    function doDeposit() {
         let a = document.getElementById('d-amt').value, t = document.getElementById('d-tid').value;
-        if(a && t) { db.ref('requests/deposits').push({phone:activeUser, amount:parseFloat(a), tid:t, method:"Manual", status:"pending"}); alert("Deposit Request Sent!"); hidePages(); }
+        if(a && t) { db.ref('requests/deposits').push({phone:activeUser, amount:a, tid:t, status:"pending"}); alert("Submitted!"); hidePages(); }
     }
-    
     function doWithdraw() {
         let a = parseFloat(document.getElementById('w-amt').value), n = document.getElementById('w-num').value;
-        if(a >= 10 && a <= wallet) { updateWalletDB(wallet - a); db.ref('requests/withdrawals').push({phone:activeUser, amount:a, target:n, status:"pending"}); alert("Withdrawal Sent!"); hidePages(); }
-        else alert("Insufficient Balance!");
+        if(a <= wallet && a >= 100) { updateWalletDB(wallet - a); db.ref('requests/withdrawals').push({phone:activeUser, amount:a, target:n, status:"pending"}); alert("Submitted!"); hidePages(); }
+    }
+
+    function loadRecords() {
+        db.ref('requests/deposits').orderByChild('phone').equalTo(activeUser).on('value', s => {
+            let h = '<strong>Deposit History</strong>';
+            s.forEach(child => { h += `<div class="record-item"><span>Rs.${child.val().amount}</span><span style="color:${child.val().status==='pending'?'orange':'green'}">${child.val().status}</span></div>`; });
+            document.getElementById('dep-records').innerHTML = h;
+        });
+        db.ref('requests/withdrawals').orderByChild('phone').equalTo(activeUser).on('value', s => {
+            let h = '<strong>Withdraw History</strong>';
+            s.forEach(child => { h += `<div class="record-item"><span>Rs.${child.val().amount}</span><span style="color:${child.val().status==='pending'?'orange':'green'}">${child.val().status}</span></div>`; });
+            document.getElementById('wit-records').innerHTML = h;
+        });
     }
 </script>
 </body>
