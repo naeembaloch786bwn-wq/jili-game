@@ -17,7 +17,7 @@
         .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 92%; margin: 10px auto; }
         .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 12px; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; }
 
-        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; }
+        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; z-index: 50; }
         .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
         .card { width: 55px; height: 80px; background: white; color: black; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; transition: transform 0.6s; transform-style: preserve-3d; margin: 10px; }
@@ -25,38 +25,39 @@
         .sel-btn { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; color: white; }
 
         .action-bar { display: flex; gap: 5px; margin-top: 10px; }
-        .act-btn { flex: 1; padding: 8px; border-radius: 5px; border: none; background: #333; color: white; font-size: 11px; }
+        .act-btn { flex: 1; padding: 8px; border-radius: 5px; border: none; background: #333; color: white; font-size: 10px; cursor: pointer; }
 
-        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
         .form-box { background: #1a1a1a; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); text-align: center; }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
+        input { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
 
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 40px; height: 40px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 18px; }
-
-        /* Auth Styles */
+        /* Auth/Logout Overlay */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .logout-btn { background: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; border: none; }
     </style>
 </head>
 <body onload="checkAuth()">
 
 <div id="auth-overlay">
     <div class="form-box">
-        <h2 id="auth-title" style="color:var(--gold)">LOGIN</h2>
+        <h2 id="auth-title" style="color:var(--gold)">777 ULTRA LOGIN</h2>
         <input type="text" id="user-in" placeholder="Username">
         <input type="password" id="pass-in" placeholder="Password">
-        <button class="btn-play" onclick="handleAuth()">GO</button>
-        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:12px; margin-top:10px;">New? Register</p>
+        <button class="btn-play" onclick="handleAuth()">ENTER GAME</button>
+        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--gold)">New User? Register Here</p>
     </div>
 </div>
 
 <header>
-    <div style="font-weight: 900; color: var(--gold);" onclick="logout()">777 ULTRA</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-weight: 900; color: var(--gold);">NAEEM PRO</span>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    </div>
     <div class="bal-box">PKR <span id="wallet">0</span></div>
 </header>
 
 <div id="game-arena">
-    <div id="display-area" style="text-align:center;"><h2>SELECT GAME</h2></div>
+    <div id="display-area" style="text-align:center;"><h2>SELECT A GAME</h2></div>
 </div>
 
 <div class="history-bar" id="hist-row"></div>
@@ -87,11 +88,11 @@
 <div id="dep-page" class="page">
     <div class="form-box">
         <h2 style="color:var(--gold)">DEPOSIT</h2>
-        <p>Send to JazzCash: 03289230760</p>
+        <p style="font-size:13px;">JazzCash: 03289230760</p>
         <input type="number" id="d-amt" placeholder="Amount">
-        <input type="text" id="d-tid" placeholder="TID">
-        <button class="btn-play" onclick="doDeposit()">SUBMIT</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; width:100%; margin-top:10px;">BACK</button>
+        <input type="text" id="d-tid" placeholder="Transaction ID">
+        <button class="btn-play" onclick="doDeposit()">SUBMIT DEPOSIT</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px;">CLOSE</button>
     </div>
 </div>
 
@@ -100,69 +101,96 @@
         <h2 style="color:var(--gold)">WITHDRAW</h2>
         <input type="number" id="w-amt" placeholder="Amount">
         <input type="text" id="w-num" placeholder="Account Number">
-        <button class="btn-play" onclick="doWithdraw()">WITHDRAW</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; width:100%; margin-top:10px;">BACK</button>
+        <button class="btn-play" onclick="doWithdraw()">WITHDRAW NOW</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px;">CLOSE</button>
+    </div>
+</div>
+
+<div id="ref-page" class="page">
+    <div class="form-box">
+        <h2 style="color:var(--gold)">REFER & EARN</h2>
+        <p style="font-size:12px;">Share link & get PKR 220 bonus!</p>
+        <input type="text" readonly value="https://777ultra.com/join/naeem786">
+        <button class="btn-play" onclick="alert('Link Copied!')">COPY LINK</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px;">CLOSE</button>
+    </div>
+</div>
+
+<div id="sup-page" class="page">
+    <div class="form-box">
+        <h2 style="color:var(--gold)">SUPPORT</h2>
+        <p>Contact us 24/7 on WhatsApp</p>
+        <button class="btn-play" style="background:#25d366; color:white;" onclick="window.open('https://wa.me/923289230760')">OPEN WHATSAPP</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px;">CLOSE</button>
     </div>
 </div>
 
 <script>
     let wallet = 150.0;
-    let room = "", isPlaying = false, bet = 0, mult = 1.0, timer, sideSelected = "", isLogin = true;
+    let room = "", isPlaying = false, bet = 0, mult = 1.0, timer, sideSelected = "", isLoginMode = true;
 
     // --- AUTH ---
     function checkAuth() {
-        if(localStorage.getItem("loggedUser")) {
+        if(localStorage.getItem("activeUser")) {
             document.getElementById('auth-overlay').style.display='none';
-            wallet = parseFloat(localStorage.getItem("naeem_bal")) || 150;
+            wallet = parseFloat(localStorage.getItem("naeem_balance")) || 150;
             updateUI();
         }
     }
     function toggleAuth() {
-        isLogin = !isLogin;
-        document.getElementById('auth-title').innerText = isLogin ? "LOGIN" : "REGISTER";
-        document.getElementById('toggle-txt').innerText = isLogin ? "New? Register" : "Have account? Login";
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-title').innerText = isLoginMode ? "LOGIN" : "REGISTER";
+        document.getElementById('toggle-txt').innerText = isLoginMode ? "New User? Register Here" : "Have account? Login";
     }
     function handleAuth() {
         let u = document.getElementById('user-in').value;
         let p = document.getElementById('pass-in').value;
-        if(isLogin) {
-            if(u === localStorage.getItem("saved_u") && p === localStorage.getItem("saved_p")) {
-                localStorage.setItem("loggedUser", u); checkAuth();
-            } else alert("Wrong!");
+        if(u.length<3) return alert("Enter Username");
+        if(isLoginMode) {
+            if(u === localStorage.getItem("u_"+u) && p === localStorage.getItem("p_"+u)) {
+                localStorage.setItem("activeUser", u); checkAuth();
+            } else alert("Invalid Login!");
         } else {
-            localStorage.setItem("saved_u", u); localStorage.setItem("saved_p", p);
-            localStorage.setItem("naeem_bal", 150); toggleAuth(); alert("Done!");
+            localStorage.setItem("u_"+u, u); localStorage.setItem("p_"+u, p);
+            localStorage.setItem("naeem_balance", 150); 
+            alert("Registered! Now Login."); toggleAuth();
         }
     }
-    function logout() { localStorage.removeItem("loggedUser"); location.reload(); }
+    function logout() { localStorage.removeItem("activeUser"); location.reload(); }
 
-    // --- CORE ---
-    function updateUI() { document.getElementById('wallet').innerText = wallet.toFixed(2); localStorage.setItem("naeem_bal", wallet); }
+    // --- UI ---
+    function updateUI() { 
+        document.getElementById('wallet').innerText = wallet.toFixed(2); 
+        localStorage.setItem("naeem_balance", wallet); 
+    }
     function showPage(id) { document.getElementById(id).style.display = "flex"; }
     function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display="none"); }
 
     function doDeposit() { 
         let a = parseFloat(document.getElementById('d-amt').value);
-        if(a > 0) { wallet += a; updateUI(); hidePages(); alert("Success!"); }
+        if(a > 0) { wallet += a; updateUI(); hidePages(); alert("Deposit Successful!"); }
     }
     function doWithdraw() {
         let a = parseFloat(document.getElementById('w-amt').value);
-        if(a <= wallet) { wallet -= a; updateUI(); hidePages(); alert("Pending!"); }
+        if(a > 0 && a <= wallet) { wallet -= a; updateUI(); hidePages(); alert("Withdrawal Requested!"); }
+        else alert("Low Balance!");
     }
 
-    // --- GAMES (No Changes) ---
+    // --- GAMES ---
     function setRoom(r) {
         room = r; document.getElementById('display-area').innerHTML = `<h2>${r} MODE</h2>`;
         document.getElementById('dvt-choice').style.display = (r === 'DVT') ? 'flex' : 'none';
         document.getElementById('btn-play').style.display = "block";
         document.getElementById('btn-cashout').style.display = "none";
     }
-    function selectSide(s) { sideSelected = s; }
+    function selectSide(s) { sideSelected = s; alert("Selected: " + s); }
 
     function startPlay() {
         if(!room || isPlaying) return;
         bet = parseFloat(document.getElementById('bet-input').value);
-        if(bet < 10 || bet > wallet) return alert("Low!");
+        if(bet < 10 || bet > wallet) return alert("Minimum bet 10 PKR");
+        if(room === 'DVT' && !sideSelected) return alert("Select Dragon or Tiger!");
+        
         wallet -= bet; updateUI(); isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
         if(room === 'CRASH') runCrash(); else if(room === 'MINES') runMines(); else if(room === 'DVT') runDVT();
@@ -171,7 +199,7 @@
     function runCrash() {
         document.getElementById('btn-cashout').style.display = "block";
         mult = 1.0; 
-        let crashAt = (Math.random() < 0.65) ? (Math.random() * 0.2) + 1.01 : (Math.random() * 3) + 1.5;
+        let crashAt = (Math.random() < 0.65) ? (Math.random() * 0.2) + 1.05 : (Math.random() * 3) + 1.6;
         timer = setInterval(() => {
             mult += 0.05; document.getElementById('display-area').innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
             if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); end(); }
@@ -194,8 +222,8 @@
         document.getElementById('display-area').innerHTML = `<div id="d-card" class="card">?</div><div id="t-card" class="card">?</div>`;
         setTimeout(() => {
             let win = (Math.random() < 0.35) ? sideSelected : (sideSelected === 'Dragon' ? 'Tiger' : 'Dragon');
-            document.getElementById('d-card').innerText = Math.floor(Math.random()*10)+1;
-            document.getElementById('t-card').innerText = Math.floor(Math.random()*10)+1;
+            document.getElementById('d-card').innerText = Math.floor(Math.random()*9)+1;
+            document.getElementById('t-card').innerText = Math.floor(Math.random()*9)+1;
             document.getElementById('d-card').style.transform = "rotateY(360deg)";
             document.getElementById('t-card').style.transform = "rotateY(360deg)";
             setTimeout(() => {
