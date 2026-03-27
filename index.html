@@ -5,55 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>777 ULTRA - NAEEM PRO ENGINE</title>
     <style>
-        :root { --gold: #f1c40f; --bg: #0a0a0a; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; }
-        header { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .bal-box { border: 1.5px solid var(--gold); padding: 5px 10px; border-radius: 5px; font-weight: bold; }
-        #game-arena { width: 92%; height: 260px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #333; overflow: hidden; }
-        .history-bar { width: 92%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 45px; background: #111; border-radius: 5px; border: 1px solid #222; }
-        .h-item { display: inline-block; padding: 6px 12px; margin: 4px; border-radius: 4px; font-weight: bold; color: #000; font-size: 12px; }
-        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 92%; margin: 10px auto; }
-        .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 15px; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; z-index: 50; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 14px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px; box-shadow: 0 4px #b8950c; }
-        .btn-play:active { transform: translateY(2px); box-shadow: none; }
-        .card { width: 65px; height: 95px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; margin: 10px; border: 2px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 10px; }
-        .tile { width: 48px; height: 48px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; cursor: pointer; border: 1px solid #444; }
-        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
-        .form-box { background: #1a1a1a; padding: 25px; border-radius: 12px; width: 85%; border: 1px solid var(--gold); text-align: center; }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 14px; width: 100%; margin-bottom: 12px; border-radius: 6px; box-sizing: border-box; outline: none; }
+        :root { --gold: #f1c40f; --bg: #0a0a0a; --red: #e74c3c; --blue: #3498db; }
+        body { background: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        /* Header & Balance */
+        header { background: #111; padding: 12px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .bal-box { border: 2px solid var(--gold); padding: 6px 15px; border-radius: 8px; font-weight: 900; background: rgba(241, 196, 15, 0.1); color: var(--gold); }
+
+        /* Game Arena */
+        #game-arena { width: 94%; height: 280px; margin: 15px auto; background: radial-gradient(circle, #222, #000); border-radius: 15px; display: flex; align-items: center; justify-content: center; position: relative; border: 2px solid #333; overflow: hidden; perspective: 1000px; }
+        
+        /* DVT Card Flip CSS */
+        .card-container { display: flex; gap: 20px; }
+        .card { width: 80px; height: 110px; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card.flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 35px; font-weight: bold; border: 3px solid #444; }
+        .card-front { background: linear-gradient(45deg, #111, #333); color: var(--gold); border-color: var(--gold); }
+        .card-back { background: white; color: black; transform: rotateY(180deg); border-color: #ddd; }
+
+        /* History Bar */
+        .history-bar { width: 94%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 50px; background: #111; border-radius: 8px; border: 1px solid #222; display: flex; align-items: center; padding: 0 10px; }
+        .h-item { display: inline-block; padding: 6px 12px; margin-right: 8px; border-radius: 5px; font-weight: bold; color: #000; font-size: 13px; text-transform: uppercase; }
+
+        /* Navigation */
+        .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 94%; margin: 15px auto; }
+        .nav-btn { background: #1a1a1a; border-bottom: 3px solid var(--gold); padding: 18px 0; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 8px; transition: 0.2s; }
+        .nav-btn:active { transform: scale(0.95); background: #222; }
+
+        /* Controls */
+        .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 2px solid #333; z-index: 50; }
+        .dvt-select { display: none; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .sel-btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-weight: bold; color: white; font-size: 16px; box-shadow: 0 4px rgba(0,0,0,0.5); }
+        
+        .bet-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        input[type="number"] { background: #000; border: 1px solid #444; color: white; padding: 14px; flex: 1; border-radius: 8px; font-size: 16px; outline: none; }
+        .btn-play { background: var(--gold); color: black; border: none; padding: 16px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 18px; text-transform: uppercase; box-shadow: 0 5px #b8950c; }
+        .btn-play:active { transform: translateY(3px); box-shadow: 0 2px #b8950c; }
+
+        /* Mines Grid */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px; }
+        .tile { width: 50px; height: 50px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 24px; cursor: pointer; border: 1px solid #444; transition: 0.2s; }
+
+        /* Action Buttons */
+        .action-bar { display: flex; gap: 8px; margin-top: 15px; }
+        .act-btn { flex: 1; padding: 12px 5px; background: #222; color: white; border: 1px solid #444; font-size: 11px; font-weight: bold; border-radius: 6px; text-transform: uppercase; }
+
+        /* Popups */
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+        .form-box { background: #1a1a1a; padding: 30px; border-radius: 20px; width: 85%; border: 2px solid var(--gold); text-align: center; }
+        .close-btn { background: none; border: none; color: #888; margin-top: 20px; font-size: 14px; cursor: pointer; text-decoration: underline; }
+
+        /* Auth Overlay */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .logout-btn { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
-        .dvt-select { display: none; gap: 10px; margin-bottom: 15px; justify-content: center; width: 100%; }
-        .sel-btn { flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; font-size: 14px; }
-        .action-bar { display: flex; gap: 5px; margin-top: 10px; }
-        .act-btn { flex: 1; padding: 10px; background: #222; color: white; border: 1px solid #333; font-size: 10px; font-weight: bold; border-radius: 4px; }
     </style>
 </head>
 <body onload="checkAuth()">
 
 <div id="auth-overlay">
     <div class="form-box">
-        <h2 id="auth-title" style="color:var(--gold); letter-spacing: 2px;">777 ULTRA</h2>
-        <input type="text" id="user-in" placeholder="Full Name (For Register)">
+        <h1 style="color:var(--gold); margin-bottom: 25px; font-size: 32px;">777 ULTRA</h1>
+        <div id="reg-fields" style="display:none;">
+            <input type="text" id="user-in" placeholder="Enter Full Name">
+        </div>
         <input type="text" id="phone-in" placeholder="Phone Number">
         <input type="password" id="pass-in" placeholder="Password">
-        <button class="btn-play" onclick="handleAuth()">PROCEED</button>
-        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:12px; margin-top:18px; cursor:pointer; color:var(--gold);">Switch to Register/Login</p>
+        <button class="btn-play" onclick="handleAuth()" id="auth-btn">LOGIN</button>
+        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:13px; margin-top:20px; cursor:pointer; color:var(--gold);">Don't have an account? Register</p>
     </div>
 </div>
 
 <header>
-    <div style="display:flex; align-items:center; gap:12px;">
-        <span style="font-weight: 900; color: var(--gold); font-size: 16px;">NAEEM PRO</span>
-        <button onclick="logout()" class="logout-btn">LOGOUT</button>
-    </div>
-    <div class="bal-box">PKR <span id="wallet">0</span></div>
+    <div style="font-weight: 900; color: var(--gold); font-size: 20px; letter-spacing: 1px;">777 ULTRA</div>
+    <div class="bal-box">PKR <span id="wallet">0.00</span></div>
 </header>
 
 <div id="game-arena">
-    <div id="display-area" style="text-align:center; width: 100%;"><h2>777 ULTRA ENGINE READY</h2></div>
+    <div id="display-area" style="text-align:center; width: 100%;">
+        <h2 style="color:#555;">SELECT A GAME TO START</h2>
+    </div>
 </div>
 
 <div class="history-bar" id="hist-row"></div>
@@ -66,58 +95,58 @@
 
 <div class="controls">
     <div id="dvt-choice" class="dvt-select">
-        <button class="sel-btn" style="background: #e74c3c; box-shadow: 0 4px #c0392b;" onclick="selectSide('Dragon')">DRAGON</button>
-        <button class="sel-btn" style="background: #3498db; box-shadow: 0 4px #2980b9;" onclick="selectSide('Tiger')">TIGER</button>
+        <button class="sel-btn" id="btn-dragon" style="background: var(--red);" onclick="selectSide('Dragon')">DRAGON</button>
+        <button class="sel-btn" id="btn-tiger" style="background: var(--blue);" onclick="selectSide('Tiger')">TIGER</button>
     </div>
-    <input type="number" id="bet-input" value="10" placeholder="Bet Amount">
-    <button id="btn-play" class="btn-play" onclick="startPlay()">PLAY NOW</button>
-    <button id="btn-cashout" class="btn-play" style="display:none; background: #27ae60;" onclick="cashOutNow()">CASH OUT</button>
-
+    <div class="bet-row">
+        <input type="number" id="bet-input" value="100" min="10">
+    </div>
+    <button id="btn-play" class="btn-play" onclick="startPlay()">START GAME</button>
+    <button id="btn-cashout" class="btn-play" style="display:none; background: #27ae60; box-shadow: 0 5px #1e8449;" onclick="cashOutNow()">CASH OUT</button>
+    
     <div class="action-bar">
-        <button class="act-btn" onclick="showPage('dep-page')">DEPOSIT</button>
-        <button class="act-btn" onclick="showPage('wit-page')">WITHDRAW</button>
-        <button class="act-btn" onclick="showPage('ref-page')">REFER</button>
-        <button class="act-btn" onclick="showPage('sup-page')">SUPPORT</button>
+        <button class="act-btn" onclick="showPage('dep-page')">Deposit</button>
+        <button class="act-btn" onclick="showPage('wit-page')">Withdraw</button>
+        <button class="act-btn" onclick="showPage('ref-page')">Referral</button>
+        <button class="act-btn" onclick="showPage('sup-page')">Support</button>
     </div>
 </div>
 
 <div id="dep-page" class="page">
     <div class="form-box">
-        <h2 style="color:var(--gold)">DEPOSIT</h2>
-        <p style="font-size:12px;">Admin: 03289230760</p>
-        <select id="d-method"><option>JazzCash</option><option>EasyPaisa</option></select>
+        <h2 style="color:var(--gold)">DEPOSIT FUNDS</h2>
+        <p style="font-size:13px; color:#aaa;">Send to JazzCash/EasyPaisa: 03289230760</p>
         <input type="number" id="d-amt" placeholder="Amount">
-        <input type="text" id="d-tid" placeholder="TID">
-        <button class="btn-play" onclick="doDeposit()">SUBMIT</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
+        <input type="text" id="d-tid" placeholder="Transaction ID (TID)">
+        <button class="btn-play" onclick="doDeposit()">SUBMIT REQUEST</button>
+        <button onclick="hidePages()" class="close-btn">CLOSE</button>
     </div>
 </div>
 
 <div id="wit-page" class="page">
     <div class="form-box">
         <h2 style="color:var(--gold)">WITHDRAW</h2>
-        <select id="w-method"><option>JazzCash</option><option>EasyPaisa</option></select>
         <input type="text" id="w-num" placeholder="Account Number">
         <input type="number" id="w-amt" placeholder="Amount">
-        <button class="btn-play" onclick="doWithdraw()">WITHDRAW</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
+        <button class="btn-play" onclick="doWithdraw()">WITHDRAW NOW</button>
+        <button onclick="hidePages()" class="close-btn">CLOSE</button>
     </div>
 </div>
 
 <div id="ref-page" class="page">
     <div class="form-box">
         <h2 style="color:var(--gold)">REFER & EARN</h2>
-        <p>Invite friends and earn PKR 220 bonus.</p>
-        <button class="btn-play" onclick="alert('Link Copied!')">COPY REFER LINK</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
+        <p>Invite friends and get PKR 220 bonus per referral!</p>
+        <button class="btn-play" onclick="alert('Referral Link Copied!')">COPY LINK</button>
+        <button onclick="hidePages()" class="close-btn">CLOSE</button>
     </div>
 </div>
 
 <div id="sup-page" class="page">
     <div class="form-box">
-        <h2 style="color:var(--gold)">SUPPORT</h2>
-        <button class="btn-play" style="background:#25d366; color:white;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
+        <h2 style="color:var(--gold)">CONTACT SUPPORT</h2>
+        <button class="btn-play" style="background:#25d366; color:white; box-shadow: 0 5px #128c7e;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP</button>
+        <button onclick="hidePages()" class="close-btn">CLOSE</button>
     </div>
 </div>
 
@@ -134,100 +163,87 @@
         messagingSenderId: "766843054614",
         appId: "1:766843054614:web:781658832e63e41fc2e337"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let wallet = 0, room = "", isPlaying = false, bet = 0, mult = 1.0, timer, sideSelected = "", isLoginMode = true;
     let activeUser = localStorage.getItem("activeUser");
 
-    function checkAuth() {
-        if(activeUser) {
-            db.ref('users/' + activeUser).on('value', (snap) => {
-                if(snap.exists()){
-                    wallet = snap.val().balance;
-                    document.getElementById('wallet').innerText = wallet.toFixed(2);
-                    document.getElementById('auth-overlay').style.display = 'none';
-                }
-            });
-        }
+    function checkAuth() { 
+        if(activeUser) { 
+            db.ref('users/' + activeUser).on('value', s => { 
+                if(s.exists()){ 
+                    wallet = s.val().balance; 
+                    document.getElementById('wallet').innerText = wallet.toFixed(2); 
+                    document.getElementById('auth-overlay').style.display='none'; 
+                } 
+            }); 
+        } 
     }
 
-    function toggleAuth() { isLoginMode = !isLoginMode; document.getElementById('auth-title').innerText = isLoginMode ? "LOGIN" : "REGISTER"; }
+    function toggleAuth() { 
+        isLoginMode = !isLoginMode; 
+        document.getElementById('auth-title').innerText = isLoginMode ? "777 ULTRA" : "REGISTER";
+        document.getElementById('auth-btn').innerText = isLoginMode ? "LOGIN" : "CREATE ACCOUNT";
+        document.getElementById('reg-fields').style.display = isLoginMode ? "none" : "block";
+        document.getElementById('toggle-txt').innerText = isLoginMode ? "Don't have an account? Register" : "Already have an account? Login";
+    }
 
     function handleAuth() {
-        let u = document.getElementById('user-in').value;
-        let ph = document.getElementById('phone-in').value;
-        let ps = document.getElementById('pass-in').value;
-        if(!ph || !ps) return alert("Sari fields bharein!");
-
-        if(isLoginMode) {
-            db.ref('users/' + ph).once('value', (snap) => {
-                if(snap.exists() && snap.val().password === ps) {
-                    localStorage.setItem("activeUser", ph);
-                    location.reload();
-                } else alert("Galt Password ya Number!");
-            });
-        } else {
-            // New User Registration with 80 Bonus
-            db.ref('users/' + ph).set({ username: u, phone: ph, password: ps, balance: 80, status: "active" })
-            .then(() => { alert("Account Ban Gaya! Login Karein."); toggleAuth(); });
+        let ph = document.getElementById('phone-in').value, ps = document.getElementById('pass-in').value, u = document.getElementById('user-in').value;
+        if(!ph || !ps) return alert("Fill all fields!");
+        if(isLoginMode) { 
+            db.ref('users/'+ph).once('value', s => { 
+                if(s.exists() && s.val().password === ps){ localStorage.setItem("activeUser", ph); location.reload(); } 
+                else alert("Invalid phone or password!"); 
+            }); 
+        } else { 
+            db.ref('users/'+ph).set({username:u || "Player", phone:ph, password:ps, balance:80, status:"active"}).then(()=> {
+                alert("Account Created! Bonus 80 PKR added.");
+                toggleAuth();
+            }); 
         }
     }
 
-    function logout() { localStorage.removeItem("activeUser"); location.reload(); }
     function showPage(id) { document.getElementById(id).style.display = "flex"; }
     function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display="none"); }
+    function updateWalletDB(nb) { if(activeUser) db.ref('users/' + activeUser).update({ balance: nb }); }
 
-    function updateWalletDB(newBal) { if(activeUser) db.ref('users/' + activeUser).update({ balance: newBal }); }
-
-    function doDeposit() {
-        let a = parseFloat(document.getElementById('d-amt').value);
-        let t = document.getElementById('d-tid').value;
-        let m = document.getElementById('d-method').value;
-        if(a > 0 && t) {
-            db.ref('requests/deposits').push({ phone: activeUser, amount: a, tid: t, method: m, status: "pending", time: new Date().toLocaleString() });
-            alert("Deposit Request Sent!"); hidePages();
-        }
+    // Game Selection
+    function setRoom(r) { 
+        room = r; 
+        document.getElementById('display-area').innerHTML = `<h2>${r} MODE READY</h2>`; 
+        document.getElementById('dvt-choice').style.display = (r==='DVT'?'flex':'none'); 
+        isPlaying = false; clearInterval(timer); 
+        document.getElementById('btn-play').style.display = "block";
+        document.getElementById('btn-cashout').style.display = "none";
     }
 
-    function doWithdraw() {
-        let a = parseFloat(document.getElementById('w-amt').value);
-        let n = document.getElementById('w-num').value;
-        let m = document.getElementById('w-method').value;
-        if(a >= 10 && a <= wallet) {
-            updateWalletDB(wallet - a);
-            db.ref('requests/withdrawals').push({ phone: activeUser, amount: a, target: n, method: m, status: "pending", time: new Date().toLocaleString() });
-            alert("Withdraw Request Sent!"); hidePages();
-        } else alert("Balance Kam Hai!");
+    function selectSide(s) { 
+        sideSelected = s; 
+        document.getElementById('btn-dragon').style.border = (s==='Dragon'?'3px solid gold':'none');
+        document.getElementById('btn-tiger').style.border = (s==='Tiger'?'3px solid gold':'none');
     }
-
-    // --- FULL ENGINE GAMES ---
-    function setRoom(r) {
-        room = r; document.getElementById('display-area').innerHTML = `<h2>${r} MODE</h2>`;
-        document.getElementById('dvt-choice').style.display = (r === 'DVT') ? 'flex' : 'none';
-        isPlaying = false; clearInterval(timer);
-    }
-
-    function selectSide(s) { sideSelected = s; alert("Selected: " + s); }
 
     function startPlay() {
-        if(!room || isPlaying) return;
         bet = parseFloat(document.getElementById('bet-input').value);
-        if(bet < 10 || bet > wallet) return alert("Balance Check Karein!");
-        if(room === 'DVT' && !sideSelected) return alert("Side Choose Karein!");
+        if(!room || bet > wallet || bet < 10) return alert("Invalid Bet or Balance!");
+        if(room==='DVT' && !sideSelected) return alert("Select Dragon or Tiger!");
         
         updateWalletDB(wallet - bet); isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
-        if(room === 'CRASH') runCrash(); else if(room === 'MINES') runMines(); else if(room === 'DVT') runDVT();
+        if(room==='CRASH') runCrash(); else if(room==='MINES') runMines(); else if(room==='DVT') runDVT();
     }
 
+    // --- WINNING RATE LOGIC (35% Win / 65% Loss) ---
+
     function runCrash() {
-        document.getElementById('btn-cashout').style.display = "block";
-        mult = 1.0; let crashAt = (Math.random() * 3) + 1.1;
+        document.getElementById('btn-cashout').style.display = "block"; mult = 1.0; 
+        let isLoss = Math.random() < 0.65;
+        let crashAt = isLoss ? (Math.random() * 0.15 + 1.01) : (Math.random() * 4 + 1.5);
         timer = setInterval(() => {
-            mult += 0.05; document.getElementById('display-area').innerHTML = `<h1 style="font-size:50px;">${mult.toFixed(2)}x</h1>`;
-            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); end(); }
+            mult += 0.04; document.getElementById('display-area').innerHTML = `<h1 style="font-size:60px; color:var(--gold);">${mult.toFixed(2)}x</h1>`;
+            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "#c0392b"); end(); }
         }, 100);
     }
 
@@ -237,27 +253,72 @@
         for(let i=0; i<25; i++) g += `<div class="tile" onclick="openT(this)">?</div>`;
         document.getElementById('display-area').innerHTML = g + '</div>';
     }
-
     function openT(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.2) { el.innerHTML="💣"; el.style.background="#c0392b"; end(); }
-        else { el.innerHTML="💎"; el.style.background="#27ae60"; mult += 0.2; document.getElementById('btn-cashout').innerText = "CASH OUT (" + (bet * mult).toFixed(0) + ")"; }
+        if(Math.random() < 0.65) { 
+            el.innerHTML="💣"; el.style.background="var(--red)"; end(); 
+            addHist("LOSE", "#c0392b");
+        } else { 
+            el.innerHTML="💎"; el.style.background="#27ae60"; mult += 0.4; 
+            document.getElementById('btn-cashout').innerText = `CASH OUT (${(bet*mult).toFixed(0)})`;
+        }
     }
 
     function runDVT() {
-        document.getElementById('display-area').innerHTML = `<div class="card">?</div><div class="card">?</div>`;
+        document.getElementById('display-area').innerHTML = `
+            <div class="card-container">
+                <div id="d-card" class="card"><div class="card-face card-front">D</div><div class="card-face card-back" id="d-val">?</div></div>
+                <div id="t-card" class="card"><div class="card-face card-front">T</div><div class="card-face card-back" id="t-val">?</div></div>
+            </div>`;
+        
         setTimeout(() => {
-            let win = Math.random() > 0.5 ? 'Dragon' : 'Tiger';
-            document.getElementById('display-area').innerHTML = `<h1 style="color:var(--gold)">${win.toUpperCase()} WINS!</h1>`;
-            if(sideSelected === win) { updateWalletDB(wallet + (bet * 1.95)); addHist(win[0], "green"); }
-            else { addHist(win[0], "red"); }
-            end();
-        }, 1500);
+            let win = (Math.random() < 0.65) ? (sideSelected === 'Dragon' ? 'Tiger' : 'Dragon') : sideSelected;
+            let dV = Math.floor(Math.random()*9)+2, tV = (win==='Dragon')? dV-1 : dV+1;
+            
+            document.getElementById('d-val').innerText = dV; 
+            document.getElementById('t-val').innerText = tV;
+            document.getElementById('d-card').classList.add('flipped'); 
+            document.getElementById('t-card').classList.add('flipped');
+
+            setTimeout(() => {
+                if(sideSelected === win) { 
+                    updateWalletDB(wallet + (bet * 1.95)); 
+                    addHist(win[0], "#27ae60");
+                    document.getElementById('display-area').innerHTML += `<h2 style="color:#27ae60">${win.toUpperCase()} WINS!</h2>`;
+                } else {
+                    addHist(win[0], "#c0392b");
+                    document.getElementById('display-area').innerHTML += `<h2 style="color:var(--red)">${win.toUpperCase()} WINS</h2>`;
+                }
+                end();
+            }, 1000);
+        }, 800);
     }
 
-    function cashOutNow() { if(!isPlaying) return; updateWalletDB(wallet + (bet * mult)); addHist(mult.toFixed(2)+"x", "green"); end(); }
-    function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; }
-    function addHist(v, c) { let r = document.getElementById('hist-row'); r.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + r.innerHTML; }
+    function cashOutNow() { 
+        if(isPlaying) { 
+            updateWalletDB(wallet + (bet * mult)); 
+            addHist(mult.toFixed(2)+"x", "#27ae60"); 
+            end(); 
+        } 
+    }
+
+    function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; document.getElementById('btn-cashout').innerText="CASH OUT"; }
+    
+    function addHist(v, c) { 
+        let r = document.getElementById('hist-row'); 
+        r.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + r.innerHTML; 
+    }
+    
+    function doDeposit() { 
+        let a = document.getElementById('d-amt').value, t = document.getElementById('d-tid').value;
+        if(a && t) { db.ref('requests/deposits').push({phone:activeUser, amount:parseFloat(a), tid:t, method:"Manual", status:"pending"}); alert("Deposit Request Sent!"); hidePages(); }
+    }
+    
+    function doWithdraw() {
+        let a = parseFloat(document.getElementById('w-amt').value), n = document.getElementById('w-num').value;
+        if(a >= 10 && a <= wallet) { updateWalletDB(wallet - a); db.ref('requests/withdrawals').push({phone:activeUser, amount:a, target:n, status:"pending"}); alert("Withdrawal Sent!"); hidePages(); }
+        else alert("Insufficient Balance!");
+    }
 </script>
 </body>
 </html>
