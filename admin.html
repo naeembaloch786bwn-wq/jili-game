@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Admin Panel</title>
+    <title>3PattiPro Admin Panel</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 15px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 8px; margin-top: 25px; font-size: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; font-size: 14px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #007bff; color: white; }
-        .btn-approve { background: #28a745; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        .btn-reject { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        .status-pending { color: orange; font-weight: bold; }
+        .btn-approve { background: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; margin-right: 5px; }
+        .btn-reject { background: #dc3545; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Naye Khiladi (New Players)</h2>
+    <h1 style="text-align:center; color:#333;">3PattiPro Dashboard</h1>
+
+    <h2>Naye Khiladi (Players)</h2>
     <table id="playersTable">
         <thead>
             <tr>
                 <th>Naam</th>
                 <th>Email/Phone</th>
                 <th>Balance</th>
-                <th>Join Date</th>
             </tr>
         </thead>
-        <tbody>
-            </tbody>
+        <tbody></tbody>
     </table>
 
     <h2>Deposit Requests</h2>
@@ -52,7 +52,6 @@
             <tr>
                 <th>Player ID</th>
                 <th>Amount</th>
-                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -60,72 +59,88 @@
     </table>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
 <script>
-    // Firebase Configuration (Apne Firebase console se copy karein)
+    // Aapke Screenshot se li gayi Config
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-        projectId: "YOUR_PROJECT",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "YOUR_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.appspot.com",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e63e41fc2e337",
+        measurementId: "G-1YYL1T76LN"
     };
-    
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 1. Naye Players ko Real-time Load karna
+    // 1. Players Data Fetching
     db.ref('users').on('value', (snapshot) => {
         const tbody = document.querySelector("#playersTable tbody");
         tbody.innerHTML = "";
-        snapshot.forEach((childSnapshot) => {
-            const user = childSnapshot.val();
-            tbody.innerHTML += `
-                <tr>
-                    <td>${user.username}</td>
-                    <td>${user.email || user.phone}</td>
-                    <td>Rs. ${user.balance}</td>
-                    <td>${user.joinDate || 'N/A'}</td>
+        if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+                const user = child.val();
+                tbody.innerHTML += `<tr>
+                    <td>${user.username || 'No Name'}</td>
+                    <td>${user.email || user.phone || 'N/A'}</td>
+                    <td>Rs. ${user.balance || 0}</td>
                 </tr>`;
-        });
+            });
+        }
     });
 
-    // 2. Deposit Requests Handle karna
+    // 2. Deposit Requests
     db.ref('deposits').on('value', (snapshot) => {
         const tbody = document.querySelector("#depositTable tbody");
         tbody.innerHTML = "";
         snapshot.forEach((child) => {
-            const dep = child.val();
-            if(dep.status === "pending") {
-                tbody.innerHTML += `
-                <tr>
-                    <td>${dep.userId}</td>
-                    <td>${dep.amount}</td>
-                    <td>${dep.method}</td>
+            const data = child.val();
+            if(data.status === "pending") {
+                tbody.innerHTML += `<tr>
+                    <td>${data.userId}</td>
+                    <td>${data.amount}</td>
+                    <td>${data.method || 'JazzCash/EasyPaisa'}</td>
                     <td>
-                        <button class="btn-approve" onclick="approveDep('${child.key}', '${dep.userId}', ${dep.amount})">Approve</button>
-                        <button class="btn-reject" onclick="rejectReq('deposits', '${child.key}')">Reject</button>
+                        <button class="btn-approve" onclick="approveDep('${child.key}', '${data.userId}', ${data.amount})">Approve</button>
+                        <button class="btn-reject" onclick="updateStatus('deposits', '${child.key}', 'rejected')">Reject</button>
                     </td>
                 </tr>`;
             }
         });
     });
 
-    // Approve Function (Balance update karne ke liye)
+    // 3. Withdraw Requests
+    db.ref('withdrawals').on('value', (snapshot) => {
+        const tbody = document.querySelector("#withdrawTable tbody");
+        tbody.innerHTML = "";
+        snapshot.forEach((child) => {
+            const data = child.val();
+            if(data.status === "pending") {
+                tbody.innerHTML += `<tr>
+                    <td>${data.userId}</td>
+                    <td>${data.amount}</td>
+                    <td>
+                        <button class="btn-approve" onclick="updateStatus('withdrawals', '${child.key}', 'completed')">Done</button>
+                        <button class="btn-reject" onclick="updateStatus('withdrawals', '${child.key}', 'rejected')">Reject</button>
+                    </td>
+                </tr>`;
+            }
+        });
+    });
+
     function approveDep(key, userId, amount) {
-        // Balance barhana
         db.ref('users/' + userId + '/balance').transaction((current) => (current || 0) + amount);
-        // Status update karna
         db.ref('deposits/' + key).update({ status: "approved" });
-        alert("Deposit Approved!");
+        alert("Payment Approved & Balance Updated!");
     }
 
-    function rejectReq(path, key) {
-        db.ref(path + '/' + key).update({ status: "rejected" });
+    function updateStatus(path, key, status) {
+        db.ref(path + '/' + key).update({ status: status });
     }
 </script>
 
