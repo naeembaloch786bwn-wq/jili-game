@@ -227,5 +227,43 @@
     function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; document.getElementById('btn-cashout').innerText="CASH OUT"; updateUI(); }
     function addHist(v, c) { let r = document.getElementById('hist-row'); r.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + r.innerHTML; }
 </script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+<script>
+    // Aapka Exact Firebase Data
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.appspot.com",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e63e41fc2e337"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Registration Function (Ise apne Register button ke 'onclick' par lagayein)
+    function registerPlayer() {
+        const name = document.getElementById('nameInput').value; // Check karein aapka ID kya hai
+        const phone = document.getElementById('phoneInput').value;
+        const pass = document.getElementById('passInput').value;
+
+        if(!name || !phone) { alert("Fields pur karein!"); return; }
+
+        db.ref('users/' + phone).set({
+            username: name,
+            phone: phone,
+            password: pass,
+            balance: 0,
+            status: "active"
+        }).then(() => {
+            alert("Data Firebase mein chala gaya!");
+            // Yahan wo code likhein jo aapka game agle page par le jata hai
+        });
+    }
+</script>
 </body>
 </html>
