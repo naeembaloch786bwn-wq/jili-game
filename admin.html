@@ -1,137 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3PattiPro - Secure Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-
+    <title>Game Admin Panel</title>
     <style>
-        body { background: #0b0e11; color: white; font-family: sans-serif; }
-        #admin-content { display: none; padding: 20px; } /* Hidden by default */
-        .login-box { max-width: 350px; margin: 100px auto; background: #1e2329; padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #f0b90b; }
-        input { width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px; border: none; }
-        .btn-login { background: #f0b90b; color: black; font-weight: bold; width: 100%; }
-        .card-box { background: #1e2329; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
-        .stat-val { font-size: 22px; color: #f0b90b; font-weight: bold; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        .btn-approve { background: #28a745; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .btn-reject { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .status-pending { color: orange; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="login-section" class="login-box">
-    <h3 style="color: #f0b90b;">Admin Login</h3>
-    <p>Enter Master Password</p>
-    <input type="password" id="adminPass" placeholder="Password">
-    <button class="btn btn-login" onclick="checkPass()">Login Now</button>
+<div class="container">
+    <h2>Naye Khiladi (New Players)</h2>
+    <table id="playersTable">
+        <thead>
+            <tr>
+                <th>Naam</th>
+                <th>Email/Phone</th>
+                <th>Balance</th>
+                <th>Join Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <h2>Deposit Requests</h2>
+    <table id="depositTable">
+        <thead>
+            <tr>
+                <th>Player ID</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Withdrawal Requests</h2>
+    <table id="withdrawTable">
+        <thead>
+            <tr>
+                <th>Player ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
-<div id="admin-content">
-    <div class="d-flex justify-content-between">
-        <h2 style="color: #f0b90b;">3PattiPro Dashboard</h2>
-        <button class="btn btn-sm btn-danger" onclick="location.reload()">Logout</button>
-    </div>
-    <hr>
-
-    <div class="row text-center">
-        <div class="col-4"><div class="card-box"><h6>Players</h6><div id="count-users" class="stat-val">0</div></div></div>
-        <div class="col-4"><div class="card-box"><h6>Deposits</h6><div id="count-deposits" class="stat-val">0</div></div></div>
-        <div class="col-4"><div class="card-box"><h6>Withdraws</h6><div id="count-withdraws" class="stat-val">0</div></div></div>
-    </div>
-
-    <div class="card-box mt-3">
-        <h5>New Users</h5>
-        <table class="table table-dark table-sm">
-            <thead><tr><th>Phone</th><th>Name</th><th>Balance</th></tr></thead>
-            <tbody id="user-body"></tbody>
-        </table>
-    </div>
-
-    <div class="card-box mt-3">
-        <h5 class="text-success">Pending Deposits</h5>
-        <table class="table table-dark table-sm">
-            <tbody id="deposit-body"></tbody>
-        </table>
-    </div>
-
-    <div class="card-box mt-3">
-        <h5 class="text-danger">Pending Withdrawals</h5>
-        <table class="table table-dark table-sm">
-            <tbody id="withdraw-body"></tbody>
-        </table>
-    </div>
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 
 <script>
-    // --- Security Check ---
-    function checkPass() {
-        const pass = document.getElementById('adminPass').value;
-        // Aapka Password niche hai (Ise change kar saktay hain)
-        if(pass === "786786") { 
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('admin-content').style.display = 'block';
-            loadData(); // Start loading data
-        } else {
-            alert("Wrong Password!");
-        }
-    }
-
-    // --- Firebase Config ---
+    // Firebase Configuration (Apne Firebase console se copy karein)
     const firebaseConfig = {
-        apiKey: "AIzaSyDTNneivrTLe-s-e0lLKw1fUixVSjDfu2k",
-        authDomain: "pattipro-c1ffe.firebaseapp.com",
-        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
-        projectId: "pattipro-c1ffe",
-        storageBucket: "pattipro-c1ffe.firebasestorage.app",
-        messagingSenderId: "766843054614",
-        appId: "1:766843054614:web:781658832e63e41fc2e337"
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+        projectId: "YOUR_PROJECT",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "YOUR_ID",
+        appId: "YOUR_APP_ID"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function loadData() {
-        // Users
-        db.ref('users').on('value', snap => {
-            let html = ""; let count = 0;
-            snap.forEach(child => {
-                count++; let u = child.val();
-                html += `<tr><td>${u.phone}</td><td>${u.name}</td><td class="text-warning">${u.balance}</td></tr>`;
-            });
-            document.getElementById('user-body').innerHTML = html;
-            document.getElementById('count-users').innerText = count;
+    // 1. Naye Players ko Real-time Load karna
+    db.ref('users').on('value', (snapshot) => {
+        const tbody = document.querySelector("#playersTable tbody");
+        tbody.innerHTML = "";
+        snapshot.forEach((childSnapshot) => {
+            const user = childSnapshot.val();
+            tbody.innerHTML += `
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.email || user.phone}</td>
+                    <td>Rs. ${user.balance}</td>
+                    <td>${user.joinDate || 'N/A'}</td>
+                </tr>`;
         });
+    });
 
-        // Deposits
-        db.ref('deposits').orderByChild('status').equalTo('pending').on('value', snap => {
-            let html = ""; let count = 0;
-            snap.forEach(child => {
-                count++; let d = child.val();
-                html += `<tr><td>${d.phone}</td><td>Rs.${d.amount}</td><td><button class="btn btn-xs btn-success" onclick="approveDep('${child.key}','${d.phone}',${d.amount})">✔</button></td></tr>`;
-            });
-            document.getElementById('deposit-body').innerHTML = html;
-            document.getElementById('count-deposits').innerText = count;
+    // 2. Deposit Requests Handle karna
+    db.ref('deposits').on('value', (snapshot) => {
+        const tbody = document.querySelector("#depositTable tbody");
+        tbody.innerHTML = "";
+        snapshot.forEach((child) => {
+            const dep = child.val();
+            if(dep.status === "pending") {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${dep.userId}</td>
+                    <td>${dep.amount}</td>
+                    <td>${dep.method}</td>
+                    <td>
+                        <button class="btn-approve" onclick="approveDep('${child.key}', '${dep.userId}', ${dep.amount})">Approve</button>
+                        <button class="btn-reject" onclick="rejectReq('deposits', '${child.key}')">Reject</button>
+                    </td>
+                </tr>`;
+            }
         });
+    });
 
-        // Withdrawals
-        db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', snap => {
-            let html = ""; let count = 0;
-            snap.forEach(child => {
-                count++; let w = child.val();
-                html += `<tr><td>${w.phone}</td><td>Rs.${w.amount}</td><td><button class="btn btn-xs btn-danger" onclick="doneWith('${child.key}')">Paid</button></td></tr>`;
-            });
-            document.getElementById('withdraw-body').innerHTML = html;
-            document.getElementById('count-withdraws').innerText = count;
-        });
+    // Approve Function (Balance update karne ke liye)
+    function approveDep(key, userId, amount) {
+        // Balance barhana
+        db.ref('users/' + userId + '/balance').transaction((current) => (current || 0) + amount);
+        // Status update karna
+        db.ref('deposits/' + key).update({ status: "approved" });
+        alert("Deposit Approved!");
     }
 
-    function approveDep(id, phone, amt) {
-        db.ref('users/' + phone).child('balance').transaction(c => (c || 0) + amt);
-        db.ref('deposits/' + id).update({ status: 'approved' });
-    }
-    function doneWith(id) {
-        db.ref('withdrawals/' + id).update({ status: 'completed' });
+    function rejectReq(path, key) {
+        db.ref(path + '/' + key).update({ status: "rejected" });
     }
 </script>
+
 </body>
 </html>
