@@ -10,28 +10,30 @@
         header { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
         .bal-box { border: 1.5px solid var(--gold); padding: 5px 10px; border-radius: 5px; }
 
-        #game-arena { width: 92%; height: 240px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #333; }
+        #game-arena { width: 92%; height: 240px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #333; }
         .history-bar { width: 92%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 40px; }
-        .h-item { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 3px; font-weight: bold; }
+        .h-item { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 3px; font-weight: bold; color: #000; }
 
         .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 92%; margin: 10px auto; }
-        .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 12px; text-align: center; cursor: pointer; font-size: 14px; }
+        .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 12px; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; }
 
         .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; }
+        .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
-        .dvt-select { display: none; gap: 10px; margin-bottom: 10px; justify-content: center; }
-        .sel-btn { padding: 10px 20px; border-radius: 5px; border: none; font-weight: bold; color: white; }
+        /* DVT Cards Animation */
+        .card { width: 55px; height: 80px; background: white; color: black; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; transition: transform 0.6s; transform-style: preserve-3d; margin: 10px; }
+        .dvt-select { display: none; gap: 10px; margin-bottom: 10px; justify-content: center; width: 100%; }
+        .sel-btn { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; color: white; }
 
         .action-bar { display: flex; gap: 5px; margin-top: 10px; }
         .act-btn { flex: 1; padding: 8px; border-radius: 5px; border: none; background: #333; color: white; font-size: 11px; }
 
         .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-        .form-box { background: #1a1a1a; margin: 15px; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
+        .form-box { background: #1a1a1a; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); }
+        input { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
 
         .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 40px; height: 40px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 20px; }
+        .tile { width: 40px; height: 40px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -42,7 +44,7 @@
 </header>
 
 <div id="game-arena">
-    <div id="display-area"><h2>CHOOSE GAME</h2></div>
+    <div id="display-area" style="text-align:center;"><h2>CHOOSE GAME</h2></div>
 </div>
 
 <div class="history-bar" id="hist-row"></div>
@@ -68,18 +70,6 @@
         <button class="act-btn" onclick="showPage('ref-page')">REFER</button>
         <button class="act-btn" onclick="showPage('sup-page')">SUPPORT</button>
     </div>
-</div>
-
-<div id="dep-page" class="page">
-    <h2>DEPOSIT</h2>
-    <div class="form-box">
-        <p>Send JazzCash to: <b>03289230760</b></p>
-        <input type="number" id="d-num" placeholder="Sender Number">
-        <input type="number" id="d-amt" placeholder="Amount">
-        <input type="text" id="d-tid" placeholder="Transaction ID">
-        <button class="btn-play" onclick="processDeposit()">SUBMIT</button>
-    </div>
-    <button onclick="hidePages()" style="color:white; background:none; border:none; margin-top:10px;">CLOSE</button>
 </div>
 
 <script type="module">
@@ -122,18 +112,13 @@
         document.getElementById('btn-cashout').style.display = "none";
     }
 
-    function selectSide(s) { sideSelected = s; alert("Selected: " + s); }
-
-    function processDeposit() {
-        let a = parseFloat(document.getElementById('d-amt').value);
-        if(a >= 1599) wallet += 220; 
-        wallet += a; updateUI(); hidePages(); alert("Deposit Submitted!");
-    }
+    function selectSide(s) { sideSelected = s; alert("Side: " + s); }
 
     function startPlay() {
         if(!room || isPlaying) return;
         bet = parseFloat(document.getElementById('bet-input').value);
-        if(bet < 10 || bet > wallet) { alert("Balance Low!"); return; }
+        if(bet < 10 || bet > wallet) return alert("Low Balance!");
+        if(room === 'DVT' && !sideSelected) return alert("Select Side!");
 
         wallet -= bet; updateUI(); isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
@@ -143,47 +128,62 @@
         else if(room === 'DVT') runDVT();
     }
 
+    // 35% Win Rate Logic for All Games
     function runCrash() {
         document.getElementById('btn-cashout').style.display = "block";
-        let d = document.getElementById('display-area');
-        mult = 1.0; let crashAt = (Math.random() * 3) + 1.1;
+        mult = 1.0; 
+        // 65% loss: crash at 1.01x - 1.2x
+        let crashAt = (Math.random() < 0.65) ? (Math.random() * 0.2) + 1.01 : (Math.random() * 3) + 1.5;
         timer = setInterval(() => {
             mult += 0.05;
-            d.innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
-            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); endGame("Crashed!"); }
+            document.getElementById('display-area').innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
+            if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); endGame("CRASHED!"); }
         }, 150);
     }
 
     function runMines() {
         document.getElementById('btn-cashout').style.display = "block";
-        let arena = document.getElementById('game-arena');
         let grid = '<div class="mines-grid">';
-        for(let i=0; i<25; i++) grid += `<div class="tile" onclick="openMine(this)">?</div>`;
-        arena.innerHTML = grid + '</div>';
-        mult = 1.0;
+        for(let i=0; i<25; i++) grid += `<div class="tile" onclick="openTile(this)">?</div>`;
+        document.getElementById('display-area').innerHTML = grid + '</div>';
     }
 
-    function openMine(el) {
+    function openTile(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.15) { el.innerHTML="💣"; endGame("BOOM!"); }
-        else { el.innerHTML="💎"; mult += 0.2; }
+        if(Math.random() < 0.55) { el.innerHTML="💣"; endGame("BOOM!"); } // High loss rate
+        else { el.innerHTML="💎"; mult += 0.25; }
     }
 
     function runDVT() {
+        document.getElementById('display-area').innerHTML = `
+            <div id="d-card" class="card">?</div>
+            <div id="t-card" class="card">?</div>
+        `;
         setTimeout(() => {
-            let win = Math.random() < 0.5 ? 'Dragon' : 'Tiger';
-            document.getElementById('display-area').innerHTML = `<h1>Winner: ${win}</h1>`;
-            if(sideSelected === win) { wallet += (bet * 1.9); addHist(win[0]+"-WIN", "green"); }
-            else { addHist(win[0]+"-WIN", "red"); }
-            updateUI(); endGame();
-        }, 1500);
+            // 35% Win Probability
+            let winSide = (Math.random() < 0.35) ? sideSelected : (sideSelected === 'Dragon' ? 'Tiger' : 'Dragon');
+            let dVal = Math.floor(Math.random()*13)+1;
+            let tVal = Math.floor(Math.random()*13)+1;
+
+            let dC = document.getElementById('d-card');
+            let tC = document.getElementById('t-card');
+            dC.innerText = dVal; tC.innerText = tVal;
+            dC.style.transform = "rotateY(360deg)"; tC.style.transform = "rotateY(360deg)";
+
+            setTimeout(() => {
+                document.getElementById('display-area').innerHTML = `<h1>${winSide.toUpperCase()} WINS</h1>`;
+                if(sideSelected === winSide) { wallet += (bet * 1.9); addHist(winSide[0], "green"); }
+                else { addHist(winSide[0], "red"); }
+                updateUI(); endGame();
+            }, 1000);
+        }, 800);
     }
 
     function cashOutNow() {
         if(!isPlaying) return;
         wallet += (bet * mult);
         addHist(mult.toFixed(2)+"x", "green");
-        endGame("Won: " + (bet*mult).toFixed(2));
+        endGame("WON!");
     }
 
     function endGame(m) {
@@ -191,7 +191,7 @@
         isPlaying = false; clearInterval(timer);
         document.getElementById('btn-play').style.display = "block";
         document.getElementById('btn-cashout').style.display = "none";
-        updateUI();
+        sideSelected = ""; updateUI();
     }
 
     function addHist(v, c) {
