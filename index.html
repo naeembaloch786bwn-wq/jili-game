@@ -265,5 +265,68 @@
         });
     }
 </script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+<script>
+    // Aapke Screenshot se li gayi exact Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.appspot.com",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e63e41fc2e337"
+    };
+
+    // Firebase ko initialize karna
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // REGISTRATION FUNCTION: Jo aapke screenshot mein tha
+    // Ise apne button par onclick="registerNow()" karke lagayein
+    function registerNow() {
+        const name = document.getElementById('name').value; // Check karein ID 'name' hi ho
+        const phone = document.getElementById('phone').value; // ID 'phone' honi chahiye
+        const pass = document.getElementById('pass').value;
+
+        if(!name || !phone) { 
+            alert("Meharbani karke fields pur karein!"); 
+            return; 
+        }
+
+        // Data database mein bhejney ka sahi tarika
+        db.ref('users/' + phone).set({
+            username: name,
+            phone: phone,
+            password: pass,
+            balance: 0,
+            status: "active"
+        }).then(() => {
+            alert("Data Firebase mein chala gaya!");
+            // Yahan aapka purana logic jo game start karta hai
+        }).catch((error) => {
+            alert("Error: " + error.message);
+        });
+    }
+
+    // ADMIN PANEL DATA: Jo data ko table mein dikhayega
+    db.ref('users').on('value', (snapshot) => {
+        const tbody = document.querySelector("#playersTable tbody");
+        if(tbody) {
+            tbody.innerHTML = "";
+            snapshot.forEach((child) => {
+                const user = child.val();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>${user.phone}</td>
+                        <td>Rs. ${user.balance || 0}</td>
+                    </tr>`;
+            });
+        }
+    });
+</script>
 </body>
 </html>
