@@ -10,6 +10,12 @@
         header { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
         .bal-box { border: 1.5px solid var(--gold); padding: 5px 10px; border-radius: 5px; }
 
+        /* Auth Screen Styling */
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .auth-box { background: #1a1a1a; padding: 25px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); text-align: center; }
+        
+        /* Game Arena & UI */
+        #game-content { display: none; } /* Chupaya hua hai jab tak login na ho */
         #game-arena { width: 92%; height: 240px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .history-bar { width: 92%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 40px; }
         .h-item { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 3px; font-weight: bold; }
@@ -18,121 +24,132 @@
         .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 12px; text-align: center; cursor: pointer; font-size: 14px; }
 
         .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; }
+        .btn-play { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
-        .dvt-select { display: none; gap: 10px; margin-bottom: 10px; justify-content: center; }
-        .sel-btn { padding: 10px 20px; border-radius: 5px; border: none; font-weight: bold; }
-
-        .action-bar { display: flex; gap: 5px; margin-top: 10px; }
-        .act-btn { flex: 1; padding: 8px; border-radius: 5px; border: none; background: #333; color: white; font-size: 11px; }
-
         .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
         .form-box { background: #1a1a1a; margin: 15px; padding: 20px; border-radius: 10px; width: 85%; border: 1px solid var(--gold); }
         input, select { background: #000; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin-bottom: 10px; box-sizing: border-box; border-radius: 5px; }
-
+        
         .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 40px; height: 40px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-<header>
-    <div style="font-weight: 900; color: var(--gold);">NAEEM PRO</div>
-    <div class="bal-box">PKR <span id="wallet">150</span></div>
-</header>
-
-<div id="game-arena">
-    <div id="display-area"><h2>CHOOSE GAME</h2></div>
-</div>
-
-<div class="history-bar" id="hist-row"></div>
-
-<div class="main-nav">
-    <div class="nav-btn" onclick="setRoom('CRASH')">CRASH</div>
-    <div class="nav-btn" onclick="setRoom('MINES')">MINES</div>
-    <div class="nav-btn" onclick="setRoom('DVT')">DVT</div>
-</div>
-
-<div class="controls">
-    <div id="dvt-choice" class="dvt-select">
-        <button class="sel-btn" style="background: #e74c3c; color: white;" onclick="selectSide('Dragon')">Dragon</button>
-        <button class="sel-btn" style="background: #3498db; color: white;" onclick="selectSide('Tiger')">Tiger</button>
+<div id="auth-screen">
+    <h1 style="color: var(--gold); margin-bottom: 20px;">NAEEM PRO ENGINE</h1>
+    <div class="auth-box">
+        <h2 id="auth-title">LOGIN</h2>
+        <input type="email" id="auth-email" placeholder="Email Address">
+        <input type="password" id="auth-pass" placeholder="Password">
+        <button id="auth-btn" class="btn-play">LOGIN NOW</button>
+        <p style="font-size: 12px; margin-top: 15px;" id="auth-toggle">Don't have an account? <span style="color: var(--gold); cursor: pointer;">Register</span></p>
     </div>
-    <input type="number" id="bet-input" value="10">
-    <button id="btn-play" class="btn-play" onclick="startPlay()">START PLAY</button>
-    <button id="btn-cashout" class="btn-play" style="display:none; background: #2ecc71;" onclick="cashOutNow()">CASH OUT</button>
+</div>
 
-    <div class="action-bar">
-        <button class="act-btn" onclick="showPage('dep-page')">DEPOSIT</button>
-        <button class="act-btn" onclick="showPage('wit-page')">WITHDRAW</button>
-        <button class="act-btn" onclick="showPage('ref-page')">REFER</button>
-        <button class="act-btn" onclick="showPage('sup-page')">SUPPORT</button>
+<div id="game-content">
+    <header>
+        <div style="font-weight: 900; color: var(--gold);">NAEEM PRO</div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="bal-box">PKR <span id="wallet">150</span></div>
+            <button onclick="logout()" style="background: red; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 10px;">LOGOUT</button>
+        </div>
+    </header>
+
+    <div id="game-arena">
+        <div id="display-area"><h2>CHOOSE GAME</h2></div>
+    </div>
+
+    <div class="history-bar" id="hist-row"></div>
+
+    <div class="main-nav">
+        <div class="nav-btn" onclick="setRoom('CRASH')">CRASH</div>
+        <div class="nav-btn" onclick="setRoom('MINES')">MINES</div>
+        <div class="nav-btn" onclick="setRoom('DVT')">DVT</div>
+    </div>
+
+    <div class="controls">
+        <div id="dvt-choice" style="display:none; gap: 10px; margin-bottom: 10px; justify-content: center;">
+            <button class="btn-play" style="background: #e74c3c; width: 45%; color: white;" onclick="selectSide('Dragon')">Dragon</button>
+            <button class="btn-play" style="background: #3498db; width: 45%; color: white;" onclick="selectSide('Tiger')">Tiger</button>
+        </div>
+        <input type="number" id="bet-input" value="10">
+        <button id="btn-play" class="btn-play" onclick="startPlay()">START PLAY</button>
+        <button id="btn-cashout" class="btn-play" style="display:none; background: #2ecc71;" onclick="cashOutNow()">CASH OUT</button>
+
+        <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <button class="btn-play" style="font-size: 10px; padding: 8px;" onclick="showPage('dep-page')">DEPOSIT</button>
+            <button class="btn-play" style="font-size: 10px; padding: 8px;" onclick="showPage('wit-page')">WITHDRAW</button>
+        </div>
     </div>
 </div>
 
 <div id="dep-page" class="page">
-    <h2>DEPOSIT</h2>
     <div class="form-box">
-        <p>Send JazzCash to: <b>03289230760</b></p>
-        <input type="number" id="d-num" placeholder="Sender Number">
+        <h2>DEPOSIT</h2>
+        <p>JazzCash: <b>03289230760</b></p>
         <input type="number" id="d-amt" placeholder="Amount">
-        <input type="text" id="d-tid" placeholder="Transaction ID">
-        <button class="btn-play" onclick="processDeposit()">SUBMIT</button>
+        <button class="btn-play" onclick="alert('Submitted!'); hidePages();">SUBMIT</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:white; margin-top:10px; width:100%;">BACK</button>
     </div>
-    <button onclick="hidePages()" style="color:white; background:none; border:none; margin-top:10px;">CLOSE</button>
-</div>
-
-<div id="wit-page" class="page">
-    <h2>WITHDRAW</h2>
-    <div class="form-box">
-        <select id="w-method">
-            <option value="EasyPaisa">EasyPaisa</option>
-            <option value="JazzCash">JazzCash</option>
-        </select>
-        <input type="number" id="w-num" placeholder="Account Number">
-        <input type="number" id="w-amt" placeholder="Amount">
-        <button class="btn-play" onclick="processWithdraw()">WITHDRAW</button>
-    </div>
-    <button onclick="hidePages()" style="color:white; background:none; border:none; margin-top:10px;">CLOSE</button>
-</div>
-
-<div id="ref-page" class="page">
-    <h2>REFER & EARN</h2>
-    <div class="form-box">
-        <p>Invite friends for PKR 220 bonus!</p>
-        <button class="btn-play" onclick="alert('Copied!')">GET LINK</button>
-    </div>
-    <button onclick="hidePages()" style="color:white; background:none; border:none; margin-top:10px;">CLOSE</button>
-</div>
-
-<div id="sup-page" class="page">
-    <h2>SUPPORT</h2>
-    <div class="form-box">
-        <button class="btn-play" style="background:#25D366;">WHATSAPP</button>
-    </div>
-    <button onclick="hidePages()" style="color:white; background:none; border:none; margin-top:10px;">CLOSE</button>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDTNneivrTLe-a-eO1LKw1fUixVSjDfu2k",
     authDomain: "pattipro-c1ffe.firebaseapp.com",
-    databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
     projectId: "pattipro-c1ffe",
-    storageBucket: "pattipro-c1ffe.appspot.com",
-    messagingSenderId: "766843054614",
-    appId: "1:766843054614:web:781658832e63e41fc2e337",
-    measurementId: "G-1YYL1T76LN"
+    appId: "1:766843054614:web:781658832e63e41fc2e337"
   };
 
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+
+  const authBtn = document.getElementById('auth-btn');
+  const toggleBtn = document.getElementById('auth-toggle');
+  let isLoginMode = true;
+
+  // Toggle Login/Register
+  toggleBtn.onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? "LOGIN" : "REGISTER";
+    authBtn.innerText = isLoginMode ? "LOGIN NOW" : "REGISTER NOW";
+    toggleBtn.innerHTML = isLoginMode ? "Don't have an account? <span style='color:var(--gold)'>Register</span>" : "Already have an account? <span style='color:var(--gold)'>Login</span>";
+  };
+
+  // Auth Action
+  authBtn.onclick = async () => {
+    const email = document.getElementById('auth-email').value;
+    const pass = document.getElementById('auth-pass').value;
+    try {
+        if (isLoginMode) {
+            await signInWithEmailAndPassword(auth, email, pass);
+        } else {
+            await createUserWithEmailAndPassword(auth, email, pass);
+            alert("Account Created!");
+        }
+    } catch (e) { alert(e.message); }
+  };
+
+  // Check User Session
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById('auth-screen').style.display = "none";
+        document.getElementById('game-content').style.display = "block";
+    } else {
+        document.getElementById('auth-screen').style.display = "flex";
+        document.getElementById('game-content').style.display = "none";
+    }
+  });
+
+  window.logout = () => signOut(auth);
 </script>
 
 <script>
+    // Game Logic (Same as your previous screenshots)
     let wallet = 150.0;
     let room = "";
     let isPlaying = false;
@@ -151,28 +168,12 @@
         document.getElementById('dvt-choice').style.display = (r === 'DVT') ? 'flex' : 'none';
     }
 
-    function selectSide(s) { sideSelected = s; alert("Side: " + s); }
-
-    function processDeposit() {
-        let a = parseFloat(document.getElementById('d-amt').value);
-        if(a >= 1599) wallet += 220; // Photo ke mutabiq bonus logic
-        wallet += a;
-        updateUI(); hidePages();
-        alert("Deposit Submitted!");
-    }
-
-    function processWithdraw() {
-        let a = parseFloat(document.getElementById('w-amt').value);
-        if(a > wallet || a < 100) { alert("Invalid!"); return; }
-        wallet -= a; updateUI(); hidePages();
-        alert("Withdrawal Successful!");
-    }
+    function selectSide(s) { sideSelected = s; alert("Selected: " + s); }
 
     function startPlay() {
         if(!room || isPlaying) return;
-        if(room === 'DVT' && !sideSelected) { alert("Select Side!"); return; }
         bet = parseFloat(document.getElementById('bet-input').value);
-        if(bet < 10 || bet > wallet) { alert("Balance Low!"); return; }
+        if(bet < 10 || bet > wallet) { alert("Insufficient Balance!"); return; }
 
         wallet -= bet; updateUI(); isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
@@ -185,10 +186,8 @@
     function runCrash() {
         document.getElementById('btn-cashout').style.display = "block";
         let d = document.getElementById('display-area');
-        mult = 1.0;
-        let crashAt = (Math.random() * 3) + 1;
+        mult = 1.0; let crashAt = (Math.random() * 3) + 1;
         timer = setInterval(() => {
-            if(!isPlaying) return;
             mult += 0.05;
             d.innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
             if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); endGame("Crashed!"); }
@@ -225,7 +224,7 @@
         if(!isPlaying) return;
         wallet += (bet * mult);
         addHist(mult.toFixed(2)+"x", "green");
-        endGame("Won: " + (bet*mult).toFixed(2));
+        endGame();
     }
 
     function endGame(m) {
