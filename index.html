@@ -9,34 +9,26 @@
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; }
         header { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
         .bal-box { border: 1.5px solid var(--gold); padding: 5px 10px; border-radius: 5px; font-weight: bold; }
-
-        #game-arena { width: 92%; height: 260px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #333; }
-        .history-bar { width: 92%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 45px; background: #111; border-radius: 5px; }
+        #game-arena { width: 92%; height: 260px; margin: 10px auto; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #333; overflow: hidden; }
+        .history-bar { width: 92%; overflow-x: auto; margin: 5px auto; white-space: nowrap; height: 45px; background: #111; border-radius: 5px; border: 1px solid #222; }
         .h-item { display: inline-block; padding: 6px 12px; margin: 4px; border-radius: 4px; font-weight: bold; color: #000; font-size: 12px; }
-
         .main-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 92%; margin: 10px auto; }
         .nav-btn { background: #1a1a1a; border-bottom: 2px solid var(--gold); padding: 15px; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        .nav-btn:active { background: #333; }
-
         .controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px; box-sizing: border-box; border-top: 1px solid #333; z-index: 50; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 14px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        
-        .card { width: 60px; height: 90px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; transition: transform 0.6s; transform-style: preserve-3d; margin: 10px; border: 2px solid #ddd; }
-        .dvt-select { display: none; gap: 10px; margin-bottom: 15px; justify-content: center; width: 100%; }
-        .sel-btn { flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; color: white; font-size: 14px; cursor: pointer; }
-
-        .action-bar { display: flex; gap: 6px; margin-top: 12px; }
-        .act-btn { flex: 1; padding: 10px; border-radius: 5px; border: none; background: #222; color: white; font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #333; }
-
-        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
-        .form-box { background: #1a1a1a; padding: 25px; border-radius: 12px; width: 85%; border: 1px solid var(--gold); text-align: center; box-shadow: 0 0 20px rgba(241, 196, 15, 0.2); }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 14px; width: 100%; margin-bottom: 12px; box-sizing: border-box; border-radius: 6px; font-size: 14px; outline: none; }
-
+        .btn-play { background: var(--gold); color: black; border: none; padding: 14px; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px; box-shadow: 0 4px #b8950c; }
+        .btn-play:active { transform: translateY(2px); box-shadow: none; }
+        .card { width: 65px; height: 95px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; margin: 10px; border: 2px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 10px; }
-        .tile { width: 48px; height: 48px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; cursor: pointer; transition: 0.2s; box-shadow: inset 0 0 5px #000; }
-        
+        .tile { width: 48px; height: 48px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; cursor: pointer; border: 1px solid #444; }
+        .page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+        .form-box { background: #1a1a1a; padding: 25px; border-radius: 12px; width: 85%; border: 1px solid var(--gold); text-align: center; }
+        input, select { background: #000; border: 1px solid #333; color: white; padding: 14px; width: 100%; margin-bottom: 12px; border-radius: 6px; box-sizing: border-box; outline: none; }
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .logout-btn { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .logout-btn { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        .dvt-select { display: none; gap: 10px; margin-bottom: 15px; justify-content: center; width: 100%; }
+        .sel-btn { flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; font-size: 14px; }
+        .action-bar { display: flex; gap: 5px; margin-top: 10px; }
+        .act-btn { flex: 1; padding: 10px; background: #222; color: white; border: 1px solid #333; font-size: 10px; font-weight: bold; border-radius: 4px; }
     </style>
 </head>
 <body onload="checkAuth()">
@@ -44,10 +36,11 @@
 <div id="auth-overlay">
     <div class="form-box">
         <h2 id="auth-title" style="color:var(--gold); letter-spacing: 2px;">777 ULTRA</h2>
-        <input type="text" id="user-in" placeholder="Username">
+        <input type="text" id="user-in" placeholder="Full Name (For Register)">
+        <input type="text" id="phone-in" placeholder="Phone Number">
         <input type="password" id="pass-in" placeholder="Password">
         <button class="btn-play" onclick="handleAuth()">PROCEED</button>
-        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:12px; margin-top:18px; cursor:pointer; color:var(--gold); text-decoration: underline;">Switch to Register/Login</p>
+        <p onclick="toggleAuth()" id="toggle-txt" style="font-size:12px; margin-top:18px; cursor:pointer; color:var(--gold);">Switch to Register/Login</p>
     </div>
 </div>
 
@@ -60,7 +53,7 @@
 </header>
 
 <div id="game-arena">
-    <div id="display-area" style="text-align:center; width: 100%;"><h2>FAST ENGINE READY</h2></div>
+    <div id="display-area" style="text-align:center; width: 100%;"><h2>777 ULTRA ENGINE READY</h2></div>
 </div>
 
 <div class="history-bar" id="hist-row"></div>
@@ -91,12 +84,12 @@
 <div id="dep-page" class="page">
     <div class="form-box">
         <h2 style="color:var(--gold)">DEPOSIT</h2>
-        <p style="font-size:12px; margin-bottom: 15px;">Send JazzCash/EasyPaisa: <br><b>03289230760</b></p>
+        <p style="font-size:12px;">Admin: 03289230760</p>
         <select id="d-method"><option>JazzCash</option><option>EasyPaisa</option></select>
-        <input type="number" id="d-amt" placeholder="Enter Amount">
-        <input type="text" id="d-tid" placeholder="Transaction ID (TID)">
-        <button class="btn-play" onclick="doDeposit()">SUBMIT DEPOSIT</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px; cursor:pointer;">CLOSE</button>
+        <input type="number" id="d-amt" placeholder="Amount">
+        <input type="text" id="d-tid" placeholder="TID">
+        <button class="btn-play" onclick="doDeposit()">SUBMIT</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
     </div>
 </div>
 
@@ -105,228 +98,166 @@
         <h2 style="color:var(--gold)">WITHDRAW</h2>
         <select id="w-method"><option>JazzCash</option><option>EasyPaisa</option></select>
         <input type="text" id="w-num" placeholder="Account Number">
-        <input type="number" id="w-amt" placeholder="Withdrawal Amount">
-        <button class="btn-play" onclick="doWithdraw()">WITHDRAW NOW</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px; cursor:pointer;">CLOSE</button>
+        <input type="number" id="w-amt" placeholder="Amount">
+        <button class="btn-play" onclick="doWithdraw()">WITHDRAW</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
     </div>
 </div>
 
 <div id="ref-page" class="page">
     <div class="form-box">
         <h2 style="color:var(--gold)">REFER & EARN</h2>
-        <p style="font-size:12px;">Earn PKR 220 per invite!</p>
-        <input type="text" readonly value="https://777ultra.com/join/naeem786" style="text-align:center;">
-        <button class="btn-play" onclick="alert('Link Copied!')">COPY LINK</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px;">BACK</button>
+        <p>Invite friends and earn PKR 220 bonus.</p>
+        <button class="btn-play" onclick="alert('Link Copied!')">COPY REFER LINK</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
     </div>
 </div>
 
 <div id="sup-page" class="page">
     <div class="form-box">
         <h2 style="color:var(--gold)">SUPPORT</h2>
-        <p style="font-size:14px;">Contact Admin for Issues</p>
-        <button class="btn-play" style="background:#25d366; color:white;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP ADMIN</button>
-        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:15px;">BACK</button>
+        <button class="btn-play" style="background:#25d366; color:white;" onclick="window.open('https://wa.me/923289230760')">WHATSAPP</button>
+        <button onclick="hidePages()" style="background:none; border:none; color:#777; margin-top:10px;">CLOSE</button>
     </div>
 </div>
 
-<script>
-    let wallet = 150.0;
-    let room = "", isPlaying = false, bet = 0, mult = 1.0, timer, sideSelected = "", isLoginMode = true;
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
-    function checkAuth() { if(localStorage.getItem("activeUser")) { document.getElementById('auth-overlay').style.display='none'; wallet = parseFloat(localStorage.getItem("naeem_balance")) || 150; updateUI(); } }
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
+        authDomain: "pattipro-c1ffe.firebaseapp.com",
+        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+        projectId: "pattipro-c1ffe",
+        storageBucket: "pattipro-c1ffe.appspot.com",
+        messagingSenderId: "766843054614",
+        appId: "1:766843054614:web:781658832e63e41fc2e337"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let wallet = 0, room = "", isPlaying = false, bet = 0, mult = 1.0, timer, sideSelected = "", isLoginMode = true;
+    let activeUser = localStorage.getItem("activeUser");
+
+    function checkAuth() {
+        if(activeUser) {
+            db.ref('users/' + activeUser).on('value', (snap) => {
+                if(snap.exists()){
+                    wallet = snap.val().balance;
+                    document.getElementById('wallet').innerText = wallet.toFixed(2);
+                    document.getElementById('auth-overlay').style.display = 'none';
+                }
+            });
+        }
+    }
+
     function toggleAuth() { isLoginMode = !isLoginMode; document.getElementById('auth-title').innerText = isLoginMode ? "LOGIN" : "REGISTER"; }
+
     function handleAuth() {
         let u = document.getElementById('user-in').value;
-        let p = document.getElementById('pass-in').value;
-        if(u.length < 3) return alert("Enter valid Username");
-        if(isLoginMode) { if(u === localStorage.getItem("u_"+u) && p === localStorage.getItem("p_"+u)) { localStorage.setItem("activeUser", u); checkAuth(); } else alert("Invalid Login!"); }
-        else { localStorage.setItem("u_"+u, u); localStorage.setItem("p_"+u, p); localStorage.setItem("naeem_balance", 150); alert("Success! Now Login."); toggleAuth(); }
-    }
-    function logout() { localStorage.removeItem("activeUser"); location.reload(); }
+        let ph = document.getElementById('phone-in').value;
+        let ps = document.getElementById('pass-in').value;
+        if(!ph || !ps) return alert("Sari fields bharein!");
 
-    function updateUI() { document.getElementById('wallet').innerText = wallet.toFixed(2); localStorage.setItem("naeem_balance", wallet); }
+        if(isLoginMode) {
+            db.ref('users/' + ph).once('value', (snap) => {
+                if(snap.exists() && snap.val().password === ps) {
+                    localStorage.setItem("activeUser", ph);
+                    location.reload();
+                } else alert("Galt Password ya Number!");
+            });
+        } else {
+            // New User Registration with 80 Bonus
+            db.ref('users/' + ph).set({ username: u, phone: ph, password: ps, balance: 80, status: "active" })
+            .then(() => { alert("Account Ban Gaya! Login Karein."); toggleAuth(); });
+        }
+    }
+
+    function logout() { localStorage.removeItem("activeUser"); location.reload(); }
     function showPage(id) { document.getElementById(id).style.display = "flex"; }
     function hidePages() { document.querySelectorAll('.page').forEach(p => p.style.display="none"); }
 
-    function doDeposit() { 
+    function updateWalletDB(newBal) { if(activeUser) db.ref('users/' + activeUser).update({ balance: newBal }); }
+
+    function doDeposit() {
         let a = parseFloat(document.getElementById('d-amt').value);
         let t = document.getElementById('d-tid').value;
-        if(a > 0 && t.length > 5) { wallet += a; updateUI(); hidePages(); alert("PKR " + a + " Deposited!"); } else alert("Enter Amount & TID!");
-    }
-    function doWithdraw() { 
-        let a = parseFloat(document.getElementById('w-amt').value); 
-        if(a >= 10 && a <= wallet) { wallet -= a; updateUI(); hidePages(); alert("Withdrawal Sent!"); } else alert("Invalid Amount!");
+        let m = document.getElementById('d-method').value;
+        if(a > 0 && t) {
+            db.ref('requests/deposits').push({ phone: activeUser, amount: a, tid: t, method: m, status: "pending", time: new Date().toLocaleString() });
+            alert("Deposit Request Sent!"); hidePages();
+        }
     }
 
+    function doWithdraw() {
+        let a = parseFloat(document.getElementById('w-amt').value);
+        let n = document.getElementById('w-num').value;
+        let m = document.getElementById('w-method').value;
+        if(a >= 10 && a <= wallet) {
+            updateWalletDB(wallet - a);
+            db.ref('requests/withdrawals').push({ phone: activeUser, amount: a, target: n, method: m, status: "pending", time: new Date().toLocaleString() });
+            alert("Withdraw Request Sent!"); hidePages();
+        } else alert("Balance Kam Hai!");
+    }
+
+    // --- FULL ENGINE GAMES ---
     function setRoom(r) {
         room = r; document.getElementById('display-area').innerHTML = `<h2>${r} MODE</h2>`;
         document.getElementById('dvt-choice').style.display = (r === 'DVT') ? 'flex' : 'none';
-        document.getElementById('btn-play').style.display = "block";
-        document.getElementById('btn-cashout').style.display = "none";
         isPlaying = false; clearInterval(timer);
     }
-    function selectSide(s) { sideSelected = s; alert("Side: " + s); }
+
+    function selectSide(s) { sideSelected = s; alert("Selected: " + s); }
 
     function startPlay() {
         if(!room || isPlaying) return;
         bet = parseFloat(document.getElementById('bet-input').value);
-        if(bet < 10 || bet > wallet) return alert("Minimum Bet is 10!");
-        if(room === 'DVT' && !sideSelected) return alert("Select Side First!");
+        if(bet < 10 || bet > wallet) return alert("Balance Check Karein!");
+        if(room === 'DVT' && !sideSelected) return alert("Side Choose Karein!");
         
-        wallet -= bet; updateUI(); isPlaying = true;
+        updateWalletDB(wallet - bet); isPlaying = true;
         document.getElementById('btn-play').style.display = "none";
         if(room === 'CRASH') runCrash(); else if(room === 'MINES') runMines(); else if(room === 'DVT') runDVT();
     }
 
     function runCrash() {
         document.getElementById('btn-cashout').style.display = "block";
-        mult = 1.0; 
-        let crashAt = (Math.random() < 0.65) ? (Math.random() * 0.1) + 1.05 : (Math.random() * 4) + 1.8;
+        mult = 1.0; let crashAt = (Math.random() * 3) + 1.1;
         timer = setInterval(() => {
-            mult += 0.08; 
-            document.getElementById('display-area').innerHTML = `<h1>${mult.toFixed(2)}x</h1>`;
+            mult += 0.05; document.getElementById('display-area').innerHTML = `<h1 style="font-size:50px;">${mult.toFixed(2)}x</h1>`;
             if(mult >= crashAt) { addHist(mult.toFixed(2)+"x", "red"); end(); }
         }, 100);
     }
 
     function runMines() {
-        document.getElementById('btn-cashout').style.display = "block";
-        mult = 1.0;
+        document.getElementById('btn-cashout').style.display = "block"; mult = 1.0;
         let g = '<div class="mines-grid">';
         for(let i=0; i<25; i++) g += `<div class="tile" onclick="openT(this)">?</div>`;
         document.getElementById('display-area').innerHTML = g + '</div>';
     }
+
     function openT(el) {
         if(!isPlaying || el.innerText !== "?") return;
-        if(Math.random() < 0.60) { 
-            el.innerHTML="💣"; el.style.background="#c0392b"; end();
-            setTimeout(() => alert("BOOM! Game Over."), 100);
-        } else {
-            el.innerHTML="💎"; el.style.background="#27ae60"; mult += 0.45;
-            document.getElementById('btn-cashout').innerText = "CASH OUT (" + (bet * mult).toFixed(0) + ")";
-        }
+        if(Math.random() < 0.2) { el.innerHTML="💣"; el.style.background="#c0392b"; end(); }
+        else { el.innerHTML="💎"; el.style.background="#27ae60"; mult += 0.2; document.getElementById('btn-cashout').innerText = "CASH OUT (" + (bet * mult).toFixed(0) + ")"; }
     }
 
     function runDVT() {
-        document.getElementById('display-area').innerHTML = `<div id="d-card" class="card">?</div><div id="t-card" class="card">?</div>`;
+        document.getElementById('display-area').innerHTML = `<div class="card">?</div><div class="card">?</div>`;
         setTimeout(() => {
-            let win = (Math.random() < 0.35) ? sideSelected : (sideSelected === 'Dragon' ? 'Tiger' : 'Dragon');
-            let dc = document.getElementById('d-card'), tc = document.getElementById('t-card');
-            dc.innerText = Math.floor(Math.random()*9)+1; tc.innerText = Math.floor(Math.random()*9)+1;
-            dc.style.transform = "rotateY(360deg)"; tc.style.transform = "rotateY(360deg)";
-            setTimeout(() => {
-                if(sideSelected === win) { wallet += (bet * 1.95); addHist(win[0], "green"); }
-                else addHist(win[0], "red");
-                updateUI(); end();
-            }, 800);
-        }, 500);
+            let win = Math.random() > 0.5 ? 'Dragon' : 'Tiger';
+            document.getElementById('display-area').innerHTML = `<h1 style="color:var(--gold)">${win.toUpperCase()} WINS!</h1>`;
+            if(sideSelected === win) { updateWalletDB(wallet + (bet * 1.95)); addHist(win[0], "green"); }
+            else { addHist(win[0], "red"); }
+            end();
+        }, 1500);
     }
 
-    function cashOutNow() { if(!isPlaying) return; wallet += (bet * mult); addHist(mult.toFixed(2)+"x", "green"); end(); alert("Cashed Out!"); }
-    function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; document.getElementById('btn-cashout').innerText="CASH OUT"; updateUI(); }
+    function cashOutNow() { if(!isPlaying) return; updateWalletDB(wallet + (bet * mult)); addHist(mult.toFixed(2)+"x", "green"); end(); }
+    function end() { isPlaying = false; clearInterval(timer); document.getElementById('btn-play').style.display="block"; document.getElementById('btn-cashout').style.display="none"; }
     function addHist(v, c) { let r = document.getElementById('hist-row'); r.innerHTML = `<span class="h-item" style="background:${c}">${v}</span>` + r.innerHTML; }
-</script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
-<script>
-    // Aapka Exact Firebase Data
-    const firebaseConfig = {
-        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
-        authDomain: "pattipro-c1ffe.firebaseapp.com",
-        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
-        projectId: "pattipro-c1ffe",
-        storageBucket: "pattipro-c1ffe.appspot.com",
-        messagingSenderId: "766843054614",
-        appId: "1:766843054614:web:781658832e63e41fc2e337"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // Registration Function (Ise apne Register button ke 'onclick' par lagayein)
-    function registerPlayer() {
-        const name = document.getElementById('nameInput').value; // Check karein aapka ID kya hai
-        const phone = document.getElementById('phoneInput').value;
-        const pass = document.getElementById('passInput').value;
-
-        if(!name || !phone) { alert("Fields pur karein!"); return; }
-
-        db.ref('users/' + phone).set({
-            username: name,
-            phone: phone,
-            password: pass,
-            balance: 0,
-            status: "active"
-        }).then(() => {
-            alert("Data Firebase mein chala gaya!");
-            // Yahan wo code likhein jo aapka game agle page par le jata hai
-        });
-    }
-</script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
-<script>
-    // Aapke Screenshot se li gayi exact Firebase Config
-    const firebaseConfig = {
-        apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
-        authDomain: "pattipro-c1ffe.firebaseapp.com",
-        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
-        projectId: "pattipro-c1ffe",
-        storageBucket: "pattipro-c1ffe.appspot.com",
-        messagingSenderId: "766843054614",
-        appId: "1:766843054614:web:781658832e63e41fc2e337"
-    };
-
-    // Firebase ko initialize karna
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // REGISTRATION FUNCTION: Jo aapke screenshot mein tha
-    // Ise apne button par onclick="registerNow()" karke lagayein
-    function registerNow() {
-        const name = document.getElementById('name').value; // Check karein ID 'name' hi ho
-        const phone = document.getElementById('phone').value; // ID 'phone' honi chahiye
-        const pass = document.getElementById('pass').value;
-
-        if(!name || !phone) { 
-            alert("Meharbani karke fields pur karein!"); 
-            return; 
-        }
-
-        // Data database mein bhejney ka sahi tarika
-        db.ref('users/' + phone).set({
-            username: name,
-            phone: phone,
-            password: pass,
-            balance: 0,
-            status: "active"
-        }).then(() => {
-            alert("Data Firebase mein chala gaya!");
-            // Yahan aapka purana logic jo game start karta hai
-        }).catch((error) => {
-            alert("Error: " + error.message);
-        });
-    }
-
-    // ADMIN PANEL DATA: Jo data ko table mein dikhayega
-    db.ref('users').on('value', (snapshot) => {
-        const tbody = document.querySelector("#playersTable tbody");
-        if(tbody) {
-            tbody.innerHTML = "";
-            snapshot.forEach((child) => {
-                const user = child.val();
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${user.username}</td>
-                        <td>${user.phone}</td>
-                        <td>Rs. ${user.balance || 0}</td>
-                    </tr>`;
-            });
-        }
-    });
 </script>
 </body>
 </html>

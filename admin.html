@@ -1,135 +1,197 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - 3PattiPro</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <title>777 ULTRA - ADMIN DASHBOARD</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 10px; direction: rtl; }
-        .container { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h2 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #fff; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 14px; }
-        th { background-color: #007bff; color: white; }
-        .btn-approve { background: #28a745; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        .btn-reject { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        :root { --gold: #f1c40f; --bg: #0a0a0a; --red: #e74c3c; --green: #2ecc71; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 15px; }
+        h1 { color: var(--gold); text-align: center; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 30px; }
+        
+        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .card h2 { margin-top: 0; font-size: 18px; color: var(--gold); border-left: 4px solid var(--gold); padding-left: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { border: 1px solid #333; padding: 12px; text-align: left; }
+        th { background: #111; color: var(--gold); text-transform: uppercase; }
+        tr:nth-child(even) { background: #222; }
+
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 11px; transition: 0.3s; }
+        .btn-approve { background: var(--green); color: white; }
+        .btn-reject { background: var(--red); color: white; margin-left: 5px; }
+        .btn-set { background: var(--gold); color: black; margin-left: 5px; }
+        .btn:hover { opacity: 0.8; transform: scale(1.05); }
+
+        input { background: #000; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; outline: none; width: 80px; }
+        input:focus { border-color: var(--gold); }
+        
+        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; background: #444; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Naye Khiladi (New Players)</h2>
-    <table id="playersTable">
-        <thead>
-            <tr>
-                <th>Naam</th>
-                <th>Email/Phone</th>
-                <th>Balance</th>
-                <th>Join Date</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <h1>777 ULTRA - ADMIN PANEL</h1>
 
-    <h2>Deposit Requests</h2>
-    <table id="depositTable">
-        <thead>
-            <tr>
-                <th>Player ID</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div class="card">
+        <h2>📥 Pending Deposits</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Phone</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>TID (Transaction ID)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="dep-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
-    <h2>Withdrawal Requests</h2>
-    <table id="withdrawalTable">
-        <thead>
-            <tr>
-                <th>Player ID</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
+    <div class="card">
+        <h2>📤 Pending Withdrawals</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Phone</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Target Number</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="wit-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
-<script>
-    // Aapke Firebase ki configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDTNneivrTLe-s-e0lKW1fUixVSjDfu2k",
-        authDomain: "pattipro-c1ffe.firebaseapp.com",
-        databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
-        projectId: "pattipro-c1ffe",
-        storageBucket: "pattipro-c1ffe.appspot.com",
-        messagingSenderId: "766843054614",
-        appId: "1:766843054614:web:781658832e63e41fc2e337"
-    };
+    <div class="card">
+        <h2>👥 All Players & Balance Management</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Phone</th>
+                        <th>Current Balance</th>
+                        <th>Update Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="user-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
-    // 1. Players Data Load Karein
-    db.ref('users').on('value', (snapshot) => {
-        const tbody = document.querySelector('#playersTable tbody');
-        tbody.innerHTML = '';
-        snapshot.forEach((child) => {
-            const user = child.val();
-            tbody.innerHTML += `<tr>
-                <td>${user.name || 'N/A'}</td>
-                <td>${user.email || user.phone}</td>
-                <td>Rs. ${user.balance || 0}</td>
-                <td>${user.joinDate || '-'}</td>
-            </tr>`;
+    <script>
+        // Firebase Configuration (Same as your Engine)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTNneivrTLe-s-eO1LKw1fUvsVsJDfu2k",
+            authDomain: "pattipro-c1ffe.firebaseapp.com",
+            databaseURL: "https://pattipro-c1ffe-default-rtdb.firebaseio.com",
+            projectId: "pattipro-c1ffe",
+            storageBucket: "pattipro-c1ffe.appspot.com",
+            messagingSenderId: "766843054614",
+            appId: "1:766843054614:web:781658832e63e41fc2e337"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- Fetch & Display Deposits ---
+        db.ref('requests/deposits').on('value', (snap) => {
+            let html = "";
+            snap.forEach((child) => {
+                let req = child.val();
+                html += `<tr>
+                    <td>${req.phone}</td>
+                    <td>PKR ${req.amount}</td>
+                    <td>${req.method || 'N/A'}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${req.tid}</td>
+                    <td>
+                        <button class="btn btn-approve" onclick="approveDep('${child.key}', '${req.phone}', ${req.amount})">APPROVE</button>
+                        <button class="btn btn-reject" onclick="deleteReq('deposits', '${child.key}')">REJECT</button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('dep-list').innerHTML = html || "<tr><td colspan='5' style='text-align:center;'>No pending deposits</td></tr>";
         });
-    });
 
-    // 2. Deposit Requests Load Karein
-    db.ref('deposits').on('value', (snapshot) => {
-        const tbody = document.querySelector('#depositTable tbody');
-        tbody.innerHTML = '';
-        snapshot.forEach((child) => {
-            const data = child.val();
-            tbody.innerHTML += `<tr>
-                <td>${data.userId}</td>
-                <td>${data.amount}</td>
-                <td>${data.method}</td>
-                <td>
-                    <button class="btn-approve" onclick="updateStatus('deposits', '${child.key}', 'Approved')">OK</button>
-                </td>
-            </tr>`;
+        // --- Fetch & Display Withdrawals ---
+        db.ref('requests/withdrawals').on('value', (snap) => {
+            let html = "";
+            snap.forEach((child) => {
+                let req = child.val();
+                html += `<tr>
+                    <td>${req.phone}</td>
+                    <td>PKR ${req.amount}</td>
+                    <td>${req.method || 'N/A'}</td>
+                    <td>${req.target}</td>
+                    <td>
+                        <button class="btn btn-approve" onclick="deleteReq('withdrawals', '${child.key}')">DONE</button>
+                        <button class="btn btn-reject" onclick="rejectWit('${child.key}', '${req.phone}', ${req.amount})">CANCEL</button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('wit-list').innerHTML = html || "<tr><td colspan='5' style='text-align:center;'>No pending withdrawals</td></tr>";
         });
-    });
 
-    // 3. Withdrawal Requests Load Karein
-    db.ref('withdrawals').on('value', (snapshot) => {
-        const tbody = document.querySelector('#withdrawalTable tbody');
-        tbody.innerHTML = '';
-        snapshot.forEach((child) => {
-            const data = child.val();
-            tbody.innerHTML += `<tr>
-                <td>${data.userId}</td>
-                <td>${data.amount}</td>
-                <td>${data.status}</td>
-                <td>
-                    <button class="btn-approve" onclick="updateStatus('withdrawals', '${child.key}', 'Paid')">Paid</button>
-                    <button class="btn-reject" onclick="updateStatus('withdrawals', '${child.key}', 'Rejected')">X</button>
-                </td>
-            </tr>`;
+        // --- Fetch & Display All Users ---
+        db.ref('users').on('value', (snap) => {
+            let html = "";
+            snap.forEach((child) => {
+                let u = child.val();
+                html += `<tr>
+                    <td>${u.username}</td>
+                    <td>${u.phone}</td>
+                    <td style="font-weight:bold; color:var(--gold);">PKR ${u.balance.toFixed(2)}</td>
+                    <td>
+                        <input type="number" id="input-${u.phone}" placeholder="Amt">
+                        <button class="btn btn-set" onclick="setBalance('${u.phone}')">SET</button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('user-list').innerHTML = html;
         });
-    });
 
-    function updateStatus(path, id, status) {
-        db.ref(path + '/' + id).update({ status: status })
-        .then(() => alert("Status Updated!"));
-    }
-</script>
+        // --- Logic Functions ---
 
+        function approveDep(key, phone, amt) {
+            if(confirm("Approve PKR " + amt + " for " + phone + "?")) {
+                db.ref('users/' + phone + '/balance').transaction((current) => (current || 0) + amt);
+                db.ref('requests/deposits/' + key).remove();
+            }
+        }
+
+        function rejectWit(key, phone, amt) {
+            if(confirm("Reject this withdraw? PKR " + amt + " will be returned to user.")) {
+                db.ref('users/' + phone + '/balance').transaction((current) => (current || 0) + amt);
+                db.ref('requests/withdrawals/' + key).remove();
+            }
+        }
+
+        function setBalance(phone) {
+            let newAmt = parseFloat(document.getElementById('input-' + phone).value);
+            if(!isNaN(newAmt)) {
+                db.ref('users/' + phone).update({ balance: newAmt });
+                alert("Balance updated for " + phone);
+            }
+        }
+
+        function deleteReq(path, key) {
+            if(confirm("Are you sure you want to delete this?")) {
+                db.ref('requests/' + path + '/' + key).remove();
+            }
+        }
+    </script>
 </body>
 </html>
