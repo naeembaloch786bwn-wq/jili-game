@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>777 ULTRA - NAEEM PRO CASINO</title>
+<style>
+  :root { --gold: #f1c40f; --bg: #0a0a0a; --card-w: 75px; --card-h: 110px; }
+  body {
+    background: linear-gradient(45deg, #000, #1a0033, #000);
+    color: white;
+    font-family: 'Arial Black', sans-serif;
+    overflow-x: hidden;
+    user-select: none;
+    margin: 0; padding: 0;
+  }
+  #auth-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, rgba(0,0,0,0.95), rgba(26,0,51,0.95));
+    z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 1s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .form-box {
+    background: linear-gradient(145deg, #1a1a1a, #111);
+    padding: 30px 25px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    border: 2px solid var(--gold);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  }
+  input[type=text], input[type=tel], input[type=password], input[type=number] {
+    background: linear-gradient(145deg, #1a1a1a, #111);
+    border: 2px solid #444;
+    color: var(--gold);
+    padding: 15px;
+    width: 100%;
+    margin: 10px 0 15px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    outline: none;
+  }
+  input[type=number]:focus, input[type=text]:focus, input[type=tel]:focus, input[type=password]:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(241,196,15,0.5);
+  }
+  button.btn-play {
+    background: linear-gradient(45deg, var(--gold), #ffd700);
+    color: #000;
+    border: none;
+    padding: 18px;
+    width: 100%;
+    font-weight: 900;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 8px 25px rgba(241,196,15,0.4);
+    transition: all 0.3s;
+  }
+  button.btn-play:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(241,196,15,0.6);
+  }
+  button.btn-play:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  p.link-text {
+    font-size: 14px;
+    margin-top: 20px;
+    cursor: pointer;
+    color: var(--gold);
+    text-decoration: underline;
+  }
+  header {
+    background: linear-gradient(90deg, #111, #333);
+    padding: 12px;
+    border-bottom: 3px solid var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(241,196,15,0.3);
+  }
+  .logo {
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(45deg, var(--gold), #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px var(--gold);
+  }
+  .bal-box {
+    border: 2px solid var(--gold);
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    background: rgba(241, 196, 15, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 10px var(--gold);} 50%{box-shadow:0 0 25px var(--gold);} }
+  .logout-btn {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+  }
+  .logout-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(231,76,60,0.5);
+  }
+  #game-arena {
+    width: 95%;
+    max-width: 500px;
+    height: 320px;
+    margin: 20px auto 15px auto;
+    background: radial-gradient(circle, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 3px solid var(--gold);
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  #display-area h2 {
+    font-size: 28px;
+    text-shadow: 0 0 20px var(--gold);
+    text-align: center;
+  }
+  .main-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto 15px auto;
+  }
+  .nav-btn {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    border: 2px solid #444;
+    padding: 20px 0;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 900;
+    border-radius: 15px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .nav-btn:hover {
+    border-color: var(--gold);
+    box-shadow: 0 15px 40px rgba(241,196,15,0.4);
+    transform: translateY(-5px);
+  }
+  .nav-btn.active {
+    background: linear-gradient(45deg, var(--gold), #ffd700);
+    color: #000;
+    animation: bounce 0.6s;
+  }
+  @keyframes bounce { 0%,20%,50%,80%,100% {transform:translateY(0);} 40% {transform:translateY(-10px);} 60% {transform:translateY(-5px);} }
+  .bet-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .bet-btn {
+    flex: 1;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 900;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+  }
+  .bet-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(231,76,60,0.5);
+  }
+  input#bet-input {
+    background: linear-gradient(145deg, #1a1a1a, #111);
+    border: 2px solid #444;
+    color: var(--gold);
+    padding: 18px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 25px auto;
+    display: block;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .btn-play {
+    background: linear-gradient(45deg, var(--gold), #ffd700);
+    color: #000;
+    border: none;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    font-weight: 900;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 8px 25px rgba(241,196,15,0.4);
+    transition: all 0.3s;
+    margin: 0 auto 15px auto;
+    display: block;
+  }
+  .btn-play:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(241,196,15,0.6);
+  }
+  .btn-play:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .action-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto 40px auto;
+  }
+  .act-btn {
+    padding: 15px 8px;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    color: #ddd;
+    border: 2px solid #444;
+    font-size: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .act-btn:hover {
+    background: var(--gold);
+    color: #000;
+    transform: scale(1.05);
+  }
+  /* Pages */
+  .page {
+    display: none;
+    position: fixed;
+    top:0; left:0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.98);
+    z-index: 1000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .page.active {
+    display: flex;
+  }
+  .close-page-btn {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #777;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body onload="initApp()">
+
+<!-- Authentication Overlay -->
+<div id="auth-overlay">
+  <div class="form-box">
+    <h2 style="background: linear-gradient(45deg, var(--gold), #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 32px; margin-bottom: 20px;">
+      🔥 777 ULTRA 🔥
+    </h2>
+    <div id="reg-fields" style="display:none;">
+      <input type="text" id="user-in" placeholder="👤 Full Name (Fixed: Naeem)" value="Naeem" readonly />
+    </div>
+    <input type="tel" id="phone-in" placeholder="📱 Phone Number" />
+    <input type="password" id="pass-in" placeholder="🔒 Password" />
+    <button class="btn-play" onclick="handleAuth()">🚀 ENTER CASINO</button>
+    <p onclick="toggleAuth()" class="link-text">New? Register Here ➕</p>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">🎰 NAEEM PRO CASINO</div>
+  <div class="bal-box">
+    <span>💰 PKR <span id="wallet">0.00</span></span>
+    <button class="logout-btn" onclick="logout()">❌ LOGOUT</button>
+  </div>
+</header>
+
+<!-- Game Arena -->
+<div id="game-arena">
+  <div id="display-area">
+    <h2>🎮 SELECT YOUR GAME</h2>
+  </div>
+  <div id="game-effect" class="game-effect"></div>
+</div>
+
+<!-- History Bar -->
+<div class="history-bar" id="hist-row" style="max-width:500px; margin: 0 auto 10px auto; display:flex; overflow-x:auto; gap:8px;"></div>
+
+<!-- Game Navigation -->
+<div class="main-nav" id="main-nav" style="max-width: 500px; margin: 0 auto 20px auto;">
+  <!-- Games loaded dynamically -->
+</div>
+
+<!-- Betting Controls -->
+<div class="controls" style="max-width: 500px; margin: 0 auto 40px auto;">
+  <div class="bet-row">
+    <button class="bet-btn quick" onclick="setBet(10)">₹10</button>
+    <button class="bet-btn quick" onclick="setBet(50)">₹50</button>
+    <button class="bet-btn quick" onclick="setBet(100)">₹100</button>
+    <button class="bet-btn quick" onclick="setBet(500)">₹500</button>
+  </div>
+  <input type="number" id="bet-input" value="10" min="10" max="10000" />
+  <button id="btn-play" class="btn-play" onclick="startGame()">🎯 SPIN & WIN</button>
+  <button id="btn-cashout" class="btn-play" style="display:none; background: linear-gradient(45deg, #27ae60, #2ecc71);" onclick="cashOut()">💸 CASH OUT</button>
+  <div class="action-bar">
+    <button class="act-btn" onclick="showPage('dep-page')">💳 DEPOSIT</button>
+    <button class="act-btn" onclick="showPage('wit-page')">🏧 WITHDRAW</button>
+    <button class="act-btn" onclick="showPage('ref-page')">👥 REFER</button>
+    <button class="act-btn" onclick="showPage('sup-page')">📞 SUPPORT</button>
+  </div>
+</div>
+
+<!-- Deposit Page -->
+<div id="dep-page" class="page">
+  <div class="form-box">
+    <h2>💳 DEPOSIT</h2>
+    <p style="font-size:14px; color:var(--gold); margin-bottom:8px;">
+      Deposit via JazzCash:<br/>
+      <strong>03289230760 — Naeem</strong>
+    </p>
+    <input type="number" id="d-amt" placeholder="Amount to Deposit" min="10" />
+    <input type="text" id="d-tid" placeholder="Transaction ID (TID)" />
+    <button class="btn-play" onclick="doDeposit()">SUBMIT</button>
+    <div id="dep-records" style="margin-top:12px; max-height:150px; overflow-y:auto; color:#ddd; font-size: 14px;"></div>
+    <p class="close-page-btn" onclick="hidePages()">CLOSE</p>
+  </div>
+</div>
+
+<!-- Withdraw Page -->
+<div id="wit-page" class="page">
+  <div class="form-box">
+    <h2>🏧 WITHDRAW</h2>
+    <input type="number" id="w-amt" placeholder="Amount to Withdraw" min="10" />
+    <button class="btn-play" onclick="doWithdraw()">WITHDRAW</button>
+    <div id="wit-records" style="margin-top:12px; max-height:150px; overflow-y:auto; color:#ddd; font-size:14px;"></div>
+    <p class="close-page-btn" onclick="hidePages()">CLOSE</p>
+  </div>
+</div>
+
+<!-- Refer Page -->
+<div id="ref-page" class="page">
+  <div class="form-box">
+    <h2>👥 REFER & EARN</h2>
+    <p>🎁 Bonus: 250 PKR per referral</p>
+    <button class="btn-play" onclick="copyRef()">📋 COPY LINK</button>
+    <p class="close-page-btn" onclick="hidePages()">CLOSE</p>
+  </div>
+</div>
+
+<!-- Support Page -->
+<div id="sup-page" class="page">
+  <div class="form-box">
+    <h2>📞 SUPPORT</h2>
+    <button class="btn-play" style="background:linear-gradient(45deg,#25d366,#128c7e);" onclick="window.open('https://wa.me/923289230760')">💬 WHATSAPP</button>
+    <p class="close-page-btn" onclick="hidePages()">CLOSE</p>
+  </div>
+</div>
+
+<script>
+// --- User & Wallet Simulation ---
+let activeUser = null;
+const usersDB = {}; // Simulated DB
+
+const GAMES = [];
+// 3 Crash Games with exact rates
+for(let i=1; i<=3; i++) {
+  GAMES.push({
+    id: `CRASH${i}`,
+    name: `Crash Game #${i}`,
+    icon: "🚀",
+    payout: 2,
+    winRate: 0.40,
+    lossRate: 0.58,
+    equalRate: 0.02
+  });
+}
+// Add 47 dummy other games similar style
+for(let i=4; i<=50; i++) {
+  const winR = (Math.random()*0.5)+0.2; // 20%-70%
+  const lossR = 1 - winR - 0.02;
+  GAMES.push({
+    id: `GAME${i}`,
+    name: `Casino Game #${i}`,
+    icon: "🎮",
+    payout: Math.round((1/winR)*1.1*10)/10,
+    winRate: winR,
+    lossRate: lossR,
+    equalRate: 0.02
+  });
+}
+
+let wallet = 0, currentGame = null;
+let isPlaying = false;
+let bet = 0;
+
+function initApp() {
+  checkAuth();
+  loadGames();
+  updateWallet(0);
+}
+
+function updateWallet(value) {
+  wallet = value;
+  document.getElementById('wallet').innerText = wallet.toFixed(2);
+}
+
+function checkAuth() {
+  // load active user from localStorage
+  let stored = localStorage.getItem("activeUser");
+  if(stored && usersDB[stored]){
+    activeUser = stored;
+    updateWallet(usersDB[activeUser].balance);
+    document.getElementById('auth-overlay').style.display = 'none';
+  } else {
+    document.getElementById('auth-overlay').style.display = 'flex';
+  }
+}
+
+function toggleAuth() {
+  const regFields = document.getElementById('reg-fields');
+  if(regFields.style.display === "none" || regFields.style.display === ""){
+    regFields.style.display = "block";
+  } else {
+    regFields.style.display = "none";
+  }
+}
+
+function handleAuth(){
+  const phone = document.getElementById('phone-in').value.trim();
+  const pass = document.getElementById('pass-in').value.trim();
+  const username = "Naeem"; // fixed name for deposit number
+
+  if(!phone || !pass){
+    alert('⚠️ Please fill all fields!');
+    return;
+  }
+
+  const regFields = document.getElementById('reg-fields');
+  if(regFields.style.display === "block"){
+    // Registration
+    if(usersDB[phone]){
+      alert("📛 User already exists. Please login!");
+      return;
+    }
+    usersDB[phone] = {username, password: pass, balance: 100, joined: Date.now()};
+    alert("✅ Registered! Welcome bonus: 100 PKR");
+    saveLogin(phone);
+  } else {
+    // Login
+    if(usersDB[phone] && usersDB[phone].password === pass){
+      saveLogin(phone);
+    } else {
+      alert("❌ Invalid credentials!");
+    }
+  }
+}
+
+function saveLogin(phone) {
+  activeUser = phone;
+  localStorage.setItem("activeUser", phone);
+  document.getElementById('auth-overlay').style.display = 'none';
+  updateWallet(usersDB[activeUser].balance);
+}
+
+// LOGOUT
+function logout(){
+  activeUser = null;
+  localStorage.removeItem("activeUser");
+  document.getElementById('auth-overlay').style.display = 'flex';
+  currentGame = null;
+  updateWallet(0);
+  document.getElementById('display-area').innerHTML = `<h2>🎮 SELECT YOUR GAME</h2>`;
+}
+
+// LOAD GAMES NAVIGATION
+function loadGames(){
+  let nav = document.getElementById("main-nav");
+  nav.innerHTML = GAMES.map(g=>`
+    <div class="nav-btn" onclick="setGame('${g.id}')">
+      <div style="font-size:32px;margin-bottom:5px;">${g.icon}</div>
+      ${g.name}
+    </div>
+  `).join('');
+}
+
+// SET GAME
+function setGame(id){
+  let game = GAMES.find(g=>g.id===id);
+  if(!game) return;
+  currentGame = game;
+
+  // Highlight active button
+  document.querySelectorAll(".nav-btn").forEach(btn=>{
+    btn.classList.remove("active");
+    if(btn.textContent.includes(game.name)) btn.classList.add("active");
+  });
+
+  document.getElementById("display-area").innerHTML = `
+    <div style="text-align:center;">
+      <div style="font-size:48px;margin-bottom:10px;">${game.icon}</div>
+      <h2 style="font-size:24px;margin:10px 0;color:var(--gold);text-shadow:0 0 20px var(--gold);">${game.name}</h2>
+      <p style="color:#ccc;font-size:14px;">Payout: ${game.payout}x | Win Rate: ${(game.winRate*100).toFixed(0)}% | Loss Rate: ${(game.lossRate*100).toFixed(0)}% | Draw Rate: ${(game.equalRate*100).toFixed(0)}%</p>
+    </div>
+  `;
+}
+
+// BET BUTTONS
+function setBet(amount){
+  document.getElementById('bet-input').value = amount;
+}
+
+// START GAME
+function startGame(){
+  if(!currentGame){
+    alert("❗ Please select a game");
+    return;
+  }
+  bet = parseFloat(document.getElementById('bet-input').value);
+  if(bet < 10){
+    alert("❌ Minimum bet is ₹10");
+    return;
+  }
+  if(bet > wallet){
+    alert("❌ Insufficient balance");
+    return;
+  }
+  if(isPlaying){
+    alert("⏳ Game is already running");
+    return;
+  }
+  isPlaying = true;
+  // Deduct bet
+  wallet -= bet;
+  updateWallet(wallet);
+
+  // Simulate game result using game rates
+  const roll = Math.random();
+  let resultText = "";
+  if(roll < currentGame.winRate){
+    // WIN
+    let payout = bet * currentGame.payout;
+    wallet += payout;
+    resultText = `🎉 You WON ₹${payout.toFixed(2)}!`;
+  } else if(roll < currentGame.winRate + currentGame.equalRate){
+    // DRAW
+    wallet += bet; // Bet refunded
+    resultText = "⚖️ It's a DRAW! Bet returned.";
+  } else {
+    // LOSE
+    resultText = "😢 You LOST! Better luck next time.";
+  }
+  updateWallet(wallet);
+  addToHistory(currentGame.name, resultText);
+  showResult(resultText);
+  isPlaying = false;
+}
+
+function addToHistory(name, result){
+  const container = document.getElementById("hist-row");
+  let div = document.createElement("div");
+  div.className = "h-item";
+  div.style.background = "var(--gold)";
+  div.style.color = "#000";
+  div.style.padding = "5px 15px";
+  div.style.borderRadius = "15px";
+  div.style.fontWeight = "bold";
+  div.style.fontSize = "14px";
+  div.textContent = `${name}: ${result}`;
+  container.prepend(div);
+
+  // Keep max 10 items
+  if(container.children.length > 10) {
+    container.removeChild(container.children[container.children.length -1]);
+  }
+}
+
+function showResult(text){
+  const display = document.getElementById("display-area");
+  let html = display.innerHTML;
+  display.innerHTML = html + `<p style="margin-top:10px; font-size:18px; font-weight:bold; color: var(--gold); text-align:center;">${text}</p>`;
+}
+
+// Show/hide pages (deposit, withdraw, etc)
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>{
+    if(p.id === id) p.classList.add("active");
+    else p.classList.remove("active");
+  });
+}
+function hidePages(){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+}
+
+// Deposit
+function doDeposit(){
+  const amt = parseFloat(document.getElementById("d-amt").value);
+  const tid = document.getElementById("d-tid").value.trim();
+  const depRec = document.getElementById("dep-records");
+  if(!activeUser){
+    alert("Login first!");
+    return;
+  }
+  if(!amt || amt <10){
+    alert("Minimum deposit ₹10");
+    return;
+  }
+  if(!tid){
+    alert("Transaction ID required");
+    return;
+  }
+
+  // For simplicity accept deposit immediately and add to wallet.
+  wallet += amt;
+  updateWallet(wallet);
+  usersDB[activeUser].balance = wallet;
+
+  // Record deposit details on screen
+  let rec = document.createElement("div");
+  rec.textContent = `₹${amt.toFixed(2)} deposited. TID: ${tid}`;
+  rec.style.borderTop = "1px solid #444";
+  rec.style.paddingTop = "5px";
+  depRec.prepend(rec);
+
+  // Clear inputs
+  document.getElementById("d-amt").value = "";
+  document.getElementById("d-tid").value = "";
+
+  alert("✅ Deposit successful!");
+}
+
+// Withdraw
+function doWithdraw(){
+  const amt = parseFloat(document.getElementById("w-amt").value);
+  const witRec = document.getElementById("wit-records");
+  if(!activeUser){
+    alert("Login first!");
+    return;
+  }
+  if(!amt || amt <10){
+    alert("Minimum withdrawal ₹10");
+    return;
+  }
+  if(amt > wallet){
+    alert("Insufficient balance");
+    return;
+  }
+
+  wallet -= amt;
+  updateWallet(wallet);
+  usersDB[activeUser].balance = wallet;
+
+  let rec = document.createElement("div");
+  rec.textContent = `₹${amt.toFixed(2)} withdrawal requested. Please wait for processing.`;
+  rec.style.borderTop = "1px solid #444";
+  rec.style.paddingTop = "5px";
+  witRec.prepend(rec);
+
+  document.getElementById("w-amt").value = "";
+  alert("✅ Withdrawal requested!");
+}
+
+// Copy refer link
+function copyRef(){
+  if(!activeUser){
+    alert("Login first!");
+    return;
+  }
+  const referLink = `${window.location.href}?ref=${activeUser}`;
+  navigator.clipboard.writeTe
