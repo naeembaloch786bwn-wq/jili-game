@@ -311,3 +311,6 @@ if __name__ == '__main__':
 
 # Vercel serverless variable mapping
 app = app
+
+# Vercel deployment entry object
+app = app
