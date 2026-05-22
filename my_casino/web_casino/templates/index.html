@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remix Casino</title>
+    <style>
+        body { background: #0a0f14; color: white; font-family: sans-serif; text-align: center; padding: 10px; }
+        .header { background: #12181f; padding: 15px; border-radius: 10px; border-bottom: 3px solid #f1c40f; }
+        .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin: 10px 0; }
+        .tab-btn { padding: 12px; background: #1c232d; color: white; border: 1px solid #2b3542; border-radius: 6px; font-weight: bold; }
+        .tab-btn.active { background: #e74c3c; }
+        .game-panel { display: none; background: #12181f; padding: 20px; border-radius: 12px; }
+        .game-panel.active { display: block; }
+        .arena { background: #020617; height: 150px; border-radius: 8px; position: relative; margin-bottom: 10px; line-height: 150px; font-size: 24px; }
+        input { width: 80%; padding: 10px; margin: 10px 0; background: #090d12; color: white; border: 1px solid #2b3542; text-align: center; }
+        .btn { width: 85%; padding: 12px; font-weight: bold; color: white; border: none; border-radius: 6px; font-size: 16px; background: #2ecc71; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🎰 REMIX LIVE SYSTEMS 🎰</h2>
+        <h3>Wallet: <span id="balance" style="color:#2ecc71;">5000</span> PKR</h3>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-btn active" id="tb-crash" onclick="switchTab('crash')">🚀 Crash</button>
+        <button class="tab-btn" id="tb-dt" onclick="switchTab('dt')">🐉 D-Tiger</button>
+    </div>
+
+    <div id="p-crash" class="game-panel active">
+        <div class="arena" id="crash-banner">1.00x</div>
+        <input type="number" id="crash-amount" value="100">
+        <button class="btn" id="btn-crash" onclick="runCrashBet()">Place Order</button>
+    </div>
+
+    <div id="p-dt" class="game-panel">
+        <div id="dt-timer" style="color:#e74c3c; font-weight:bold;">Timer: --</div>
+        <div id="dt-msg" style="color:#f1c40f; margin: 10px 0;">Waiting...</div>
+        <div style="font-size: 28px; margin: 15px 0;">🐉 <span id="card-d">?</span> VS <span id="card-t">?</span> 🐅</div>
+        <input type="number" id="dt-amount" value="100">
+        <div style="display:flex; gap:6px;"><button class="btn" style="background:#e74c3c;" onclick="lockLiveBet('dt','D')">Dragon</button><button class="btn" style="background:#3498db;" onclick="lockLiveBet('dt','T')">Tiger</button></div>
+    </div>
+
+<script>
+    let activeTab = "crash", state = {}, currentBet = { game: null, side: null, amount: 0, active: false };
+    
+    function switchTab(t) {
+        activeTab = t;
+        document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('p-' + t).classList.add('active');
+        document.getElementById('tb-' + t).classList.add('active');
+    }
+
+    function sync() {
+        fetch('/status').then(r => r.json()).then(d => {
+            state = d; document.getElementById('balance').innerText = d.balance;
+            
+            if(activeTab === "crash") {
+                let b = document.getElementById("crash-banner");
+                let btn = document.getElementById("btn-crash");
+                if(d.crash_status === "betting") {
+                    b.innerText = "Next in " + d.crash_time + "s";
+                    if(!currentBet.active) btn.innerText = "Place Order";
+                } else if(d.crash_status === "flying") {
+                    b.innerText = d.multiplier + "x";
+                    if(currentBet.active && currentBet.game === 'crash') btn.innerText = "Cashout: Rs." + Math.floor(currentBet.amount * d.multiplier);
+                } else {
+                    b.innerText = "💥 CRASHED (" + d.crash_history[0] + ")";
+                    currentBet.active = false; btn.innerText = "Crashed";
+                }
+            }
+
+            if(activeTab === "dt") {
+                document.getElementById("dt-timer").innerText = d.dt_status === "betting" ? "Timer: " + d.dt_time + "s" : "Dealing Phase";
+                document.getElementById("dt-msg").innerText = d.dt_msg;
+                document.getElementById("card-d").innerText = d.dt_card_d;
+                document.getElementById("card-t").innerText = d.dt_card_t;
+                
+                if(d.dt_status === "dealing" && currentBet.active && currentBet.game === 'dt') {
+                    if(currentBet.side === d.dt_history[0]) fetch('/action', {method:'POST', body:new URLSearchParams({'type':'win_payout','amount':currentBet.amount*2})});
+                    currentBet.active = false;
+                }
+            }
+        });
+    }
+
+    function lockLiveBet(gameType, sideCode) {
+        if(currentBet.active) return;
+        let amt = document.getElementById('dt-amount').value;
+        fetch("/action", {method:"POST", body:new URLSearchParams({'type':'bet','amount':amt})}).then(r=>r.json()).then(res => {
+            if(res.success) currentBet = { game: gameType, side: sideCode, amount: parseInt(amt), active: true };
+        });
+    }
+
+    function runCrashBet() {
+        let amt = document.getElementById("crash-amount").value;
+        if(!currentBet.active && state.crash_status === "betting") {
+            fetch("/action", {method:"POST", body:new URLSearchParams({'type':'bet','amount':amt})}).then(r=>r.json()).then(d=>{ if(d.success) currentBet={game:'crash', active:True, amount:parseInt(amt)}; });
+        } else if(currentBet.active && state.crash_status === "flying" && currentBet.game === 'crash') {
+            fetch("/action", {method:"POST", body:new URLSearchParams({'type':'cashout','amount':currentBet.amount})}).then(r=>r.json()).then(d=> { if(d.success) currentBet.active=false; });
+        }
+    }
+
+    setInterval(sync, 1000);
+</script>
+</body>
+</html>

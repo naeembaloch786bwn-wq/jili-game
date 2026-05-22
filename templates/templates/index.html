@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JILI Multiplier Hub</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #0c0f12; color: #fff; margin: 0; padding: 10px; }
+        .main-layout { display: flex; max-width: 600px; margin: auto; gap: 10px; justify-content: center; }
+        .left-sidebar { width: 75px; background: rgba(30,35,45,0.6); padding: 5px; border-radius: 10px; display: flex; flex-direction: column; gap: 12px; align-items: center; border: 1px solid #222; }
+        .player-dp { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #ffcc00; background: #333; display: flex; align-items: center; justify-content: center; font-size: 10px; position: relative; }
+        .player-dp::after { content: '•'; color: #00ffcc; position: absolute; bottom: 0; right: 2px; font-size: 20px; }
+        .center-content { flex: 1; max-width: 480px; }
+        .card { background: #161a22; padding: 12px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #252c3a; position: relative; }
+        .timer-box { font-size: 24px; font-weight: bold; color: #ffcc00; background: #222a36; padding: 6px 20px; border-radius: 30px; display: inline-block; border: 1px solid #ffcc00; min-width: 140px; }
+        .status-overlay { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 90%; background: rgba(0,0,0,0.9); color: #ff3344; padding: 15px; border-radius: 10px; font-size: 26px; font-weight: bold; z-index: 100; border: 2px solid #ff3344; display: none; box-shadow: 0 0 20px #ff3344; text-transform: uppercase; }
+        .board-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 15px 0; }
+        .box-slot { background: #1f2633; padding: 6px 2px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; position: relative; }
+        .extra-pay-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #ffcc00, #ff9800); color: black; font-size: 10px; font-weight: bold; padding: 1px 6px; border-radius: 10px; border: 1px solid black; display: none; z-index: 10; }
+        .pool-tag { font-size: 10px; color: #00ffcc; font-weight: bold; }
+        .mybet-tag { font-size: 10px; color: #ffeb3b; font-weight: bold; min-height: 12px; }
+        .num-box { font-size: 26px; font-weight: bold; color: white; margin: 2px 0; }
+        .mult-tag { font-size: 11px; color: #ff4757; font-weight: bold; }
+        .b0, .b5 { background: #7b1fa2; } .b1, .b6 { background: #c2185b; } .b2, .b7 { background: #0097a7; } .b3, .b8 { background: #388e3c; } .b4, .b9 { background: #f57c00; }
+        .active-win { border: 2px solid #fff !important; background: #ffffff !important; box-shadow: 0 0 20px #fff; transform: scale(1.05); }
+        .active-win .num-box, .active-win .mult-tag, .active-win .pool-tag { color: #000 !important; }
+        .chip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 5px; }
+        .chip-btn { background: #252c3a; color: #fff; border: 2px solid #44516d; padding: 8px; font-weight: bold; border-radius: 50px; cursor: pointer; font-size: 13px; }
+        .chip-btn.selected-chip { border-color: #ffcc00; background: #ffcc00; color: #000; }
+        .gate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .gate-btn { padding: 8px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; text-decoration: none; font-size: 12px; color: white; text-align: center; }
+        .history-ribbon { display: flex; gap: 4px; overflow-x: auto; padding: 6px; background: #12161f; border-radius: 6px; margin-bottom: 8px; justify-content: center; }
+        .hist-badge { width: 20px; height: 20px; line-height: 20px; font-size: 11px; font-weight: bold; border-radius: 50%; text-align: center; color: #fff; }
+    </style>
+    <script>
+        let selectedChipAmount = 10; 
+        let isSpinning = false;
+        let isLocked = false;
+
+        function selectChip(element, amount) {
+            if(isLocked || isSpinning) return;
+            selectedChipAmount = amount;
+            let btns = document.getElementsByClassName('chip-btn');
+            for(let i=0; i<btns.length; i++) { btns[i].classList.remove('selected-chip'); }
+            element.classList.add('selected-chip');
+        }
+
+        function clickToPlaceBet(targetNum) {
+            if(isLocked || isSpinning) return;
+            let formData = new FormData();
+            formData.append('amount', selectedChipAmount);
+            formData.append('target_num', targetNum);
+            
+            fetch('/bet', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") { 
+                    document.getElementById('user_balance').innerText = data.new_balance;
+                    let myBetEl = document.getElementById('mybet_'+targetNum);
+                    let currentPersonal = parseInt(myBetEl.innerText.replace('You:', '')) || 0;
+                    myBetEl.innerText = "You:" + (currentPersonal + selectedChipAmount);
+                } else { alert(data.message); }
+            });
+        }
+
+        function startLiveSync() {
+            setInterval(function() {
+                if (isSpinning) return;
+                fetch('/api/game_status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('period').innerText = data.period;
+                    document.getElementById('user_balance').innerText = data.user_balance;
+                    
+                    let timeLeft = Math.max(0, Math.floor(data.time_left));
+                    let overlay = document.getElementById('overlay-msg');
+                    
+                    if (timeLeft <= 5 && timeLeft > 0) {
+                        isLocked = true;
+                        overlay.style.display = "block";
+                        if (timeLeft > 2) {
+                            overlay.innerText = "Bet Locked";
+                            overlay.style.color = "#ff3344";
+                        } else {
+                            overlay.innerText = "Extra Pay";
+                            overlay.style.color = "#ffcc00";
+                        }
+                    } else {
+                        isLocked = false;
+                        overlay.style.display = "none";
+                    }
+                    
+                    for (let i = 0; i <= 9; i++) {
+                        document.getElementById('pool_'+i).innerText = data.pools[i] > 0 ? "P: " + data.pools[i] : "P: 0";
+                        document.getElementById('mybet_'+i).innerText = data.my_bets[i] > 0 ? "You:" + data.my_bets[i] : "";
+                        
+                        let extraTag = document.getElementById('extra_'+i);
+                        if (timeLeft <= 5 && data.lightning_boxes && data.lightning_boxes[i]) {
+                            extraTag.innerText = data.lightning_boxes[i] + "X";
+                            extraTag.style.display = "block";
+                        } else {
+                            extraTag.style.display = "none";
+                        }
+                    }
+                    
+                    if(!isSpinning) { 
+                        document.getElementById('timer').innerText = "00:" + (timeLeft < 10 ? "0" : "") + timeLeft;
+                    }
+                    if (timeLeft <= 0) { runCasinoWheelAnimation(data.last_number); }
+                });
+            }, 1000);
+        }
+
+        function runCasinoWheelAnimation(finalNum) {
+            isSpinning = true;
+            document.getElementById('overlay-msg').style.display = "none";
+            document.getElementById('timer').innerText = "SPINNING";
+            let currentTile = 0;
+            let speed = 40; 
+            let steps = 0;
+            let totalSteps = 40 + finalNum; 
+
+            function spin() {
+                document.getElementById('slot_'+(currentTile % 10)).classList.remove('active-win');
+                currentTile++;
+                document.getElementById('slot_'+(currentTile % 10)).classList.add('active-win');
+                steps++;
+                if (steps < totalSteps) {
+                    if (totalSteps - steps < 12) speed += 30;
+                    setTimeout(spin, speed);
+                } else {
+                    for(let i=0; i<=9; i++) { document.getElementById('slot_'+i).classList.remove('active-win'); }
+                    document.getElementById('slot_'+finalNum).classList.add('active-win');
+                    setTimeout(() => {
+                        isSpinning = false;
+                        isLocked = false;
+                        location.reload();
+                    }, 2200);
+                }
+            }
+            spin();
+        }
+        window.onload = startLiveSync;
+    </script>
+</head>
+<body>
+    <div class="main-layout">
+        <div class="left-sidebar">
+            <span style="font-size:9px; color:#ffcc00; font-weight:bold;">ONLINE</span>
+            <div class="player-dp">🙋‍♂️<br><span style="font-size:8px;">Jili</span></div>
+            <div class="player-dp">👤<br><span style="font-size:8px;">Sana</span></div>
+            <div class="player-dp">😎<br><span style="font-size:8px;">Ali</span></div>
+            <div class="player-dp">👑<br><span style="font-size:8px;">Malik</span></div>
+        </div>
+        <div class="center-content">
+            <div class="card">
+                <div class="gate-grid">
+                    <a href="/panel/deposit" class="gate-btn" style="background:#28a745;">Deposit Panel</a>
+                    <a href="/panel/withdraw" class="gate-btn" style="background:#007bff;">Withdraw Panel</a>
+                </div>
+                <p style="margin:4px 0; font-size:13px;"><b>User:</b> {{ username }} | <b>Balance:</b> <span style="color:#4CAF50;">Rs.<span id="user_balance">{{ balance }}</span></span></p>
+            </div>
+            <div class="card">
+                <div class="status-overlay" id="overlay-msg">Bet Locked</div>
+                <div class="history-ribbon">
+                    {% for num in history %}
+                    <div class="hist-badge b{{num}}">{{num}}</div>
+                    {% endfor %}
+                </div>
+                <h4 style="margin:5px 0;">Period: <span id="period" style="color:#e91e63;">{{ game.period }}</span></h4>
+                <div class="timer-box" id="timer">00:15</div>
+                <div class="board-grid">
+                    {% for i in range(10) %}
+                    <div class="box-slot b{{i}} {{ 'active-win' if game.last_number == i }}" id="slot_{{i}}" onclick="clickToPlaceBet({{i}})">
+                        <div class="extra-pay-tag" id="extra_{{i}}">500X</div>
+                        <div class="pool-tag" id="pool_{{i}}">P: 0</div>
+                        <div class="num-box">{{i}}</div>
+                        <div class="mult-tag" id="mult_{{i}}">{{ multipliers[i] }}x</div>
+                        <div class="mybet-tag" id="mybet_{{i}}"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <div class="chip-grid">
+                    <button class="chip-btn selected-chip" onclick="selectChip(this, 10)">10</button>
+                    <button class="chip-btn" onclick="selectChip(this, 50)">50</button>
+                    <button class="chip-btn" onclick="selectChip(this, 100)">100</button>
+                    <button class="chip-btn" onclick="selectChip(this, 500)">500</button>
+                    <button class="chip-btn" onclick="selectChip(this, 1000)">1000</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

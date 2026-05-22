@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Tiger Game</title>
+    <style>
+        body { background-color: #1a1a2e; color: white; font-family: Arial; text-align: center; }
+        .game-container { margin-top: 50px; }
+        .board { display: flex; justify-content: center; gap: 20px; margin: 20px; }
+        .card-box { width: 120px; height: 160px; border: 2px solid gold; border-radius: 10px; font-size: 40px; line-height: 160px; background: #16213e; }
+        .controls { margin: 20px; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; }
+        .btn-dragon { background-color: #e94560; color: white; }
+        .btn-tiger { background-color: #0f3460; color: white; }
+        .btn-tie { background-color: #228b22; color: white; }
+        #status { font-size: 20px; margin: 20px; color: gold; }
+        .history-bar { margin-top: 20px; font-size: 24px; letter-spacing: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>🐉 Dragon VS Tiger 🐯</h1>
+    <h2 id="wallet-display">Wallet: RS {{ wallet }}</h2>
+
+    <div class="game-container">
+        <div class="board">
+            <div id="dragon-card" class="card-box">?</div>
+            <div id="tiger-card" class="card-box">?</div>
+        </div>
+
+        <div id="status">Apni bet lagayein!</div>
+
+        <div class="controls">
+            <input type="number" id="bet-amount" placeholder="Bet Amount" value="10"> <br><br>
+            <button class="btn-dragon" onclick="play('D')">DRAGON</button>
+            <button class="btn-tie" onclick="play('TIE')">TIE</button>
+            <button class="btn-tiger" onclick="play('T')">TIGER</button>
+        </div>
+    </div>
+
+    <h3>History:</h3>
+    <div id="history" class="history-bar"></div>
+
+    <script>
+        async function play(userChoice) {
+            const bet = document.getElementById('bet-amount').value;
+            const response = await fetch('/play', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({bet: bet, choice: userChoice})
+            });
+            
+            const data = await response.json();
+            if(data.error) {
+                alert(data.error);
+                return;
+            }
+
+            // Cards update
+            document.getElementById('dragon-card').innerText = data.d_card;
+            document.getElementById('tiger-card').innerText = data.t_card;
+            
+            // Wallet aur Status update
+            document.getElementById('wallet-display').innerText = "Wallet: RS " + data.wallet;
+            document.getElementById('status').innerText = data.msg;
+
+            // History update
+            document.getElementById('history').innerText = data.history.join(" ");
+        }
+    </scnano templates/index.html	

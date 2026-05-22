@@ -323,3 +323,40 @@ grep -r "1" /sdcard/
 grep -E "[0-9]" filename.txt
 termux-setup-storage
 grep "1" filename.txt
+pkg install tur-repo -y
+pkg install cloudflared -y
+cloudflared tunnel --url http://127.0.0.1:5000
+python color_game.py
+rm color_game.py
+nano color_game.py
+python color_game.py
+rm color_game.py
+nano color_game.py
+python color_game.py
+rm color_game.py
+nano color_game.py
+python color_game.py
+rm color_game.py
+nano color_game.py
+python color_game.py
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Game List Example</title>
+<style>
+</style>
+</head>
+<body>
+<h1>TD777.com Style Game List</h1>
+<div class="game-container">
+</div>
+</body>
+</html>
+pkg update && pkg upgrade -y
+nano game.py
+python game.py
+pkg update && pkg upgrade -y
+pkg install python -y
+pip install flask
+nano color_game.py

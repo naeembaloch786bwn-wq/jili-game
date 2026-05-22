@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #111; color: white; padding: 15px; margin: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 25px; background: #161a22; }
+        th, td { padding: 8px; border: 1px solid #333; text-align: center; font-size: 13px; }
+        th { background: #222; color: #ffcc00; }
+        .btn { background: #28a745; color: white; padding: 4px 8px; text-decoration: none; border-radius: 4px; font-weight: bold; border: none; cursor: pointer; font-size: 12px; }
+        .btn-danger { background: #dc3545; }
+        .btn-update { background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
+        h2, h3 { color: #fff; border-bottom: 2px solid #222; padding-bottom: 6px; margin-top: 20px; }
+        .balance-form input { width: 70px; padding: 4px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; text-align: center; }
+        .balance-form select { padding: 4px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h2>👑 Admin Control Panel</h2>
+    
+    <h3>👥 Registered Users & Balance Control</h3>
+    <table>
+        <tr>
+            <th>User Mobile</th>
+            <th>Password</th>
+            <th>Current Balance</th>
+            <th>Withdraw PIN</th>
+            <th>Referred By</th>
+            <th>Change Balance</th>
+        </tr>
+        {% for username, details in all_users.items() %}
+        <tr>
+            <td style="font-weight: bold; color: #00ffcc;">{{ username }}</td>
+            <td>{{ details.password }}</td>
+            <td style="color: #28a745; font-weight: bold;">Rs. {{ details.balance }}</td>
+            <td>{{ details.withdraw_pin }}</td>
+            <td style="color: #ff9800;">{{ details.referred_by if details.referred_by else 'None' }}</td>
+            <td>
+                <form action="/admin/update_balance" method="POST" class="balance-form" style="display: inline-flex; gap: 4px; align-items: center;">
+                    <input type="hidden" name="target_user" value="{{ username }}">
+                    <select name="action_type">
+                        <option value="add">Add (+)</option>
+                        <option value="sub">Deduct (-)</option>
+                    </select>
+                    <input type="number" name="amount" placeholder="Amt" required min="1">
+                    <button type="submit" class="btn-update">Go</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>📥 Deposit Requests (Pending Approval)</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Sender Name</th>
+            <th>Sender Number</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for d in deposits %}
+        <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.user }}</td>
+            <td>{{ d.name }}</td>
+            <td>{{ d.number }}</td>
+            <td style="color: #28a745; font-weight: bold;">Rs. {{ d.amount }}</td>
+            <td style="color: {% if d.status == 'Pending' %}#ffcc00{% else %}#28a745{% endif %}; font-weight:bold;">{{ d.status }}</td>
+            <td>
+                {% if d.status == 'Pending' %}
+                <a href="/admin/approve_deposit/{{ d.id }}" class="btn">Approve / Add Money</a>
+                {% else %}
+                Approved
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>📤 Withdrawal Requests</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Account Title</th>
+            <th>Account Number</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for w in withdrawals %}
+        <tr>
+            <td>{{ w.id }}</td>
+            <td>{{ w.user }}</td>
+            <td>{{ w.name }}</td>
+            <td>{{ w.number }}</td>
+            <td style="color: #dc3545; font-weight: bold;">Rs. {{ w.amount }}</td>
+            <td style="color: {% if w.status == 'Pending' %}#ffcc00{% else %}#28a745{% endif %}; font-weight:bold;">{{ w.status }}</td>
+            <td>
+                {% if w.status == 'Pending' %}
+                <div style="display: flex; gap: 5px; justify-content: center;">
+                    <a href="/admin/approve_withdraw/{{ w.id }}" class="btn">Pay / Success</a>
+                    <a href="/admin/reject_withdraw/{{ w.id }}" class="btn btn-danger">Reject</a>
+                </div>
+                {% else %}
+                {{ w.status }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <p><a href="/" style="color:#aaa; text-decoration:none;">← Back to Game</a></p>
+</body>
+</html>
+
